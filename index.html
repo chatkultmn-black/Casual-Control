@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Casual Labor Control · 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh}
+.hdr{background:#0D1F3C;padding:14px 20px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;padding-bottom:10px}
+.hdr h1{font-size:clamp(13px,2.8vw,18px);font-weight:700;color:#fff}
+.hdr p{font-size:11px;color:#93C5FD;margin-top:2px}
+.month-btn{background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.4);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:#F59E0B;cursor:pointer;transition:.15s;white-space:nowrap}
+.month-btn:hover{background:rgba(245,158,11,.35)}
+.tabs{display:flex;overflow-x:auto;border-top:1px solid rgba(255,255,255,.1);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 14px;font-size:12px;font-weight:600;color:rgba(255,255,255,.5);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;transition:.15s;user-select:none}
+.tab.on{color:#fff;border-bottom-color:#F59E0B}
+.tab:hover:not(.on){color:rgba(255,255,255,.8)}
+.tbadge{display:inline-block;background:#EF4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:4px;vertical-align:middle}
+.page{display:none}.page.on{display:block}
+.wrap{max-width:1280px;margin:0 auto;padding:14px 14px 50px}
+.req-wrap{max-width:960px;margin:0 auto;padding:14px 14px 50px}
+.occ-wrap{max-width:840px;margin:0 auto;padding:14px 14px 50px}
+.rev-wrap{max-width:1060px;margin:0 auto;padding:14px 14px 50px}
+.bgt-wrap{max-width:1180px;margin:0 auto;padding:14px 14px 50px}
+.fct-wrap{max-width:860px;margin:0 auto;padding:14px 14px 50px}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.mbg.on{display:flex}
+.modal{background:#fff;border-radius:14px;padding:22px;width:90%;max-width:480px;max-height:82vh;overflow-y:auto}
+.modal h3{font-size:15px;font-weight:700;color:#0D1F3C;margin-bottom:6px}
+.modal p{font-size:12px;color:#64748B;margin-bottom:12px}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.mopt{padding:10px 8px;border-radius:8px;border:1.5px solid #E2E8F0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:.15s;color:#475569}
+.mopt:hover{border-color:#1565C0;color:#1565C0}
+.mopt.on{background:#0D1F3C;border-color:#0D1F3C;color:#fff}
+.mopt small{display:block;font-size:10px;opacity:.7;margin-top:2px;font-weight:400}
+.sa{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:9px;margin-bottom:8px;border:1px solid}
+.sa-ok{background:#F0FDF4;border-color:#86EFAC;color:#166534}
+.sa-warn{background:#FEF3C7;border-color:#FDE68A;color:#92400E}
+.sa-over{background:#FEE2E2;border-color:#FECACA;color:#991B1B}
+.sa-pend{background:#EFF6FF;border-color:#BFDBFE;color:#1E3A8A}
+.sa-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.sa-title{font-size:13px;font-weight:700}
+.sa-sub{font-size:11px;opacity:.85;margin-top:1px;line-height:1.4}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #E2E8F0;border-top:3px solid #CBD5E1}
+.kpi.blue{border-top-color:#1565C0}.kpi.teal{border-top-color:#0F766E}.kpi.amb{border-top-color:#D97706}
+.kpi.red{border-top-color:#DC2626}.kpi.navy{border-top-color:#0D1F3C}.kpi.purple{border-top-color:#7C3AED}
+.kl{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kv{font-size:clamp(17px,3.5vw,25px);font-weight:700;line-height:1;margin-bottom:3px}
+.ks{font-size:11px;color:#64748B}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;margin-top:3px}
+.pg{background:#DCFCE7;color:#166534}.pr{background:#FEE2E2;color:#991B1B}.pa{background:#FEF3C7;color:#92400E}
+.sec{background:#fff;border-radius:10px;overflow:hidden;margin-bottom:14px;border:1px solid #E2E8F0}
+.sh{background:#0D1F3C;padding:10px 14px;font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px}
+.sh .dot{width:7px;height:7px;border-radius:50%;background:#F59E0B;flex-shrink:0}
+.sb{padding:14px}
+.tw{overflow-x:auto}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.chdr{text-align:center;font-size:10px;font-weight:700;color:#64748B;padding:3px 0;text-transform:uppercase}
+.cday{border-radius:7px;padding:5px 4px;text-align:center;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:1px;position:relative;cursor:default;transition:transform .1s,box-shadow .1s}
+.cday:hover{transform:scale(1.06);box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:10}
+.cn{font-size:11px;font-weight:700;line-height:1;margin-bottom:2px}
+.co{font-size:11px;font-weight:700;line-height:1}.cr{font-size:9px;opacity:.75}
+.s-str{background:#14532D;color:#fff}.s-str .cn{color:rgba(255,255,255,.6)}
+.s-on{background:#DCFCE7;color:#166534}.s-soft{background:#FEF3C7;color:#B45309}
+.s-low{background:#FEE2E2;color:#991B1B}.s-emp{background:#E2E8F0;color:#94A3B8}
+.s-hol{background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA}
+.is-wknd{background:#F5F0FF;color:#7C3AED;opacity:.85}
+.hol-tag{font-size:8px;line-height:1;margin-top:1px;font-weight:600;color:#DC2626;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-bars{width:88%;margin-top:4px;display:flex;flex-direction:column;gap:2px}
+.cal-bar{height:4px;border-radius:2px;min-width:3px}
+.cal-cost{font-size:8px;font-weight:700;margin-top:2px;opacity:.9;line-height:1}
+.ctt{display:none;position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#0D1F3C;color:#fff;border-radius:10px;padding:11px 13px;font-size:12px;z-index:200;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.35);min-width:175px;max-width:220px;text-align:left;white-space:normal}
+.ctt::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#0D1F3C}
+.cday:hover .ctt{display:block}
+.ctt.tt-left{left:0;transform:none}.ctt.tt-left::after{left:20px;transform:none}
+.ctt.tt-right{left:auto;right:0;transform:none}.ctt.tt-right::after{left:auto;right:20px;transform:none}
+.ctt-hdr{font-size:10px;color:#93C5FD;font-weight:600;margin-bottom:5px;padding-bottom:4px;border-bottom:0.5px solid rgba(255,255,255,.15)}
+.ctt-occ{font-size:13px;font-weight:700;color:#F59E0B;margin-bottom:5px}
+.ctt-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ctt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ctt-dept{font-size:11px;color:#E2E8F0;flex:1}
+.ctt-ppl{font-size:10px;color:#93C5FD;white-space:nowrap}
+.ctt-total{border-top:0.5px solid rgba(255,255,255,.2);margin-top:5px;padding-top:5px;font-size:11px;color:#86EFAC;font-weight:600}
+.ctt-empty{font-size:11px;color:#64748B;font-style:italic}
+.ctt-hol{font-size:11px;color:#FCA5A5;margin-bottom:4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;padding:10px 14px;border-top:1px solid #E2E8F0;font-size:11px;color:#64748B}
+.li{display:flex;align-items:center;gap:4px}
+.ld{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.glabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:5px 0 2px;width:100%}
+.dbar{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.db{padding:6px 12px;border-radius:7px;border:1.5px solid #E2E8F0;background:#fff;font-size:12px;font-weight:600;color:#475569;cursor:pointer;transition:.15s;position:relative}
+.db:hover{border-color:#1565C0;color:#1565C0}
+.db.on{background:#0D1F3C;border-color:#0D1F3C;color:#fff}
+.db.has{border-color:#0F766E;color:#0F766E}
+.db.has.on{background:#0F766E;border-color:#0F766E;color:#fff}
+.db.over{border-color:#DC2626;color:#DC2626}
+.db.over.on{background:#DC2626;border-color:#DC2626;color:#fff}
+.db-dot{position:absolute;top:-4px;right:-4px;width:9px;height:9px;border-radius:50%;border:1.5px solid #fff}
+.fcard{background:#fff;border-radius:12px;border:1px solid #E2E8F0;overflow:hidden;margin-bottom:14px}
+.fhdr{padding:13px 18px}
+.fhdr h2{font-size:15px;font-weight:700;color:#fff}
+.fhdr p{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px}
+.wtabs{display:flex;gap:5px;padding:11px 18px 0;border-bottom:1px solid #F1F5F9;flex-wrap:wrap}
+.wtab{padding:7px 13px;font-size:12px;font-weight:600;color:#64748B;cursor:pointer;border-radius:7px 7px 0 0;border:1.5px solid transparent;border-bottom:none;background:#F8FAFC;transition:.15s}
+.wtab.on{background:#fff;color:#0D1F3C;border-color:#E2E8F0;border-bottom-color:#fff;margin-bottom:-1px}
+.wtab.has{color:#0F766E}.wtab.ov{color:#DC2626}
+.digrid{display:grid;gap:9px;padding:13px 18px}
+.dirow{display:grid;grid-template-columns:74px 80px 1fr 1fr 86px;gap:8px;align-items:center;padding:9px 11px;border-radius:8px;background:#F8FAFC;border:1px solid transparent;transition:.15s}
+.dirow:hover{border-color:#DBEAFE}
+.dirow.he{background:#F0FDF4;border-color:#BBF7D0}
+.dirow.wk{background:#F5F0FF}.dirow.lo{background:#FFF7ED}.dirow.hol{background:#FFF0F0}
+.dn{font-weight:700;font-size:13px;color:#0D1F3C}
+.dw{font-size:10px;color:#64748B}
+.dihdr{display:grid;grid-template-columns:74px 80px 1fr 1fr 86px;gap:8px;padding:0 11px 5px;font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em}
+input[type=number]{width:100%;padding:7px 8px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:13px;font-weight:600;text-align:center;background:#fff;color:#0F172A;transition:.15s;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{opacity:1}
+input[type=number]:focus{outline:none;border-color:#1565C0;box-shadow:0 0 0 3px rgba(21,101,192,.1)}
+select{width:100%;padding:7px 8px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;background:#fff;color:#0F172A;cursor:pointer}
+select:focus{outline:none;border-color:#1565C0}
+.dcost{font-size:12px;font-weight:700;color:#0F766E;text-align:right}
+.wsum{background:#0D1F3C;padding:10px 18px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.wsi{color:#93C5FD;font-size:11px}
+.wsi strong{color:#fff;font-size:14px;display:block;margin-bottom:1px}
+.wsi.hl strong{color:#F59E0B}.wsi.ov strong{color:#FCA5A5}
+.extrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px 18px}
+@media(max-width:560px){.extrow{grid-template-columns:1fr}}
+.fl label{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+textarea{width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;resize:vertical;min-height:56px;font-family:inherit;color:#0F172A}
+textarea:focus{outline:none;border-color:#1565C0}
+
+input[type=text]{width:100%;padding:7px 9px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;background:#fff;color:#0F172A}
+input[type=text]:focus{outline:none;border-color:#B45309}
+.brow{display:flex;gap:9px;padding:12px 18px;border-top:1px solid #F1F5F9;flex-wrap:wrap}
+.btn{padding:9px 18px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:.15s}
+.b-primary{background:#0D1F3C;color:#fff}.b-primary:hover{background:#1E3A5F}
+.b-success{background:#0F766E;color:#fff}.b-success:hover{background:#0D5C55}
+.b-ghost{background:#F1F5F9;color:#475569;border:1px solid #E2E8F0}.b-ghost:hover{background:#E2E8F0}
+.b-danger{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}.b-danger:hover{background:#FECACA}
+.stbl{width:100%;border-collapse:collapse;font-size:12px}
+.stbl th{background:#F1F5F9;color:#64748B;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;text-align:left;white-space:nowrap}
+.stbl td{padding:9px 10px;border-bottom:1px solid #F1F5F9;vertical-align:middle}
+.stbl tbody tr:hover td{background:#FAFAFA}
+.stbl .gtot td{background:#0D1F3C!important;color:#F59E0B;font-weight:700}
+.stbl .ghdr td{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:5px 10px}
+.ocgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.oc-hdr{text-align:center;font-size:10px;font-weight:700;color:#64748B;padding:3px 0;text-transform:uppercase}
+.ocday{background:#fff;border:1.5px solid #E2E8F0;border-radius:8px;padding:7px 4px;text-align:center;transition:.15s}
+.ocday:hover{border-color:#1565C0}.ocday.fl{border-color:#0F766E}.ocday.td{border-color:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,.15)}
+.ocday.wk{background:#F5F0FF}.ocday.hol{background:#FFF0F0}.ocday.es{visibility:hidden}
+.od-n{font-size:11px;font-weight:700;color:#0D1F3C;margin-bottom:2px}
+.od-w{font-size:9px;color:#94A3B8;margin-bottom:4px}
+.ocday input{width:100%;border:1px solid #E2E8F0;border-radius:5px;padding:5px 2px;font-size:12px;font-weight:700;text-align:center;background:#F8FAFC;color:#0D1F3C;-moz-appearance:textfield}
+.ocday input:focus{outline:none;border-color:#0F766E;background:#fff}
+.od-p{font-size:10px;font-weight:700;margin-top:3px;min-height:14px}
+.od-s{font-size:9px;margin-top:1px;min-height:12px}
+.gatrack{height:12px;background:#F1F5F9;border-radius:6px;overflow:visible;position:relative;margin-bottom:4px}
+.gafill{height:100%;border-radius:6px;transition:width .5s}
+.gatgt{position:absolute;top:-4px;bottom:-4px;width:2px;background:#D97706;border-radius:1px}
+.gatgt-lbl{position:absolute;top:-17px;font-size:9px;font-weight:700;color:#D97706;white-space:nowrap;transform:translateX(-50%)}
+.rigrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 18px}
+.ric{background:#F8FAFC;border-radius:9px;border:1.5px solid #E2E8F0;padding:11px;transition:.15s}
+.ric:hover{border-color:#1565C0}.ric.hv{border-color:#0F766E;background:#F0FDF4}
+.rtbl{width:100%;border-collapse:collapse;font-size:12px}
+.rtbl th{background:#F1F5F9;color:#64748B;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;text-align:left;white-space:nowrap}
+.rtbl td{padding:9px 10px;border-bottom:1px solid #F1F5F9;vertical-align:middle}
+.rtbl tbody tr:hover td{background:#FAFAFA}
+.rtbl .tot td{background:#0D1F3C!important;color:#F59E0B;font-weight:700}
+.pchip{display:inline-block;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:700}
+.mbar{height:5px;background:#E2E8F0;border-radius:3px;margin-top:3px;overflow:hidden}
+.mfill{height:100%;border-radius:3px}
+@media(max-width:520px){.rigrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.dirow{grid-template-columns:60px 70px 1fr}.dihdr{grid-template-columns:60px 70px 1fr}.dirow>:nth-child(4),.dirow>:nth-child(5),.dihdr>:nth-child(4),.dihdr>:nth-child(5){display:none}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:#0D1F3C;color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s;box-shadow:0 4px 20px rgba(0,0,0,.25);white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ═══════════════════════════════════════════════
+   MOBILE RESPONSIVE — All breakpoints
+   Target: 360px (small phone) to 768px (tablet)
+═══════════════════════════════════════════════ */
+
+/* Base fixes for ALL screen sizes */
+html { -webkit-text-size-adjust: 100%; }
+img, canvas { max-width: 100%; }
+table { table-layout: auto; }
+
+/* ── Small phones (≤480px) ── */
+.chart-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+@media (max-width: 640px) { .chart-2col { grid-template-columns: 1fr !important; } }
+@media (max-width: 480px) {
+
+  /* Header */
+  .hdr { padding: 10px 14px 0; }
+  .hdr h1 { font-size: 13px; line-height: 1.3; }
+  .hdr p { display: none; }
+  .month-btn { font-size: 11px; padding: 4px 10px; }
+  .tab { padding: 8px 10px; font-size: 11px; }
+
+  /* Page wrappers — remove max-width locks, reduce padding */
+  .wrap, .req-wrap, .occ-wrap, .rev-wrap,
+  .bgt-wrap, .fct-wrap { padding: 10px 10px 60px; max-width: 100%; }
+
+  /* KPI grid — 2 columns */
+  .kgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .kv { font-size: 18px; }
+  .kl { font-size: 9px; }
+
+  /* Dashboard two-col charts → single col */
+  #page-dash .wrap > div:nth-child(3) { grid-template-columns: 1fr !important; }
+  #page-dash canvas { height: 160px !important; }
+
+  /* Calendar — keep 7 cols but smaller */
+  .cgrid { gap: 2px; }
+  .cday { min-height: 46px; padding: 3px 2px; border-radius: 5px; }
+  .cn { font-size: 9px; }
+  .co { font-size: 9px; }
+  .cr { display: none; }
+  .chdr { font-size: 8px; padding: 2px 0; }
+  .cal-bars { width: 95%; }
+  .cal-bar { height: 3px; }
+  .cal-cost { font-size: 7px; }
+  .ctt { min-width: 150px; font-size: 11px; padding: 9px 11px; }
+
+  /* OCC calendar */
+  .ocgrid { gap: 2px; }
+  .ocday { padding: 5px 2px; border-radius: 6px; }
+  .od-n { font-size: 10px; }
+  .od-w { font-size: 8px; }
+  .ocday input { font-size: 11px; padding: 4px 1px; }
+  .od-p { font-size: 9px; }
+  .od-s { font-size: 8px; }
+
+  /* Casual request day rows */
+  .dirow {
+    grid-template-columns: 56px 64px 1fr !important;
+    padding: 7px 8px;
+    gap: 6px;
+  }
+  .dihdr {
+    grid-template-columns: 56px 64px 1fr !important;
+    padding: 0 8px 4px;
+    gap: 6px;
+  }
+  .dirow > :nth-child(4),
+  .dirow > :nth-child(5),
+  .dihdr > :nth-child(4),
+  .dihdr > :nth-child(5) { display: none !important; }
+  .dn { font-size: 11px; }
+  .dw { font-size: 9px; }
+  input[type=number] { font-size: 14px; padding: 8px 4px; }
+
+  /* Week summary bar */
+  .wsum { padding: 9px 12px; gap: 10px; }
+  .wsi strong { font-size: 13px; }
+  .wsi { font-size: 10px; }
+
+  /* Extra fields in request form */
+  .extrow { grid-template-columns: 1fr !important; padding: 10px 12px; }
+  .appgrid { grid-template-columns: 1fr !important; }
+  .appbox { padding: 11px 12px; }
+
+  /* Button row */
+  .brow { padding: 10px 12px; gap: 7px; }
+  .btn { padding: 8px 14px; font-size: 11px; }
+
+  /* Dept bar */
+  .db { font-size: 11px; padding: 5px 10px; }
+  .glabel { font-size: 9px; }
+
+  /* Revenue input grid → 2 col */
+  .rigrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; padding: 10px 12px; gap: 8px; }
+  .ric-f input { font-size: 12px; padding: 6px 8px; }
+  .pct-big { font-size: 14px; }
+
+  /* Budget page grid → single col */
+  #budget-body > div { grid-template-columns: 1fr !important; }
+
+  /* Forecast page grid → single col */
+  #fct-body > div { grid-template-columns: 1fr !important; }
+
+  /* Summary/all-dept table — horizontal scroll + smaller text */
+  .stbl th, .stbl td { padding: 7px 8px; font-size: 11px; }
+  .rtbl th, .rtbl td { padding: 7px 8px; font-size: 11px; }
+
+  /* Legend */
+  .legend { gap: 7px; padding: 8px 10px; font-size: 10px; }
+  .ld { width: 8px; height: 8px; }
+
+  /* Section header */
+  .sh { padding: 9px 12px; font-size: 11px; }
+  .sb { padding: 10px; }
+
+  /* Alert banners */
+  .sa { padding: 9px 11px; }
+  .sa-title { font-size: 12px; }
+  .sa-sub { font-size: 10px; }
+
+  /* Week tabs */
+  .wtab { padding: 6px 10px; font-size: 11px; }
+
+  /* Month modal */
+  .modal { padding: 16px; }
+  .mgrid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .mopt { padding: 9px 6px; font-size: 11px; }
+
+  /* Toast */
+  .toast { font-size: 12px; padding: 9px 18px; bottom: 14px; }
+
+  /* Gauge */
+  .gatrack { height: 10px; }
+  .gatgt-lbl { font-size: 8px; }
+
+  /* Chart in revenue page */
+  #revChart { height: 160px !important; }
+}
+
+/* ── Tablets (481px – 768px) ── */
+@media (min-width: 481px) and (max-width: 768px) {
+
+  .wrap, .req-wrap, .occ-wrap, .rev-wrap,
+  .bgt-wrap, .fct-wrap { padding: 12px 12px 50px; max-width: 100%; }
+
+  .kgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* Two-col chart → single */
+  #page-dash .wrap > div:nth-child(3) { grid-template-columns: 1fr !important; }
+
+  /* Calendar slightly larger */
+  .cday { min-height: 54px; }
+  .co { font-size: 10px; }
+
+  /* OCC grid comfortable */
+  .od-n { font-size: 10px; }
+  .ocday input { font-size: 11px; }
+
+  /* Day rows — hide rate col on small tablet */
+  .dirow { grid-template-columns: 66px 74px 1fr 1fr !important; }
+  .dihdr { grid-template-columns: 66px 74px 1fr 1fr !important; }
+  .dirow > :nth-child(5),
+  .dihdr > :nth-child(5) { display: none !important; }
+
+  /* Revenue grid 2 col */
+  .rigrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+  /* Budget/Forecast → stack */
+  #budget-body > div { grid-template-columns: 1fr !important; }
+  #fct-body > div { grid-template-columns: 1fr !important; }
+
+  /* Month modal */
+  .mgrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Fix: tables always scrollable on mobile ── */
+@media (max-width: 768px) {
+  .tw, #sumBody, #d-wktbl, #occ-wtbl { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tw table, .stbl, .rtbl { min-width: 500px; }
+  #d-wktbl table { min-width: 420px; }
+  #occ-wtbl table { min-width: 400px; }
+
+  /* Prevent text overflow in cells */
+  .stbl td, .rtbl td { white-space: nowrap; }
+
+  /* Touch-friendly inputs */
+  input[type=number], input[type=text], select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+  .ocday input { font-size: 16px !important; }
+}
+
+/* ── Fix: prevent horizontal scroll of entire page ── */
+@media (max-width: 768px) {
+  body { overflow-x: hidden; }
+  .hdr { overflow-x: hidden; }
+  .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+
+/* ═══ LOGIN ═══ */
+.login-bg{position:fixed;inset:0;background:#0D1F3C;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.login-card{background:#fff;border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center}
+.login-logo{font-size:32px;margin-bottom:8px}
+.login-title{font-size:18px;font-weight:700;color:#0D1F3C;margin-bottom:4px}
+.login-sub{font-size:12px;color:#64748B;margin-bottom:24px}
+.login-field{margin-bottom:14px;text-align:left}
+.login-field label{font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px}
+.login-field select,.login-field input[type=password]{width:100%;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:16px;color:#0F172A;background:#fff;transition:border-color .15s}
+.login-field select:focus,.login-field input[type=password]:focus{outline:none;border-color:#1565C0}
+.login-btn{width:100%;padding:13px;background:#0D1F3C;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.login-btn:hover{background:#1E3A5F}
+.lerr{background:#FEE2E2;color:#991B1B;border-radius:8px;padding:9px 13px;font-size:13px;font-weight:600;margin-top:12px;display:none}
+.lerr.show{display:block}
+/* User badge */
+.ubadge{display:flex;align-items:center;gap:7px;flex-shrink:0;flex-wrap:wrap}
+.upill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 11px;font-size:11px;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.udot{width:7px;height:7px;border-radius:50%;background:#4ADE80;flex-shrink:0}
+.udot.adm{background:#F59E0B}
+.uxbtn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,.75);cursor:pointer;white-space:nowrap}
+.uxbtn:hover{background:rgba(255,255,255,.2);color:#fff}
+/* Readonly notice */
+.ro-notice{background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:10px 14px;font-size:12px;color:#92400E;margin-bottom:12px;display:none;align-items:center;gap:8px}
+/* Change PW modal */
+.cpwbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center}
+.cpwbg.on{display:flex}
+.cpwcard{background:#fff;border-radius:14px;padding:24px;width:90%;max-width:300px}
+.cpwcard h3{font-size:15px;font-weight:700;color:#0D1F3C;margin-bottom:14px}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="lgbg" class="login-bg">
+  <div class="login-card">
+    <div class="login-logo">&#127968;</div>
+    <div class="login-title">Casual Labor Control 2026</div>
+    <div class="login-sub">188 Rooms · กรุณาเข้าสู่ระบบ</div>
+    <div class="login-field">
+      <label>แผนก / User</label>
+      <select id="lg-dept">
+        <option value="">— เลือกแผนก —</option>
+        <option value="finance">Finance (Admin)</option>
+        <option value="fo">Front Office</option>
+        <option value="hk">Housekeeping</option>
+        <option value="fb">Food & Beverage</option>
+        <option value="kitchen">Kitchen</option>
+        <option value="sport">Sport & Recreation</option>
+        <option value="spa">Spa</option>
+        <option value="sales">Sales & Marketing</option>
+        <option value="prop">Property Op & Maint</option>
+        <option value="hr">Human Resources</option>
+        <option value="admin">Admin & General</option>
+        <option value="marine">Marine</option>
+        <option value="other">Other Special Op</option>
+        <option value="laundry">Guest Laundry</option>
+        <option value="trans">Transportation</option>
+        <option value="hlaund">House Laundry</option>
+        <option value="dining">Staff Dining</option>
+        <option value="conv">Conversion</option>
+      </select>
+    </div>
+    <div class="login-field">
+      <label>รหัสผ่าน (ตัวเลข 4 หลัก)</label>
+      <input type="password" id="lg-pw" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*">
+    </div>
+    <button class="login-btn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="lerr" id="lg-err">รหัสผ่านไม่ถูกต้อง</div>
+  </div>
+</div>
+<!-- CHANGE PW -->
+<div class="cpwbg" id="cpwbg">
+  <div class="cpwcard">
+    <h3>&#128273; เปลี่ยนรหัสผ่าน</h3>
+    <div class="login-field"><label>รหัสปัจจุบัน</label><input type="password" id="cpw-old" maxlength="4" placeholder="••••" inputmode="numeric"></div>
+    <div class="login-field"><label>รหัสใหม่</label><input type="password" id="cpw-new" maxlength="4" placeholder="••••" inputmode="numeric"></div>
+    <div class="login-field"><label>ยืนยันรหัสใหม่</label><input type="password" id="cpw-cfm" maxlength="4" placeholder="••••" inputmode="numeric"></div>
+    <div class="lerr" id="cpw-err" style="margin-bottom:10px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn b-primary" onclick="doChangePw()" style="flex:1">บันทึก</button>
+      <button class="btn b-ghost" onclick="closeCpw()" style="flex:1">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<div class="hdr" id="main-app" style="display:none">
+  <div class="hdr-top">
+    <div>
+      <h1 id="hdr-title">Casual Labor Control · 2026</h1>
+      <p>188 Rooms · Budget & Forecast Setup · OCC รายวัน · Casual Request · Revenue & Casual %</p>
+    </div>
+    <div class="ubadge">
+      <div class="upill"><div class="udot" id="udot"></div><span id="ulbl">—</span></div>
+      <button class="uxbtn" onclick="openCpw()">&#128273; รหัส</button>
+      <button class="uxbtn" onclick="doLogout()">ออก</button>
+      <button class="month-btn" onclick="openMonthModal()">&#128197; เปลี่ยนเดือน</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab on"  onclick="go('dash')">Dashboard</div>
+    <div class="tab"     onclick="go('budget')">&#9881;&#65039; Budget Setup</div>
+    <div class="tab"     onclick="go('fct')">&#128203; Forecast Update</div>
+    <div class="tab"     onclick="go('occ')">OCC Daily Input</div>
+    <div class="tab"     onclick="go('req')" id="t-req">Casual Request <span class="tbadge" id="rbadge" style="display:none">0</span></div>
+    <div class="tab"     onclick="go('rev')">Revenue &amp; Casual %</div>
+    <div class="tab"     onclick="go('sum')">All Dept Summary</div>
+  </div>
+</div>
+
+<div class="mbg" id="mbg" onclick="if(event.target===this)closeMonthModal()">
+  <div class="modal">
+    <h3>&#128197; เลือกเดือน 2026</h3>
+    <p>🟢 มีข้อมูล Casual · 🟡 มี Forecast · ⚙️ มี Budget · ข้อมูลแต่ละเดือนแยกกัน</p>
+    <div class="mgrid" id="mgrid"></div>
+    <div style="margin-top:14px;text-align:right"><button class="btn b-ghost" onclick="closeMonthModal()">ปิด</button></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page on" id="page-dash">
+<div class="wrap">
+  <div id="d-alerts"></div>
+  <div class="kgrid" id="d-kpis"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px" class="chart-2col">
+    <div class="sec" style="margin:0"><div class="sh"><div class="dot"></div>Daily OCC% — Actual vs Budget vs Forecast</div><div class="sb"><div style="position:relative;height:clamp(140px,25vw,185px)"><canvas id="cLine"></canvas></div></div></div>
+    <div class="sec" style="margin:0"><div class="sh"><div class="dot"></div>Weekly OCC% Average</div><div class="sb"><div style="position:relative;height:clamp(140px,25vw,185px)"><canvas id="cBar"></canvas></div></div></div>
+  </div>
+  <div class="sec">
+    <div class="sh"><div class="dot"></div>OCC% รายวัน · แถบสีแสดงแผนกที่ขอ Casual · เม้าชี้เพื่อดูรายละเอียด</div>
+    <div class="sb">
+      <div class="cgrid" id="calHdr"></div>
+      <div class="cgrid" id="calGrid" style="margin-top:3px"></div>
+    </div>
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#14532D"></div>Strong &gt;Budget+5%</div>
+      <div class="li"><div class="ld" style="background:#DCFCE7"></div>On Budget</div>
+      <div class="li"><div class="ld" style="background:#FEF3C7"></div>Soft ±5%</div>
+      <div class="li"><div class="ld" style="background:#FEE2E2"></div>Low OCC</div>
+      <div class="li"><div class="ld" style="background:#FEF2F2;border:1px solid #FECACA"></div>วันหยุด 🎌</div>
+      <div class="li"><div class="ld" style="background:#F5F0FF"></div>Sat-Sun 🏖</div>
+      <div class="li" style="margin-top:3px;width:100%;font-weight:600;color:#475569;font-size:10px">แถบสีกลุ่มแผนก Casual:</div>
+      <div class="li"><div style="width:22px;height:4px;border-radius:2px;background:#1565C0;display:inline-block"></div>Rooms</div>
+      <div class="li"><div style="width:22px;height:4px;border-radius:2px;background:#166534;display:inline-block"></div>F&amp;B</div>
+      <div class="li"><div style="width:22px;height:4px;border-radius:2px;background:#7C3AED;display:inline-block"></div>Leisure</div>
+      <div class="li"><div style="width:22px;height:4px;border-radius:2px;background:#B45309;display:inline-block"></div>Commercial</div>
+      <div class="li"><div style="width:22px;height:4px;border-radius:2px;background:#BE185D;display:inline-block"></div>Engineering</div>
+      <div class="li"><div style="width:22px;height:4px;border-radius:2px;background:#475569;display:inline-block"></div>Back Office</div>
+    </div>
+  </div>
+  <div class="sec"><div class="sh"><div class="dot"></div>Weekly Summary</div><div class="tw" id="d-wktbl"></div></div>
+</div>
+</div>
+
+<!-- BUDGET SETUP -->
+<div class="page" id="page-budget">
+<div class="bgt-wrap">
+  <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div style="font-size:20px">⚙️</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#1E3A8A">Budget Setup — กรอกครั้งเดียวต้นปี · แก้ไขได้ตลอด</div>
+      <div style="font-size:12px;color:#64748B;margin-top:2px">Budget Revenue, OCC%, Casual Wage แยกรายแผนก × รายเดือน · กด Copy จากเดือนก่อนเพื่อประหยัดเวลา</div>
+    </div>
+  </div>
+  <div id="budget-body"></div>
+</div>
+</div>
+
+<!-- FORECAST UPDATE -->
+<div class="page" id="page-fct">
+<div class="fct-wrap">
+  <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <div style="font-size:20px">📋</div>
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#92400E">Forecast Update — อัพเดทเดือนละ 2 ครั้ง</div>
+      <div style="font-size:12px;color:#64748B;margin-top:2px">Forecast 1 (วันที่ 1–15) · Forecast 2 (วันที่ 16–31) · เก็บ 2 Version ให้เปรียบเทียบได้</div>
+    </div>
+  </div>
+  <div id="fct-body"></div>
+</div>
+</div>
+
+<!-- OCC DAILY -->
+<div class="page" id="page-occ">
+<div class="occ-wrap">
+  <div class="kgrid" id="occ-kpis"></div>
+  <div class="sec" style="margin-bottom:12px">
+    <div class="sh"><div class="dot"></div>กรอก Rooms Occupied ทุกวัน · 188 Rooms Available</div>
+    <div style="padding:8px 14px 4px;font-size:11px;color:#92400E;background:#FFFBEB;border-bottom:1px solid #FDE68A">กรอก Paying Rooms ที่ขายได้จริง · OCC% คำนวณอัตโนมัติและเปรียบเทียบกับ Budget ที่ตั้งไว้</div>
+    <div style="padding:10px 9px">
+      <div class="ocgrid" id="occ-hdr"></div>
+      <div class="ocgrid" id="occ-cal" style="margin-top:3px"></div>
+    </div>
+    <div class="brow" style="border-top:1px solid #F1F5F9">
+      <button class="btn b-primary" onclick="saveAllOcc()">Save ทั้งเดือน</button>
+      <button class="btn b-ghost" onclick="clearOcc()">Clear OCC</button>
+    </div>
+  </div>
+  <div class="sec"><div class="sh"><div class="dot"></div>OCC Summary รายสัปดาห์</div><div class="tw" id="occ-wtbl"></div></div>
+</div>
+</div>
+
+<!-- CASUAL REQUEST -->
+<div class="page" id="page-req">
+<div class="req-wrap">
+  <div style="background:#fff;border-radius:10px;border:1px solid #E2E8F0;padding:12px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+    <div style="flex:1;min-width:180px">
+      <div style="font-size:13px;font-weight:700;color:#0D1F3C" id="req-mlbl">Casual Request</div>
+      <div style="font-size:11px;color:#64748B;margin-top:2px">เลือกแผนก → กรอกจำนวน Casual (คน/วัน) → Save</div>
+    </div>
+    <button class="btn b-danger" style="font-size:11px;padding:6px 12px" onclick="clearMonth()">Clear Month Data</button>
+  </div>
+  <div class="ro-notice" id="ro-notice">&#128274; คุณดูได้ทุกหน้า แต่แก้ไขได้เฉพาะ Casual Request แผนกตัวเองเท่านั้น</div>
+  <div id="req-alerts" style="margin-bottom:10px"></div>
+  <div id="dbar" class="dbar"></div>
+  <div id="farea"><div style="text-align:center;padding:48px 20px;color:#94A3B8"><div style="font-size:32px;margin-bottom:8px">👆</div><div style="font-size:14px;font-weight:600">เลือกแผนกด้านบน</div></div></div>
+</div>
+</div>
+
+<!-- REVENUE -->
+<div class="page" id="page-rev">
+<div class="rev-wrap">
+  <div class="kgrid" id="rev-kpis"></div>
+  <div style="background:#FEF3C7;border:0.5px solid #FDE68A;border-radius:8px;padding:9px 13px;font-size:12px;color:#92400E;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#D97706" stroke-width="1.5"/><path d="M8 5v3.5M8 11h.01" stroke="#D97706" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Target: Casual Wage &le; 4.5% of Net Revenue &nbsp;|&nbsp; Revenue ต่ำ → % สูงขึ้น → ควรลด Casual ตามสัดส่วน
+  </div>
+  <div class="sec" style="margin-bottom:12px"><div class="sh"><div class="dot"></div>Casual % of Revenue — Gauge</div><div style="padding:14px 18px" id="gauges"></div></div>
+  <div class="sec" style="margin-bottom:12px">
+    <div class="sh"><div class="dot"></div>Revenue vs Casual Wage Chart</div>
+    <div style="padding:13px">
+      <div id="revLegend" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:11px;color:#64748B"></div>
+      <div style="position:relative;height:clamp(160px,28vw,210px)"><canvas id="revChart"></canvas></div>
+    </div>
+  </div>
+  <div class="sec"><div class="sh"><div class="dot"></div>Weekly Revenue vs Casual Summary</div><div class="tw"><table class="rtbl" id="revTbl"></table></div></div>
+</div>
+</div>
+
+<!-- SUMMARY -->
+<div class="page" id="page-sum">
+<div class="wrap">
+  <div class="sec">
+    <div class="sh"><div class="dot"></div>All Departments <span id="sum-mlbl" style="font-size:11px;opacity:.65;margin-left:6px"></span></div>
+    <div id="sumBody"></div>
+  </div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const DEPTS=[{"id": "fo", "name": "Front Office", "group": "Rooms", "hasBudget": true, "dailyRate": 520}, {"id": "hk", "name": "Housekeeping", "group": "Rooms", "hasBudget": true, "dailyRate": 480}, {"id": "fb", "name": "Food & Beverage", "group": "F&B", "hasBudget": true, "dailyRate": 500}, {"id": "kitchen", "name": "Kitchen", "group": "F&B", "hasBudget": true, "dailyRate": 500}, {"id": "sport", "name": "Sport & Recreation", "group": "Leisure", "hasBudget": true, "dailyRate": 500}, {"id": "spa", "name": "Spa", "group": "Leisure", "hasBudget": false, "dailyRate": 500}, {"id": "sales", "name": "Sales & Marketing", "group": "Commercial", "hasBudget": true, "dailyRate": 550}, {"id": "prop", "name": "Property Op & Maint", "group": "Engineering", "hasBudget": true, "dailyRate": 480}, {"id": "hr", "name": "Human Resources", "group": "Back Office", "hasBudget": true, "dailyRate": 500}, {"id": "admin", "name": "Admin & General", "group": "Back Office", "hasBudget": false, "dailyRate": 500}, {"id": "marine", "name": "Marine", "group": "Leisure", "hasBudget": false, "dailyRate": 500}, {"id": "other", "name": "Other Special Op", "group": "Back Office", "hasBudget": false, "dailyRate": 450}, {"id": "laundry", "name": "Guest Laundry", "group": "Back Office", "hasBudget": false, "dailyRate": 400}, {"id": "trans", "name": "Transportation", "group": "Back Office", "hasBudget": false, "dailyRate": 500}, {"id": "hlaund", "name": "House Laundry", "group": "Back Office", "hasBudget": false, "dailyRate": 400}, {"id": "dining", "name": "Staff Dining", "group": "Back Office", "hasBudget": false, "dailyRate": 400}, {"id": "conv", "name": "Conversion", "group": "Back Office", "hasBudget": false, "dailyRate": 450}];
+const GROUP_COLORS={"Rooms": ["#DBEAFE", "#1565C0", "#1E3A5F"], "F&B": ["#DCFCE7", "#166534", "#14532D"], "Leisure": ["#F3E8FF", "#7C3AED", "#4C1D95"], "Commercial": ["#FEF3C7", "#B45309", "#78350F"], "Engineering": ["#FFE4E6", "#BE185D", "#831843"], "Back Office": ["#F1F5F9", "#475569", "#1E293B"]};
+const MONTHS_LIST=[{"id": "jan", "name": "January", "days": 31}, {"id": "feb", "name": "February", "days": 28}, {"id": "mar", "name": "March", "days": 31}, {"id": "apr", "name": "April", "days": 30}, {"id": "may", "name": "May", "days": 31}, {"id": "jun", "name": "June", "days": 30}, {"id": "jul", "name": "July", "days": 31}, {"id": "aug", "name": "August", "days": 31}, {"id": "sep", "name": "September", "days": 30}, {"id": "oct", "name": "October", "days": 31}, {"id": "nov", "name": "November", "days": 30}, {"id": "dec", "name": "December", "days": 31}];
+const CAL_DATA=[{"id":"jan","name":"January","monthNum":1,"days":31,"firstWdSun":4,"data":[{"d":1,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":true,"holidayName":"วันปีใหม่"},{"d":2,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":true,"holidayName":"ชดเชยปีใหม่"},{"d":3,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""}]},{"id":"feb","name":"February","monthNum":2,"days":28,"firstWdSun":0,"data":[{"d":1,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":true,"holidayName":"วันมาฆบูชา"},{"d":12,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""}]},{"id":"mar","name":"March","monthNum":3,"days":31,"firstWdSun":0,"data":[{"d":1,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"apr","name":"April","monthNum":4,"days":30,"firstWdSun":3,"data":[{"d":1,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":true,"holidayName":"วันจักรี"},{"d":7,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":true,"holidayName":"สงกรานต์"},{"d":14,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":true,"holidayName":"สงกรานต์"},{"d":15,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":true,"holidayName":"สงกรานต์"},{"d":16,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"may","name":"May","monthNum":5,"days":31,"firstWdSun":5,"data":[{"d":1,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":true,"holidayName":"วันแรงงาน"},{"d":2,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":true,"holidayName":"วันฉัตรมงคล"},{"d":5,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":true,"holidayName":"วันวิสาขบูชา"},{"d":12,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""}]},{"id":"jun","name":"June","monthNum":6,"days":30,"firstWdSun":1,"data":[{"d":1,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":true,"holidayName":"วันเฉลิมพระชนมพรรษา"},{"d":4,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"jul","name":"July","monthNum":7,"days":31,"firstWdSun":3,"data":[{"d":1,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":true,"holidayName":"วันอาสาฬหบูชา"},{"d":10,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":true,"holidayName":"วันเข้าพรรษา"},{"d":11,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":true,"holidayName":"วันเฉลิมพระชนมพรรษา"},{"d":29,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"aug","name":"August","monthNum":8,"days":31,"firstWdSun":6,"data":[{"d":1,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":true,"holidayName":"วันแม่แห่งชาติ"},{"d":13,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"sep","name":"September","monthNum":9,"days":30,"firstWdSun":2,"data":[{"d":1,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"oct","name":"October","monthNum":10,"days":31,"firstWdSun":4,"data":[{"d":1,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":true,"holidayName":"วันคล้ายวันสวรรคต ร.9"},{"d":14,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":true,"holidayName":"วันปิยมหาราช"},{"d":24,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""}]},{"id":"nov","name":"November","monthNum":11,"days":30,"firstWdSun":0,"data":[{"d":1,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":6,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":11,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""}]},{"id":"dec","name":"December","monthNum":12,"days":31,"firstWdSun":2,"data":[{"d":1,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":2,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":3,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":4,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":5,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":true,"holidayName":"วันพ่อแห่งชาติ"},{"d":6,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":7,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":8,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":9,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":10,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":true,"holidayName":"วันรัฐธรรมนูญ"},{"d":11,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":12,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":13,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":14,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":15,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":16,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":17,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":18,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":19,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":20,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":21,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":22,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":23,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":24,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":25,"wd":"Fri","wdIdx":5,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":26,"wd":"Sat","wdIdx":6,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":27,"wd":"Sun","wdIdx":0,"isWeekend":true,"isHoliday":false,"holidayName":""},{"d":28,"wd":"Mon","wdIdx":1,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":29,"wd":"Tue","wdIdx":2,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":30,"wd":"Wed","wdIdx":3,"isWeekend":false,"isHoliday":false,"holidayName":""},{"d":31,"wd":"Thu","wdIdx":4,"isWeekend":false,"isHoliday":true,"holidayName":"วันสิ้นปี"}]}];
+
+/* ─── RUNTIME CONSTANTS ─── */
+const ROOMS = 188, PCT_TARGET = 4.5;
+const TYPES = ["Regular","Group Check-in","Group Check-out","Event","Seasonal Peak","Emergency","Other"];
+const DAY_ABBR = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const WK_COUNT = 4;
+
+/* ─── STATE ─── */
+let MONTH = "jan", curDept = null, curWk = 0;
+let dCharts = {}, revChartObj = null;
+
+/* ─── STORAGE KEYS ─── */
+const SK  = k  => `cc_${MONTH}_${k}`;
+const GSK = k  => `cc_global_${k}`;   // global = Budget (all months)
+
+/* ─── STORAGE HELPERS ─── */
+const gj = key => { try { return JSON.parse(localStorage.getItem(key) || "null") } catch { return null } };
+const sj = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+
+// Budget (global, set once per year)
+const getBgtStore  = () => gj(GSK("budget"))  || {};
+const saveBgtStore = d  => sj(GSK("budget"), d);
+
+// Forecast F1 (1st) and F2 (16th) per month
+const getFctStore  = () => gj(SK("fct"))  || { f1: null, f2: null, f1ts: null, f2ts: null };
+const saveFctStore = d  => sj(SK("fct"), d);
+
+// OCC daily per month
+const getOccStore  = () => gj(SK("occ"))  || {};
+const saveOccStore = d  => sj(SK("occ"), d);
+
+// Casual requests per month
+const getReqStore  = () => gj(SK("req"))  || {};
+const saveReqStore = d  => sj(SK("req"), d);
+
+/* ─── BUDGET GETTERS ─── */
+function getBgtMonth(mid) {
+  const b = getBgtStore();
+  return b[mid] || { rev: 0, occ: 0, casual: {} };
+}
+function getBgtDeptMonth(deptId, mid) {
+  return getBgtMonth(mid).casual[deptId] || 0;
+}
+function getTotalBgtCasualMonth(mid) {
+  const bm = getBgtMonth(mid);
+  return Object.values(bm.casual || {}).reduce((s, v) => s + (v || 0), 0);
+}
+
+/* ─── FORECAST GETTERS ─── */
+function getActiveFct() {
+  const f = getFctStore();
+  // Active = f2 if exists, else f1
+  const active = f.f2 || f.f1 || null;
+  return active ? { ...active, version: f.f2 ? "F2 (16th)" : "F1 (1st)" } : null;
+}
+
+/* ─── OCC HELPERS ─── */
+function getMonthData(mid) {
+  return CAL_DATA.find(x => x.id === (mid || MONTH)) || CAL_DATA[0];
+}
+function getLiveDayData(mid) {
+  const occ = getOccStore();
+  const mdata = getMonthData(mid || MONTH);
+  return mdata.data.map(d => {
+    const r = occ[d.d] ?? 0;
+    const o = r > 0 ? parseFloat((r / ROOMS * 100).toFixed(1)) : 0;
+    return { ...d, r, o };
+  });
+}
+function getMonthMtdOcc() {
+  const ld = getLiveDayData();
+  const entered = ld.filter(x => x.r > 0);
+  if (!entered.length) return { occ: 0, rooms: 0, days: 0 };
+  return {
+    occ: parseFloat((entered.reduce((s, x) => s + x.o, 0) / entered.length).toFixed(1)),
+    rooms: entered.reduce((s, x) => s + x.r, 0),
+    days: entered.length,
+  };
+}
+
+/* ─── WEEK RANGES ─── */
+function getWkRanges(mid) {
+  const m = getMonthData(mid);
+  const days = m.days;
+  const ranges = [];
+  let s = 1;
+  while (s <= days && ranges.length < WK_COUNT) {
+    const e = ranges.length === WK_COUNT - 1 ? days : Math.min(s + 6, days);
+    ranges.push([s, e]);
+    s = e + 1;
+  }
+  return ranges;
+}
+
+/* ─── CASUAL HELPERS ─── */
+const getDeptData = id => { const s = getReqStore(); return s[id] || { weeks: [null,null,null,null] }; };
+const setDeptData = (id, data) => { const s = getReqStore(); s[id] = data; saveReqStore(s); };
+const wkCasual = wi => DEPTS.reduce((s, d) => s + (getDeptData(d.id).weeks?.[wi]?.totalCost || 0), 0);
+const totCasual = () => [0,1,2,3].reduce((s, wi) => s + wkCasual(wi), 0);
+
+function getDayCasualInfo(dayNum) {
+  const s = getReqStore(), wkR = getWkRanges(MONTH), res = [];
+  DEPTS.forEach(dept => {
+    const dd = s[dept.id];
+    if (!dd?.weeks) return;
+    wkR.forEach((range, wi) => {
+      const [ws, we] = range;
+      if (dayNum < ws || dayNum > we) return;
+      const wk = dd.weeks[wi];
+      if (!wk?.days) return;
+      const day = wk.days[dayNum];
+      if (!day?.ppl) return;
+      const gc = GROUP_COLORS[dept.group] || ["#F1F5F9","#475569","#1E293B"];
+      res.push({ name: dept.name, group: dept.group, ppl: day.ppl, rate: day.rate || dept.dailyRate, cost: day.ppl * (day.rate || dept.dailyRate), color: gc[1] });
+    });
+  });
+  return res;
+}
+
+/* ─── FORMATTING ─── */
+const fmt  = (n, d = 0) => (+n).toLocaleString("th-TH", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fB   = n => "฿" + fmt(n);
+const fM   = n => n >= 1e6 ? (n / 1e6).toFixed(2) + "M" : n > 0 ? fB(n) : "—";
+const fPct = n => n != null ? n.toFixed(1) + "%" : "—";
+const ts   = () => new Date().toLocaleString("th-TH", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" });
+
+/* ─── TOAST ─── */
+function showToast(msg, dur = 2400) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), dur);
+}
+
+/* ─── OCC STATUS ─── */
+function occCls(o, has, bgtOcc) {
+  const bgt = bgtOcc || getBgtMonth(MONTH).occ || 78.2;
+  if (!has) return "s-emp";
+  if (o >= bgt + 5) return "s-str";
+  if (o >= bgt)     return "s-on";
+  if (o >= bgt - 5) return "s-soft";
+  return "s-low";
+}
+
+/* ─── ALERTS ─── */
+function getAlerts() {
+  const s = getReqStore(), bm = getBgtMonth(MONTH), alerts = [];
+  const tc = totCasual(), bgt = getTotalBgtCasualMonth(MONTH);
+  const fct = getActiveFct();
+  const pct = fct?.rev > 0 ? (tc / fct.rev * 100) : null;
+  const mtd = getMonthMtdOcc();
+  const bgtOcc = bm.occ || 0;
+
+  if (!bgt && !bm.rev) {
+    alerts.push({ type:"warn", icon:"⚙️", title:"ยังไม่ได้ตั้ง Budget", sub:"ไปที่ Tab Budget Setup → กรอก Budget Revenue, OCC% และ Casual Wage" });
+  }
+  if (!fct) {
+    alerts.push({ type:"pend", icon:"📋", title:"ยังไม่มี Forecast เดือนนี้", sub:"ไปที่ Tab Forecast Update → กรอก Forecast Revenue และ OCC%" });
+  }
+  const over = DEPTS.filter(d => {
+    const b = getBgtDeptMonth(d.id, MONTH); if (!b) return false;
+    const tot = getDeptData(d.id).weeks?.reduce((s, w) => s + (w?.totalCost || 0), 0) || 0;
+    return tot > b * 1.05;
+  });
+  if (over.length) alerts.push({ type:"over", icon:"🔴", title:`${over.length} แผนกเกิน Budget`, sub: over.map(d => d.name).join(" · ") });
+  const pend = DEPTS.filter(d => s[d.id]?.weeks?.some(w => w?.totalCost > 0 && !w.approved));
+  if (pend.length) alerts.push({ type:"pend", icon:"⏳", title:`${pend.length} แผนกรอ Approve`, sub: pend.map(d => d.name).join(" · ") });
+  if (pct !== null && pct > PCT_TARGET) alerts.push({ type:"over", icon:"📊", title:`Casual % Revenue เกิน Target`, sub:`${pct.toFixed(2)}% vs Target ${PCT_TARGET}% — พิจารณาลด Casual` });
+  if (bgtOcc > 0 && mtd.days > 0 && mtd.occ < bgtOcc - 5) alerts.push({ type:"warn", icon:"📉", title:`OCC% ต่ำกว่า Budget`, sub:`MTD ${mtd.occ.toFixed(1)}% vs Budget ${bgtOcc.toFixed(1)}% — Adj. Casual Allowance ลดลง` });
+  if (!alerts.length && tc > 0) alerts.push({ type:"ok", icon:"✅", title:"ทุกอย่างอยู่ในกรอบ Budget", sub:"Casual costs within budget · Revenue ratio OK" });
+  return alerts;
+}
+function renderAlerts(id) {
+  const el = document.getElementById(id); if (!el) return;
+  el.innerHTML = getAlerts().map(a =>
+    `<div class="sa sa-${a.type}"><div class="sa-icon">${a.icon}</div><div><div class="sa-title">${a.title}</div><div class="sa-sub">${a.sub}</div></div></div>`
+  ).join("");
+}
+
+/* ─── MONTH MODAL ─── */
+function openMonthModal() {
+  document.getElementById("mgrid").innerHTML = MONTHS_LIST.map(m => {
+    const hasReq = !!localStorage.getItem(`cc_${m.id}_req`);
+    const hasFct = !!localStorage.getItem(`cc_${m.id}_fct`);
+    const bm = getBgtMonth(m.id);
+    const hasB = bm.rev > 0 || bm.occ > 0;
+    const dot = hasReq ? "🟢" : hasFct ? "🟡" : hasB ? "⚙️" : "";
+    return `<div class="mopt ${m.id === MONTH ? "on" : ""}" onclick="pickMonth('${m.id}')">${m.name}<small>${dot}</small></div>`;
+  }).join("");
+  document.getElementById("mbg").classList.add("on");
+}
+function closeMonthModal() { document.getElementById("mbg").classList.remove("on"); }
+function pickMonth(id) {
+  MONTH = id;
+  const m = MONTHS_LIST.find(x => x.id === id);
+  document.getElementById("hdr-title").textContent = `Casual Labor Control · ${m.name} 2026`;
+  closeMonthModal();
+  rebuildCurrent();
+  updateBadge();
+  showToast(`เปลี่ยนเป็น ${m.name} 2026`);
+}
+
+/* ─── PAGE SWITCHING ─── */
+const PAGES = ["dash","budget","fct","occ","req","rev","sum","guide"];
+function go(pg) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("on"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+  document.getElementById("page-" + pg)?.classList.add("on");
+  const i = PAGES.indexOf(pg);
+  if (i >= 0) document.querySelectorAll(".tab")[i]?.classList.add("on");
+  if (pg === "dash")   buildDash();
+  if (pg === "budget") buildBudgetPage();
+  if (pg === "fct")    buildFctPage();
+  if (pg === "occ")    buildOccPage();
+  if (pg === "req")    { buildDBar(); renderAlerts("req-alerts"); }
+  if (pg === "rev")    buildRevPage();
+  if (pg === "sum")    buildSumPage();
+}
+function rebuildCurrent() {
+  const pg = document.querySelector(".page.on")?.id?.replace("page-", "");
+  if (pg) go(pg); else go("dash");
+}
+function updateBadge() {
+  const s = getReqStore(); let n = 0;
+  DEPTS.forEach(d => { const dd = s[d.id]; if (dd?.weeks) dd.weeks.forEach(w => { if (w?.totalCost > 0) n++; }); });
+  const b = document.getElementById("rbadge"); b.textContent = n; b.style.display = n > 0 ? "inline" : "none";
+}
+
+/* ══════════════════════════════════════════════════
+   BUDGET SETUP TAB
+══════════════════════════════════════════════════ */
+function buildBudgetPage() {
+  const b = getBgtStore();
+  const m = MONTHS_LIST.find(x => x.id === MONTH);
+
+  // Annual summary row
+  const summaryRows = MONTHS_LIST.map(mo => {
+    const bm = b[mo.id] || {};
+    return `<tr id="brow-${mo.id}" style="${mo.id === MONTH ? "background:#EFF6FF" : ""}">
+      <td style="padding:8px 10px;font-weight:${mo.id===MONTH?"700":"500"};color:${mo.id===MONTH?"#1565C0":"#0F172A"}">${mo.name}</td>
+      <td style="padding:8px 10px;text-align:right">${bm.occ ? bm.occ.toFixed(1)+"%" : `<span style="color:#CBD5E1">—</span>`}</td>
+      <td style="padding:8px 10px;text-align:right">${bm.rev ? fB(bm.rev) : `<span style="color:#CBD5E1">—</span>`}</td>
+      <td style="padding:8px 10px;text-align:right">${getTotalBgtCasualMonth(mo.id) ? fB(getTotalBgtCasualMonth(mo.id)) : `<span style="color:#CBD5E1">—</span>`}</td>
+      <td style="padding:8px 10px;text-align:center">
+        <button class="btn b-ghost" style="font-size:11px;padding:4px 10px" onclick="editBgtMonth('${mo.id}')">แก้ไข</button>
+      </td>
+    </tr>`;
+  }).join("");
+
+  // Current month detail
+  const bm = b[MONTH] || {};
+  const deptRows = DEPTS.map((dept, i) => {
+    const val = bm.casual?.[dept.id] || 0;
+    const gc = GROUP_COLORS[dept.group] || ["#F1F5F9","#475569"];
+    return `<tr style="${i%2===0?"background:#F8FAFC":""}">
+      <td style="padding:8px 10px;font-size:12px">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${gc[1]};margin-right:5px"></span>
+        ${dept.name} ${!dept.hasBudget?"<span style='font-size:9px;background:#FEF3C7;color:#92400E;padding:1px 5px;border-radius:20px;font-weight:700;margin-left:3px'>Unbgt</span>":""}
+      </td>
+      <td style="padding:8px 10px">
+        <input type="number" id="bw-${dept.id}" min="0" step="1000" value="${val||""}" placeholder="0"
+          style="width:100%;padding:6px 9px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:13px;font-weight:600;text-align:right"
+          oninput="updateBgtCasual('${dept.id}',this.value)">
+      </td>
+      <td style="padding:8px 10px;font-size:12px;color:#64748B;text-align:right">${val ? fB(val) : "—"}</td>
+    </tr>`;
+  }).join("");
+
+  document.getElementById("budget-body").innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+
+      <!-- Left: 12-month summary -->
+      <div class="sec" style="margin:0">
+        <div class="sh"><div class="dot"></div>Budget Summary — ทั้ง 12 เดือน</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead><tr style="background:#F1F5F9">
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:left">Month</th>
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:right">Budget OCC%</th>
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:right">Budget Revenue</th>
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:right">Budget Casual</th>
+              <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:center">Action</th>
+            </tr></thead>
+            <tbody>${summaryRows}</tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right: Current month detail -->
+      <div>
+        <div class="sec" style="margin:0 0 12px">
+          <div class="sh"><div class="dot"></div>Budget ${m.name} 2026 — กรอก/แก้ไข</div>
+          <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Budget OCC% (เดือน)</label>
+              <input type="number" id="b-occ" min="0" max="100" step="0.1" value="${bm.occ||""}" placeholder="78.2"
+                style="width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:7px;font-size:14px;font-weight:700">
+            </div>
+            <div>
+              <label style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Budget Revenue (THB)</label>
+              <input type="number" id="b-rev" min="0" step="1000" value="${bm.rev||""}" placeholder="13,181,848"
+                style="width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:7px;font-size:14px;font-weight:700">
+            </div>
+          </div>
+        </div>
+
+        <div class="sec" style="margin:0">
+          <div class="sh"><div class="dot"></div>Budget Casual Wage แยกรายแผนก — ${m.name} 2026</div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr style="background:#F1F5F9">
+                <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:left">Department</th>
+                <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase">Budget Wage (THB)</th>
+                <th style="padding:8px 10px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:right">Saved</th>
+              </tr></thead>
+              <tbody>${deptRows}</tbody>
+              <tfoot><tr style="background:#0D1F3C">
+                <td style="padding:9px 10px;color:#F59E0B;font-weight:700">TOTAL</td>
+                <td></td>
+                <td style="padding:9px 10px;color:#F59E0B;font-weight:700;text-align:right" id="b-casual-total">${fB(getTotalBgtCasualMonth(MONTH))}</td>
+              </tfoot>
+            </table>
+          </div>
+          <div style="padding:12px 16px;border-top:1px solid #F1F5F9;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn b-primary" onclick="saveBgtMonth()">Save Budget ${m.name}</button>
+            <button class="btn b-ghost" onclick="copyBgtFromMonth()">Copy จากเดือนก่อน</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function updateBgtCasual(deptId, val) {
+  // Live update total display
+  let tot = 0;
+  DEPTS.forEach(d => {
+    const el = document.getElementById("bw-" + d.id);
+    if (el) tot += parseFloat(el.value) || 0;
+  });
+  const el = document.getElementById("b-casual-total");
+  if (el) el.textContent = fB(tot);
+}
+
+function saveBgtMonth() {
+  const b = getBgtStore();
+  if (!b[MONTH]) b[MONTH] = { casual: {} };
+  b[MONTH].occ = parseFloat(document.getElementById("b-occ")?.value) || 0;
+  b[MONTH].rev = parseFloat(document.getElementById("b-rev")?.value) || 0;
+  if (!b[MONTH].casual) b[MONTH].casual = {};
+  DEPTS.forEach(d => {
+    const el = document.getElementById("bw-" + d.id);
+    b[MONTH].casual[d.id] = el ? (parseFloat(el.value) || 0) : 0;
+  });
+  saveBgtStore(b);
+  buildBudgetPage();
+  showToast(`Saved Budget ${MONTHS_LIST.find(x=>x.id===MONTH)?.name} 2026`);
+}
+
+function editBgtMonth(mid) {
+  MONTH = mid;
+  const m = MONTHS_LIST.find(x => x.id === mid);
+  document.getElementById("hdr-title").textContent = `Casual Labor Control · ${m.name} 2026`;
+  buildBudgetPage();
+  showToast(`แก้ไข Budget ${m.name}`);
+}
+
+function copyBgtFromMonth() {
+  const months = MONTHS_LIST.map(m => m.id);
+  const curIdx = months.indexOf(MONTH);
+  if (curIdx <= 0) { showToast("ไม่มีเดือนก่อนหน้า"); return; }
+  const prevId = months[curIdx - 1];
+  const prevM = MONTHS_LIST[curIdx - 1];
+  const b = getBgtStore();
+  const prev = b[prevId];
+  if (!prev || !prev.rev) { showToast(`ไม่มีข้อมูล Budget ${prevM.name}`); return; }
+  b[MONTH] = JSON.parse(JSON.stringify(prev));
+  saveBgtStore(b);
+  buildBudgetPage();
+  showToast(`Copied Budget จาก ${prevM.name}`);
+}
+
+/* ══════════════════════════════════════════════════
+   FORECAST UPDATE TAB
+══════════════════════════════════════════════════ */
+function buildFctPage() {
+  const f = getFctStore();
+  const bm = getBgtMonth(MONTH);
+  const m = MONTHS_LIST.find(x => x.id === MONTH);
+  const today = new Date().getDate();
+  const version = today >= 16 ? "F2 (16th)" : "F1 (1st)";
+  const whichKey = today >= 16 ? "f2" : "f1";
+  const cur = f[whichKey] || {};
+
+  const histHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      ${["f1","f2"].map(k => {
+        const fx = f[k];
+        const lbl = k === "f1" ? "Forecast 1 (วันที่ 1)" : "Forecast 2 (วันที่ 16)";
+        const bg = k === whichKey ? "#EFF6FF" : "#F8FAFC";
+        const brd = k === whichKey ? "2px solid #1565C0" : "1px solid #E2E8F0";
+        return `<div style="background:${bg};border:${brd};border-radius:10px;padding:13px 14px">
+          <div style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">${lbl}${k===whichKey?" ← Current":""}</div>
+          ${fx ? `
+            <div style="font-size:13px;font-weight:700;color:#0D1F3C;margin-bottom:3px">Rev: ${fB(fx.rev || 0)}</div>
+            <div style="font-size:12px;color:#0F766E;margin-bottom:3px">OCC: ${fPct(fx.occ)}</div>
+            <div style="font-size:10px;color:#94A3B8">Updated: ${fx.ts || "—"}</div>
+          ` : `<div style="color:#94A3B8;font-size:12px">ยังไม่มีข้อมูล</div>`}
+        </div>`;
+      }).join("")}
+    </div>`;
+
+  document.getElementById("fct-body").innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div>
+        <div class="sec" style="margin:0 0 12px">
+          <div class="sh"><div class="dot"></div>${version} — อัพเดท Forecast ${m.name} 2026</div>
+          <div style="padding:14px 16px">
+            <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:9px 12px;font-size:12px;color:#92400E;margin-bottom:14px;display:flex;align-items:center;gap:7px">
+              📅 วันที่ 1–15 กรอก Forecast 1 · วันที่ 16–31 กรอก Forecast 2 · ทั้งสองเก็บแยกกัน
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+              <div>
+                <label style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Forecast Revenue (THB)</label>
+                <input type="number" id="fct-rev" min="0" step="1000" value="${cur.rev||""}" placeholder="${bm.rev||0}"
+                  style="width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:7px;font-size:14px;font-weight:700">
+                ${bm.rev ? `<div style="font-size:11px;color:#64748B;margin-top:3px">Budget: ${fB(bm.rev)}</div>` : ""}
+              </div>
+              <div>
+                <label style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">Forecast OCC% (เดือน)</label>
+                <input type="number" id="fct-occ" min="0" max="100" step="0.1" value="${cur.occ||""}" placeholder="${bm.occ||0}"
+                  style="width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:7px;font-size:14px;font-weight:700">
+                ${bm.occ ? `<div style="font-size:11px;color:#64748B;margin-top:3px">Budget: ${fPct(bm.occ)}</div>` : ""}
+              </div>
+            </div>
+            <div style="margin-bottom:12px">
+              <label style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px">หมายเหตุ</label>
+              <textarea id="fct-note" placeholder="เหตุผล/สถานการณ์ที่ทำให้ Forecast เปลี่ยน เช่น Group cancellation, Holiday demand surge..."
+                style="width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:7px;font-size:12px;resize:vertical;min-height:56px;font-family:inherit">${cur.note||""}</textarea>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn b-primary" onclick="saveFct()">Save ${version}</button>
+              <button class="btn b-ghost" onclick="clearFct('${whichKey}')">Clear ${version}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec" style="margin:0">
+          <div class="sh"><div class="dot"></div>ประวัติ Forecast — ${m.name} 2026</div>
+          <div style="padding:14px 16px">
+            ${histHTML}
+            ${bm.rev ? `
+              <div style="background:#F8FAFC;border-radius:8px;padding:11px 13px;font-size:12px">
+                <div style="font-weight:700;color:#0D1F3C;margin-bottom:7px">เปรียบเทียบ Budget vs Active Forecast</div>
+                ${[["Revenue","rev",fB],["OCC%","occ",fPct]].map(([lbl,key,f_]) => {
+                  const fct = getActiveFct();
+                  const bv = bm[key]; const fv = fct?.[key];
+                  const var_ = bv && fv ? (fv - bv) : null;
+                  return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:0.5px solid #E2E8F0">
+                    <span style="color:#64748B">${lbl}</span>
+                    <span><span style="color:#1565C0">${bv?f_(bv):"—"}</span>
+                    ${var_!==null?`<span style="color:${var_>=0?"#166534":"#991B1B"};margin-left:8px;font-weight:700">${var_>=0?"+":""}${key==="rev"?fB(var_):var_.toFixed(1)+"%"}</span>`:""}
+                    </span></div>`;
+                }).join("")}
+              </div>` : `<div style="color:#94A3B8;font-size:12px">กรอก Budget ก่อนเพื่อเปรียบเทียบ</div>`}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function saveFct() {
+  const today = new Date().getDate();
+  const k = today >= 16 ? "f2" : "f1";
+  const f = getFctStore();
+  f[k] = {
+    rev: parseFloat(document.getElementById("fct-rev")?.value) || 0,
+    occ: parseFloat(document.getElementById("fct-occ")?.value) || 0,
+    note: document.getElementById("fct-note")?.value || "",
+    ts: ts(),
+  };
+  f[k + "ts"] = ts();
+  saveFctStore(f);
+  buildFctPage();
+  showToast("Saved Forecast " + (k === "f1" ? "1 (1st)" : "2 (16th)"));
+}
+
+function clearFct(k) {
+  if (!confirm("Clear Forecast " + (k === "f1" ? "1" : "2") + "?")) return;
+  const f = getFctStore();
+  delete f[k]; delete f[k + "ts"];
+  saveFctStore(f); buildFctPage(); showToast("Cleared");
+}
+
+/* ══════════════════════════════════════════════════
+   OCC DAILY INPUT TAB
+══════════════════════════════════════════════════ */
+function buildOccPage() { buildOccKPIs(); buildOccCal(); buildOccWkTbl(); }
+
+function buildOccKPIs() {
+  const mtd = getMonthMtdOcc();
+  const bm = getBgtMonth(MONTH);
+  const fct = getActiveFct();
+  const bgtOcc = bm.occ || 0;
+  const fctOcc = fct?.occ || 0;
+  const varB = bgtOcc ? (mtd.occ - bgtOcc) : null;
+  const varF = fctOcc ? (mtd.occ - fctOcc) : null;
+  const ld = getLiveDayData();
+  document.getElementById("occ-kpis").innerHTML = [
+    { l:"MTD OCC% (Actual)", v: mtd.days ? fPct(mtd.occ) : "—", s:`Budget ${fPct(bgtOcc)} · ${varB!==null?(varB>=0?"+":"")+varB.toFixed(1)+"%":"กรอก Budget"}`, cls: varB===null?"navy":varB>=0?"teal":"red" },
+    { l:"vs Forecast OCC%",  v: varF!==null?(varF>=0?"+":"")+varF.toFixed(1)+"%" : "—", s:`Fct ${fPct(fctOcc)} · ${fct?.version||"ไม่มี Forecast"}`, cls: varF===null?"navy":varF>=0?"teal":"red" },
+    { l:"Days Entered",      v: mtd.days+"/"+getMonthData().days, s:(getMonthData().days-mtd.days)+" วันเหลือ", cls:"amb" },
+    { l:"Total Rooms Sold",  v: fmt(mtd.rooms), s:`Budget ${fmt(Math.round(getMonthData().days * ROOMS * (bgtOcc/100)))} rms`, cls:"navy" },
+  ].map(k => `<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div><div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+}
+
+function buildOccCal() {
+  document.getElementById("occ-hdr").innerHTML = DAY_ABBR.map(w => `<div class="oc-hdr">${w}</div>`).join("");
+  const mdata = getMonthData();
+  const occ = getOccStore();
+  const bm = getBgtMonth(MONTH);
+  const bgtOcc = bm.occ || 78.2;
+  const todayDay = new Date().getDate();
+  let cells = "";
+  for (let i = 0; i < mdata.firstWdSun; i++) cells += `<div class="ocday es"></div>`;
+  mdata.data.forEach(d => {
+    const isW = d.isWeekend, isH = d.isHoliday, isTd = d.d === todayDay;
+    const sr = occ[d.d] ?? null;
+    const r = sr !== null ? sr : 0;
+    const p = r > 0 ? (r / ROOMS * 100) : 0;
+    const hf = sr !== null;
+    const pc = r > 0 ? (p >= bgtOcc+5 ? "#166534" : p >= bgtOcc ? "#0F766E" : p >= bgtOcc-5 ? "#B45309" : "#991B1B") : "#CBD5E1";
+    const st = r > 0 ? (p >= bgtOcc+5 ? "Strong" : p >= bgtOcc ? "On Bgt" : p >= bgtOcc-5 ? "Soft" : "Low") : "";
+    cells += `<div class="ocday ${hf?"fl":""} ${isTd?"td":""} ${isW?"wk":""} ${isH?"hol":""}">
+      <div class="od-n">${d.d}${isH?` <span style="font-size:8px">🎌</span>`:""}</div>
+      <div class="od-w">${d.wd}${isW?" 🏖":""}</div>
+      <input type="number" id="oi-${d.d}" min="0" max="188" step="1" value="${r||""}" placeholder="—"
+        oninput="onOccIn(${d.d},this.value)"
+        style="${isTd?"border-color:#F59E0B;background:#FFFBEB;":""}">
+      <div class="od-p" style="color:${pc}">${r>0?p.toFixed(0)+"%":""}</div>
+      <div class="od-s" style="color:${pc};font-size:9px">${st}</div>
+    </div>`;
+  });
+  document.getElementById("occ-cal").innerHTML = cells;
+}
+
+function onOccIn(day, val) {
+  const r = val === "" ? null : Math.max(0, Math.min(188, parseInt(val) || 0));
+  const occ = getOccStore();
+  if (r === null) delete occ[day]; else occ[day] = r;
+  saveOccStore(occ);
+  const bm = getBgtMonth(MONTH);
+  const bgtOcc = bm.occ || 78.2;
+  const p = r > 0 ? (r / ROOMS * 100) : 0;
+  const card = document.getElementById("oi-" + day)?.closest(".ocday");
+  if (card) {
+    const pc = r > 0 ? (p >= bgtOcc+5 ? "#166534" : p >= bgtOcc ? "#0F766E" : p >= bgtOcc-5 ? "#B45309" : "#991B1B") : "#CBD5E1";
+    const st = r > 0 ? (p >= bgtOcc+5 ? "Strong" : p >= bgtOcc ? "On Bgt" : p >= bgtOcc-5 ? "Soft" : "Low") : "";
+    card.querySelector(".od-p").textContent = r > 0 ? p.toFixed(0) + "%" : "";
+    card.querySelector(".od-p").style.color = pc;
+    card.querySelector(".od-s").textContent = st;
+    card.querySelector(".od-s").style.color = pc;
+    card.classList.toggle("fl", r !== null);
+  }
+  buildOccKPIs(); buildOccWkTbl();
+}
+
+function saveAllOcc() {
+  const occ = getOccStore();
+  getMonthData().data.forEach(d => {
+    const el = document.getElementById("oi-" + d.d);
+    if (el && el.value !== "") { const n = parseInt(el.value) || 0; if (n >= 0) occ[d.d] = n; }
+  });
+  saveOccStore(occ); buildOccKPIs(); buildOccWkTbl(); showToast("Saved OCC data");
+}
+
+function clearOcc() {
+  if (!confirm("Clear OCC data for this month?")) return;
+  localStorage.removeItem(SK("occ")); buildOccPage(); showToast("OCC cleared");
+}
+
+function buildOccWkTbl() {
+  const tbl = document.getElementById("occ-wtbl"); if (!tbl) return;
+  const ld = getLiveDayData();
+  const bm = getBgtMonth(MONTH);
+  const bgtOcc = bm.occ || 0;
+  let h = `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#F1F5F9">
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:left">Week</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:center">Days</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:center">OCC% Actual</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:center">Budget OCC%</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:center">Variance</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:right">Rooms Sold</th>
+  </tr></thead><tbody>`;
+  getWkRanges(MONTH).forEach(([s, e], wi) => {
+    const wkD = ld.filter(x => x.d >= s && x.d <= e && x.r > 0);
+    const all = ld.filter(x => x.d >= s && x.d <= e);
+    const wo = wkD.length ? wkD.reduce((sum, x) => sum + x.o, 0) / wkD.length : 0;
+    const varO = bgtOcc ? (wo - bgtOcc) : null;
+    const ocFg = wo >= (bgtOcc||78.2) ? "#166534" : "#991B1B";
+    h += `<tr>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9"><strong>W${wi+1}</strong>
+        <div style="font-size:10px;color:#64748B">${MONTHS_LIST.find(m=>m.id===MONTH)?.name.slice(0,3)||""} ${s}–${e}</div></td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center;color:#64748B">${wkD.length}/${all.length}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center">
+        <span style="color:${ocFg};font-weight:700">${wo>0?wo.toFixed(1)+"%":"—"}</span>
+        <div style="height:5px;background:#E2E8F0;border-radius:3px;margin-top:3px;overflow:hidden"><div style="width:${Math.min(wo,100)}%;height:100%;background:${ocFg};border-radius:3px"></div></div>
+      </td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center;color:#1565C0">${bgtOcc?bgtOcc.toFixed(1)+"%":"—"}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:center">
+        ${varO!==null&&wo>0?`<span style="color:${varO>=0?"#166534":"#991B1B"};font-weight:700">${varO>=0?"+":""}${varO.toFixed(1)}%</span>`:"—"}
+      </td>
+      <td style="padding:9px 12px;border-bottom:1px solid #F1F5F9;text-align:right;font-weight:700">${wkD.reduce((s,x)=>s+x.r,0)||"—"}</td>
+    </tr>`;
+  });
+  tbl.innerHTML = h + "</tbody></table>";
+}
+
+/* ══════════════════════════════════════════════════
+   CASUAL REQUEST TAB
+══════════════════════════════════════════════════ */
+function buildDBar() {
+  const s = getReqStore();
+  const groups = [...new Set(DEPTS.map(d => d.group))];
+  let h = "";
+  groups.forEach(g => {
+    const gc = GROUP_COLORS[g] || ["#F1F5F9","#475569","#1E293B"];
+    h += `<div class="glabel" style="color:${gc[1]}">${g}</div>`;
+    DEPTS.filter(d => d.group === g).forEach(d => {
+      const dd = s[d.id];
+      const hasCost = dd?.weeks?.some(w => w?.totalCost > 0);
+      const b = getBgtDeptMonth(d.id, MONTH);
+      const tot = dd?.weeks?.reduce((sum,w)=>sum+(w?.totalCost||0),0)||0;
+      const isOver = b > 0 && tot > b * 1.05;
+      const cls = isOver ? "over" : hasCost ? "has" : "";
+      const dotC = isOver ? "#EF4444" : hasCost ? "#0F766E" : "transparent";
+      const ceD=canEdit(d.id);
+      h += `<button class="db ${cls}${curDept===d.id?" on":""}" id="db-${d.id}"
+        onclick="${ceD?`pickDept('${d.id}')`:`showToast('เฉพาะแผนก ${d.name} เท่านั้น')`}"
+        style="${!ceD?'opacity:.4;cursor:not-allowed;':''}">${d.name}<div class="db-dot" style="background:${dotC}"></div></button>`;
+    });
+  });
+  document.getElementById("dbar").innerHTML = h;
+}
+
+function pickDept(id) {
+  curDept = id; curWk = 0;
+  document.querySelectorAll(".db").forEach(b => b.classList.remove("on"));
+  document.getElementById("db-" + id)?.classList.add("on");
+  renderForm();
+}
+
+function renderForm() {
+  if (!curDept) return;
+  const dept = DEPTS.find(d => d.id === curDept);
+  const data = getDeptData(curDept);
+  const gc = GROUP_COLORS[dept.group] || ["#F1F5F9","#475569","#1E293B"];
+  const bgtWage = getBgtDeptMonth(curDept, MONTH);
+  const wkR = getWkRanges(MONTH);
+  const mn = MONTHS_LIST.find(m => m.id === MONTH)?.name.slice(0,3) || "";
+  const wkLabels = wkR.map((r, i) => `W${i+1} ${mn} ${r[0]}–${r[1]}`);
+
+  document.getElementById("farea").innerHTML = `
+    <div class="fcard">
+      <div class="fhdr" style="background:${gc[2]}">
+        <h2>${dept.name}</h2>
+        <p>${dept.group} · ${bgtWage?`Budget Wage: ${fB(bgtWage)}/month · `:"Unbudgeted · "}Default Rate: ${fB(dept.dailyRate)}/คน</p>
+      </div>
+      <div class="wtabs">
+        ${wkLabels.map((lbl, i) => {
+          const w = data.weeks[i]; const hc = w?.totalCost > 0;
+          const isOv = bgtWage > 0 && hc && w.totalCost > bgtWage/4 * 1.05;
+          return `<div class="wtab ${hc?isOv?"ov":"has":""} ${i===curWk?"on":""}" onclick="pickWk(${i})">${lbl}</div>`;
+        }).join("")}
+      </div>
+      <div id="wkContent"></div>
+    </div>`;
+  renderWkForm();
+}
+
+function pickWk(wi) {
+  curWk = wi;
+  document.querySelectorAll(".wtab").forEach((t, i) => t.classList.toggle("on", i === wi));
+  renderWkForm();
+}
+
+function renderWkForm() {
+  if (!curDept) return;
+  const dept = DEPTS.find(d => d.id === curDept);
+  const data = getDeptData(curDept);
+  const wk = data.weeks[curWk] || { days:{}, reason:"", type:"Regular", reqBy:"", fcBy:"", gmBy:"", approved:false };
+  const wkR = getWkRanges(MONTH);
+  const [ws, we] = wkR[curWk] || [1,7];
+  const rate = wk.rate ?? dept.dailyRate;
+  const occ = getOccStore();
+  const bm = getBgtMonth(MONTH);
+  const bgtOcc = bm.occ || 78.2;
+  const fw = getMonthData().firstWdSun;
+  const mn = MONTHS_LIST.find(m => m.id === MONTH)?.name.slice(0,3) || "";
+  let h = `<div class="digrid"><div class="dihdr"><div>วัน</div><div>OCC% ref</div><div style="text-align:center">Casual (คน)</div><div style="text-align:center">Rate (THB)</div><div style="text-align:right">ค่าใช้จ่าย</div></div>`;
+  for (let dn = ws; dn <= we; dn++) {
+    const dayObj = getMonthData().data.find(x => x.d === dn);
+    const isW = dayObj?.isWeekend || false;
+    const isH = dayObj?.isHoliday || false;
+    const occR = occ[dn] ?? 0;
+    const occP = occR > 0 ? (occR / ROOMS * 100) : 0;
+    const isLow = occP > 0 && occP < bgtOcc - 5;
+    const ppl = wk.days[dn]?.ppl ?? 0;
+    const dr = wk.days[dn]?.rate ?? rate;
+    const cost = ppl * dr;
+    const oc = occR > 0 ? (occP >= bgtOcc+5?"#166534":occP >= bgtOcc?"#0F766E":occP >= bgtOcc-5?"#B45309":"#991B1B") : "#CBD5E1";
+    h += `<div class="dirow ${isW?"wk":""} ${ppl>0?"he":""} ${isLow?"lo":""} ${isH?"hol":""}" id="dr-${dn}">
+      <div><div class="dn">${dn} ${mn}</div><div class="dw">${dayObj?.wd||""}${isW?" 🏖":""}${isH?" 🎌":""}${isLow?" ⚠️":""}</div></div>
+      <div style="text-align:center"><span style="font-size:12px;font-weight:700;color:${oc}">${occR>0?occP.toFixed(0)+"%":"—"}</span><div style="font-size:9px;color:#94A3B8">${occR>0?occR+" rms":""}</div></div>
+      <input type="number" min="0" max="50" step="1" value="${ppl||""}" placeholder="0" onchange="upDay(${dn},this.value,'ppl')" oninput="upRow(${dn})">
+      <input type="number" min="0" step="50" value="${dr}" onchange="upDay(${dn},this.value,'rate')" oninput="upRow(${dn})">
+      <div class="dcost" id="dc-${dn}">${ppl>0?fB(cost):"—"}</div>
+    </div>`;
+  }
+  h += "</div>";
+  const totP = Object.values(wk.days||{}).reduce((s,v)=>s+(v.ppl||0),0);
+  const totC = Object.entries(wk.days||{}).reduce((s,[,v])=>s+(v.ppl||0)*(v.rate||dept.dailyRate),0);
+  const bWk = getBgtDeptMonth(curDept, MONTH) > 0 ? Math.round(getBgtDeptMonth(curDept, MONTH)/4) : 0;
+  const varV = bWk > 0 ? totC - bWk : null;
+  const isOv = varV !== null && varV > bWk * 0.05;
+  h += `<div class="wsum">
+    <div class="wsi"><strong>${totP}</strong>Person-Days</div>
+    <div class="wsi hl"><strong>${fB(totC)}</strong>Total Cost</div>
+    ${bWk>0?`<div class="wsi"><strong>${fB(bWk)}</strong>Wk Budget</div>
+    <div class="wsi ${isOv?"ov":""}"><strong>${varV>=0?"+":""}${fB(varV??0)}</strong>vs Budget</div>`:`<div class="wsi" style="color:#FCA5A5"><strong>Unbudgeted</strong></div>`}
+  </div>
+  <div class="extrow">
+    <div class="fl"><label>ประเภทงาน</label><select onchange="upEx('type',this.value)">${TYPES.map(t=>`<option ${wk.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
+    <div class="fl"><label>Requested By</label><input type="text" value="${wk.reqBy||""}" placeholder="ชื่อ-ตำแหน่ง" onchange="upEx('reqBy',this.value)"></div>
+    <div class="fl" style="grid-column:1/-1"><label>เหตุผล / รายละเอียด</label><textarea placeholder="Group check-in, Event, Peak season ฯลฯ" onchange="upEx('reason',this.value)">${wk.reason||""}</textarea></div>
+  </div>
+
+  <div class="brow">
+    <button class="btn b-primary" onclick="saveWk()">Save W${curWk+1}</button>
+    <button class="btn b-ghost" onclick="clearWk()">Clear</button>
+    <button class="btn b-success" onclick="saveWk();go('sum')">Save &amp; View Summary</button>
+  </div>`;
+  document.getElementById("wkContent").innerHTML = h;
+}
+
+function upDay(day, val, field) {
+  const dept = DEPTS.find(d => d.id === curDept);
+  const data = getDeptData(curDept);
+  const wk = data.weeks[curWk] || { days:{} };
+  if (!wk.days) wk.days = {};
+  if (!wk.days[day]) wk.days[day] = { ppl:0, rate:dept.dailyRate };
+  wk.days[day][field] = field === "ppl" ? Math.max(0, parseInt(val)||0) : Math.max(0, parseFloat(val)||dept.dailyRate);
+  data.weeks[curWk] = wk; setDeptData(curDept, data);
+}
+function upRow(day) {
+  const dept = DEPTS.find(d => d.id === curDept);
+  const data = getDeptData(curDept);
+  const wk = data.weeks[curWk] || { days:{} };
+  const d = wk.days?.[day] || { ppl:0, rate:dept.dailyRate };
+  const cost = d.ppl * d.rate;
+  const el = document.getElementById("dc-" + day); if (el) el.textContent = d.ppl > 0 ? fB(cost) : "—";
+  document.getElementById("dr-" + day)?.classList.toggle("he", d.ppl > 0);
+  const tot = Object.entries(wk.days||{}).reduce((s,[,v])=>s+(v.ppl||0)*(v.rate||dept.dailyRate),0);
+  const totP = Object.values(wk.days||{}).reduce((s,v)=>s+(v.ppl||0),0);
+  const items = document.querySelectorAll(".wsi strong");
+  if (items[0]) items[0].textContent = totP;
+  if (items[1]) items[1].textContent = fB(tot);
+  const bWk = getBgtDeptMonth(curDept, MONTH) > 0 ? Math.round(getBgtDeptMonth(curDept, MONTH)/4) : 0;
+  if (items[3] && bWk > 0) { const v = tot - bWk; items[3].textContent = (v>=0?"+":"") + fB(v); items[3].closest(".wsi")?.classList.toggle("ov", v > bWk*0.05); }
+}
+function upEx(field, val) {
+  const data = getDeptData(curDept);
+  const wk = data.weeks[curWk] || { days:{} };
+  wk[field] = val; data.weeks[curWk] = wk; setDeptData(curDept, data);
+}
+function saveWk() {
+  if (!canEdit(curDept)) { showToast("ไม่มีสิทธิ์แก้ไขแผนกนี้"); return; }
+  const data = getDeptData(curDept);
+  const wk = data.weeks[curWk] || { days:{} };
+  const dept = DEPTS.find(d => d.id === curDept);
+  const tot = Object.entries(wk.days||{}).reduce((s,[,v])=>s+(v.ppl||0)*(v.rate||dept.dailyRate),0);
+  wk.totalCost = tot; wk.totalPpl = Object.values(wk.days||{}).reduce((s,v)=>s+(v.ppl||0),0);
+  data.weeks[curWk] = wk; setDeptData(curDept, data);
+  buildDBar(); renderAlerts("req-alerts"); updateBadge(); renderForm();
+  showToast("Saved W" + (curWk+1) + " · " + dept.name);
+}
+function clearWk() {
+  if (!canEdit(curDept)) { showToast("ไม่มีสิทธิ์แก้ไขแผนกนี้"); return; }
+  if (!confirm("Clear W" + (curWk+1) + "?")) return;
+  const data = getDeptData(curDept); data.weeks[curWk] = null;
+  setDeptData(curDept, data); buildDBar(); renderForm(); updateBadge(); showToast("Cleared");
+}
+function clearMonth() {
+  if (!IS_ADMIN) { showToast("เฉพาะ Admin เท่านั้น"); return; }
+  const m = MONTHS_LIST.find(x => x.id === MONTH);
+  if (!confirm("Clear ALL Casual Request data for " + m.name + "?")) return;
+  localStorage.removeItem(SK("req"));
+  curDept = null; buildDBar(); updateBadge();
+  document.getElementById("farea").innerHTML = `<div style="text-align:center;padding:48px 20px;color:#94A3B8"><div style="font-size:32px;margin-bottom:8px">👆</div><div style="font-size:14px;font-weight:600">เลือกแผนกด้านบน</div></div>`;
+  showToast("Cleared " + m.name);
+}
+
+/* ══════════════════════════════════════════════════
+   REVENUE & CASUAL % TAB
+══════════════════════════════════════════════════ */
+function buildRevPage() {
+  buildRevKPIs(); buildRevGauges(); buildRevTable();
+  if (revChartObj) { revChartObj.destroy(); revChartObj = null; }
+  buildRevChart();
+}
+function buildRevKPIs() {
+  const bm = getBgtMonth(MONTH);
+  const fct = getActiveFct();
+  const tc = totCasual();
+  const bgtC = getTotalBgtCasualMonth(MONTH);
+  const fR = fct?.rev || 0;
+  const bR = bm.rev || 0;
+  const revVar = bR && fR ? ((fR-bR)/bR*100) : null;
+  const pctBgt = bR && bgtC ? (bgtC/bR*100) : null;
+  const pctFct = fR && tc ? (tc/fR*100) : null;
+  document.getElementById("rev-kpis").innerHTML = [
+    { l:"Budget Revenue", v:bR?fM(bR):"กรอก Budget", s:MONTHS_LIST.find(x=>x.id===MONTH)?.name+" 2026", cls:"" },
+    { l:"Forecast Revenue", v:fR?fM(fR):"กรอก Forecast", s:revVar!==null?(revVar>=0?"+":"")+revVar.toFixed(1)+"% vs Budget":fct?.version||"ไม่มี Forecast", cls:"teal" },
+    { l:"Budget Casual % of Rev", v:pctBgt!==null?pctBgt.toFixed(2)+"%":"—", s:`Budget Casual ${fB(bgtC)}`, cls:"amb" },
+    { l:"Actual Casual % of Fct", v:pctFct!==null?pctFct.toFixed(2)+"%":"—", s:pctFct!==null?(pctFct<=PCT_TARGET?"✅ Within target":"🔴 Over target "+PCT_TARGET+"%"):"กรอก Forecast", cls:pctFct===null?"navy":pctFct<=PCT_TARGET?"teal":"red" },
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div><div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+}
+function buildRevGauges() {
+  const bm = getBgtMonth(MONTH);
+  const fct = getActiveFct();
+  const tc = totCasual();
+  const bC = getTotalBgtCasualMonth(MONTH);
+  const bR = bm.rev || 0, fR = fct?.rev || 0;
+  const gauges = [
+    { label:"Budget Scenario",   pct: bR&&bC ? bC/bR*100 : null, color:"#1565C0", sub: bR?`${fB(bC)} ÷ ${fB(bR)}`:"กรอก Budget" },
+    { label:"Forecast Scenario", pct: fR&&tc  ? tc/fR*100 : null, color:"#0F766E", sub: fR?`${fB(tc)} ÷ ${fM(fR)}`:"กรอก Forecast Revenue" },
+  ];
+  const MAX=10, TW=(PCT_TARGET/MAX*100);
+  document.getElementById("gauges").innerHTML = gauges.map(g => {
+    const has = g.pct !== null && g.pct > 0, fw = has ? Math.min(g.pct/MAX*100,100) : 0;
+    const over = has && g.pct > PCT_TARGET, fc = !has?"#CBD5E1":over?"#DC2626":g.color, pc = !has?"#94A3B8":over?"#991B1B":"#166534";
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:12px;font-weight:600;color:#475569">${g.label}</span>
+        <span style="font-size:20px;font-weight:700;color:${pc}">${has?g.pct.toFixed(2)+"%":"—"}</span>
+      </div>
+      <div class="gatrack"><div class="gafill" style="width:${fw}%;background:${fc}"></div>
+        <div class="gatgt" style="left:${TW}%"><span class="gatgt-lbl">Target ${PCT_TARGET}%</span></div></div>
+      <div style="font-size:11px;color:#64748B;margin-top:3px">${g.sub}${over?` <strong style="color:#991B1B">▲ Over by ${(g.pct-PCT_TARGET).toFixed(2)}%</strong>`:""}</div>
+    </div>`;
+  }).join("");
+}
+function buildRevTable() {
+  const bm = getBgtMonth(MONTH), fct = getActiveFct(), tc = totCasual();
+  const bC = getTotalBgtCasualMonth(MONTH), bR = bm.rev||0, fR = fct?.rev||0;
+  const pB = bR&&bC?(bC/bR*100):null, pF = fR&&tc?(tc/fR*100):null, over = pF!==null&&pF>PCT_TARGET;
+  const wkR = getWkRanges(MONTH), mn = MONTHS_LIST.find(m=>m.id===MONTH)?.name.slice(0,3)||"";
+  let rows = `<thead><tr><th>Week</th><th>Budget Casual</th><th>Actual Casual</th><th>Budget Rev</th><th>Forecast Rev</th><th>Casual % Bgt</th><th>Casual % Fct</th><th>Status</th></tr></thead><tbody>`;
+  let tBC=0, tAC=0, tBR=0, tFR=0;
+  // Approximate week rev = monthly/days*week_days
+  wkR.forEach(([s,e],wi)=>{
+    const wkDays=e-s+1, mDays=getMonthData().days;
+    const wkBR = bR ? Math.round(bR/mDays*wkDays) : 0;
+    const wkFR = fR ? Math.round(fR/mDays*wkDays) : 0;
+    const wkBC = bC ? Math.round(bC/4) : 0;
+    const wkAC = wkCasual(wi);
+    tBC+=wkBC; tAC+=wkAC; tBR+=wkBR; tFR+=wkFR;
+    const pWB = wkBR&&wkBC?(wkBC/wkBR*100):null, pWF = wkFR&&wkAC?(wkAC/wkFR*100):null, wOver=pWF!==null&&pWF>PCT_TARGET;
+    rows+=`<tr>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9"><strong>W${wi+1}</strong><div style="font-size:10px;color:#64748B">${mn} ${s}–${e}</div></td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;color:#1565C0;font-size:12px">${wkBC?fB(wkBC):"—"}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9">${wkAC?`<strong>${fB(wkAC)}</strong>`:`<span style="color:#94A3B8">—</span>`}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;color:#1565C0;font-size:12px">${wkBR?fB(wkBR):"—"}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9">${wkFR?fB(wkFR):"—"}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9">${pWB!==null?`<span class="pchip" style="background:${pWB<=PCT_TARGET?"#DCFCE7":"#FEE2E2"};color:${pWB<=PCT_TARGET?"#166534":"#991B1B"}">${pWB.toFixed(2)}%</span>`:"—"}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9">${pWF!==null?`<span class="pchip" style="background:${wOver?"#FEE2E2":"#DCFCE7"};color:${wOver?"#991B1B":"#166534"}">${pWF.toFixed(2)}%</span>`:"—"}</td>
+      <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9">${pWF===null&&!wkAC?`<span style="color:#94A3B8;font-size:11px">No data</span>`:wOver?`<span class="pchip" style="background:#FEE2E2;color:#991B1B">Over</span>`:`<span class="pchip" style="background:#DCFCE7;color:#166534">OK</span>`}</td>
+    </tr>`;
+  });
+  const tpB=tBR&&tBC?(tBC/tBR*100):null, tpF=tFR&&tAC?(tAC/tFR*100):null;
+  rows+=`</tbody><tfoot><tr class="tot"><td colspan="2">TOTAL</td><td>${tAC?fB(tAC):"—"}</td><td>${tBR?fB(tBR):"—"}</td><td>${tFR?fB(tFR):"—"}</td><td>${tpB!==null?tpB.toFixed(2)+"%":"—"}</td><td style="color:${tpF!==null&&tpF>PCT_TARGET?"#FCA5A5":"#86EFAC"}">${tpF!==null?tpF.toFixed(2)+"%":"—"}</td><td></td></tr></tfoot>`;
+  document.getElementById("revTbl").innerHTML = rows;
+}
+function buildRevChart() {
+  const ctx = document.getElementById("revChart")?.getContext("2d"); if (!ctx) return;
+  const bm = getBgtMonth(MONTH), fct = getActiveFct();
+  const bC = getTotalBgtCasualMonth(MONTH), bR = bm.rev||0, fR = fct?.rev||0;
+  const mDays = getMonthData().days;
+  const wkR = getWkRanges(MONTH);
+  const labels = wkR.map(([s,e],i)=>`W${i+1}`);
+  const bgtRevWk = wkR.map(([s,e])=>bR?Math.round(bR/mDays*(e-s+1)):null);
+  const fctRevWk = wkR.map(([s,e])=>fR?Math.round(fR/mDays*(e-s+1)):null);
+  const bgtCasWk = wkR.map(()=>bC?Math.round(bC/4):null);
+  const actCasWk = wkR.map(([s,e],wi)=>wkCasual(wi)||null);
+  const leg=[{c:"rgba(21,101,192,.2)",l:"Budget Revenue",t:"bar"},{c:"rgba(15,118,110,.2)",l:"Forecast Revenue",t:"bar"},{c:"#F59E0B",l:"Budget Casual",t:"line"},{c:"#7C3AED",l:"Actual Casual",t:"dash"}];
+  document.getElementById("revLegend").innerHTML=leg.map(x=>`<div style="display:flex;align-items:center;gap:5px">${x.t==="bar"?`<div style="width:12px;height:12px;border-radius:2px;background:${x.c}"></div>`:x.t==="line"?`<div style="width:16px;height:3px;background:${x.c};border-radius:2px"></div>`:`<div style="width:16px;height:0;border-top:2.5px dashed ${x.c}"></div>`}<span style="font-size:11px;color:#64748B">${x.l}</span></div>`).join("");
+  revChartObj = new Chart(ctx,{type:"bar",data:{labels,datasets:[
+    {label:"Budget Rev",data:bgtRevWk,backgroundColor:"rgba(21,101,192,.2)",borderColor:"#1565C0",borderWidth:1.5,borderRadius:5,yAxisID:"yR"},
+    {label:"Forecast Rev",data:fctRevWk,backgroundColor:"rgba(15,118,110,.2)",borderColor:"#0F766E",borderWidth:1.5,borderRadius:5,yAxisID:"yR"},
+    {label:"Budget Casual",data:bgtCasWk,type:"line",borderColor:"#F59E0B",borderWidth:2.5,pointRadius:5,pointBackgroundColor:"#F59E0B",fill:false,yAxisID:"yW"},
+    {label:"Actual Casual",data:actCasWk,type:"line",borderColor:"#7C3AED",borderWidth:2,borderDash:[5,4],pointRadius:5,pointBackgroundColor:"#7C3AED",fill:false,yAxisID:"yW"},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+    yR:{position:"left",ticks:{callback:v=>v>=1e6?(v/1e6).toFixed(1)+"M":(v/1000)+"K",font:{size:10}},grid:{color:"rgba(0,0,0,.04)"},title:{display:true,text:"Revenue (THB)",font:{size:10},color:"#64748B"}},
+    yW:{position:"right",ticks:{callback:v=>(v/1000).toFixed(0)+"K",font:{size:10}},grid:{display:false},title:{display:true,text:"Casual Wage (THB)",font:{size:10},color:"#64748B"}},
+    x:{ticks:{font:{size:11}},grid:{display:false}}
+  }}});
+}
+
+/* ══════════════════════════════════════════════════
+   ALL DEPT SUMMARY TAB
+══════════════════════════════════════════════════ */
+function buildSumPage() {
+  const s = getReqStore();
+  const m = MONTHS_LIST.find(x => x.id === MONTH);
+  const groups = [...new Set(DEPTS.map(d => d.group))];
+  let rows = "", wkTots = [0,0,0,0], gTotC = 0, gTotB = 0;
+  groups.forEach(g => {
+    const gc = GROUP_COLORS[g]||["#F1F5F9","#475569"];
+    rows += `<tr class="ghdr"><td colspan="9" style="background:${gc[0]};color:${gc[1]};font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:5px 10px">${g}</td></tr>`;
+    DEPTS.filter(d => d.group === g).forEach(d => {
+      const dd = s[d.id]||{weeks:[null,null,null,null]};
+      const tot = dd.weeks?.reduce((sum,w)=>sum+(w?.totalCost||0),0)||0;
+      const appr = false;
+      dd.weeks?.forEach((w,i)=>{ if(w) wkTots[i]+=(w.totalCost||0); });
+      const b = getBgtDeptMonth(d.id, MONTH);
+      if (b) gTotB += b;
+      gTotC += tot;
+      const varV = b ? tot-b : null, isOv = varV!==null&&varV>b*0.05;
+      const dotC = !tot?"#CBD5E1":isOv?"#EF4444":tot>0?"#22C55E":"#F59E0B";
+      const stLbl = !tot?"No data":isOv?"Over Budget":"Entered";
+      rows += `<tr style="${!tot?"opacity:.45":""}">
+        <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9"><strong style="font-size:12px">${d.name}</strong>${!d.hasBudget?`<span style="font-size:9px;background:#FEF3C7;color:#92400E;padding:1px 5px;border-radius:20px;margin-left:4px;font-weight:700">Unbgt</span>`:""}</td>
+        <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;color:#1565C0;font-size:12px">${b?fB(b):"—"}</td>
+        ${dd.weeks?.map((w,wi)=>`<td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;text-align:center;font-size:12px;color:${w?.totalCost>0?"#0F172A":"#CBD5E1"}">${w?.totalCost>0?fB(w.totalCost)+(w.totalPpl>0?`<div style="font-size:9px;color:#64748B">${w.totalPpl} days</div>`:""):"—"}</td>`).join("")||"<td colspan='4'>—</td>"}
+        <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;text-align:right"><strong style="color:${tot?"#0D1F3C":"#CBD5E1"}">${tot?fB(tot):"—"}</strong></td>
+        <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;text-align:center">${varV!==null&&tot?`<span style="font-size:12px;font-weight:700;color:${isOv?"#991B1B":"#166534"}">${varV>=0?"+":""}${fB(varV)}</span>`:"—"}</td>
+        <td style="padding:9px 10px;border-bottom:1px solid #F1F5F9;text-align:center"><span style="display:inline-flex;align-items:center;gap:4px"><span style="width:7px;height:7px;border-radius:50%;background:${dotC}"></span><span style="font-size:11px;color:#64748B">${stLbl}</span></span></td>
+      </tr>`;
+    });
+  });
+  document.getElementById("sumBody").innerHTML = `<div style="overflow-x:auto"><table class="stbl">
+    <thead><tr><th>Department</th><th>Budget/Month</th><th>W1</th><th>W2</th><th>W3</th><th>W4</th><th style="text-align:right">Total</th><th style="text-align:center">vs Budget</th><th style="text-align:center">Status</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr class="gtot"><td colspan="2">TOTAL</td>${wkTots.map(c=>`<td style="text-align:center">${c?fB(c):"—"}</td>`).join("")}<td style="text-align:right">${gTotC?fB(gTotC):"—"}</td><td style="text-align:center;color:${(gTotC-gTotB)<=0?"#86EFAC":"#FCA5A5"}">${gTotC?(gTotC-gTotB>=0?"+":"")+fB(gTotC-gTotB):"—"}</td><td></td></tr></tfoot>
+  </table></div>`;
+  // Approval panel
+  const pend = DEPTS.filter(d=>s[d.id]?.weeks?.some(w=>w?.totalCost>0&&!w.approved));
+  const appr = DEPTS.filter(d=>s[d.id]?.weeks?.some(w=>w?.approved));
+  const _skip_appr = `
+    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">Pending (${pend.length})</div>
+    ${pend.length?pend.map(d=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:#FFFBEB;border-radius:7px;margin-bottom:5px;border:1px solid #FDE68A">
+      <div><strong style="font-size:13px">${d.name}</strong><span style="font-size:12px;color:#64748B;margin-left:7px">${fB(s[d.id]?.weeks?.reduce((sum,w)=>sum+(w?.totalCost||0),0)||0)}</span></div>
+<span style="font-size:11px;color:#0F766E;font-weight:700">✓ Entered</span>
+    </div>`).join(""):"<div style='color:#64748B;font-size:12px;padding:6px 0'>ไม่มีรายการรอ</div>"}
+    </div>
+    <div><div style="font-size:11px;font-weight:700;color:#064E3B;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">Approved (${appr.length})</div>
+    ${appr.length?appr.map(d=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 13px;background:#F0FDF4;border-radius:7px;margin-bottom:4px"><div style="width:7px;height:7px;border-radius:50%;background:#0F766E;flex-shrink:0"></div><strong style="font-size:12px">${d.name}</strong></div>`).join(""):"<div style='color:#64748B;font-size:12px;padding:6px 0'>ยังไม่มี</div>"}
+    </div>`;
+  if (document.getElementById("sum-mlbl")) document.getElementById("sum-mlbl").textContent = m.name + " 2026";
+}
+function quickAppr(id) {
+  const data = getDeptData(id);
+  data.weeks = data.weeks.map(w => w ? {...w, approved:true} : null);
+  setDeptData(id, data); buildSumPage(); showToast("Approved · " + DEPTS.find(d=>d.id===id)?.name);
+}
+
+/* ══════════════════════════════════════════════════
+   DASHBOARD TAB
+══════════════════════════════════════════════════ */
+function buildDash() {
+  const ld = getLiveDayData();
+  renderAlerts("d-alerts");
+  buildDashKPIs(ld); buildCal(ld); buildDashWkTbl(ld); buildDashCharts(ld);
+}
+function buildDashKPIs(ld) {
+  const mtd = getMonthMtdOcc();
+  const bm = getBgtMonth(MONTH), fct = getActiveFct(), tc = totCasual();
+  const bgtOcc = bm.occ||0, fctOcc = fct?.occ||0, bR = bm.rev||0, fR = fct?.rev||0;
+  const varBO = bgtOcc?(mtd.occ-bgtOcc):null, varFO = fctOcc?(mtd.occ-fctOcc):null;
+  const pctFct = fR&&tc?(tc/fR*100):null;
+  document.getElementById("d-kpis").innerHTML = [
+    {l:"OCC% Actual vs Budget",   v:mtd.days?fPct(mtd.occ):"—", s:`Budget ${fPct(bgtOcc)}${varBO!==null?" · Var "+(varBO>=0?"+":"")+varBO.toFixed(1)+"%":""}`, pill:varBO!==null?{t:(varBO>=0?"+":"")+varBO.toFixed(1)+"%",c:varBO>=0?"g":"r"}:null, cls:""},
+    {l:"OCC% Actual vs Forecast", v:mtd.days?fPct(mtd.occ):"—", s:`Fct ${fPct(fctOcc)}${varFO!==null?" · Var "+(varFO>=0?"+":"")+varFO.toFixed(1)+"%":""}`, pill:varFO!==null?{t:(varFO>=0?"+":"")+varFO.toFixed(1)+"%",c:varFO>=0?"g":"r"}:null, cls:"teal"},
+    {l:"Casual Cost vs Budget",   v:tc?fM(tc):"Not entered", s:`Budget ${fM(getTotalBgtCasualMonth(MONTH))}`, pill:tc&&getTotalBgtCasualMonth(MONTH)?{t:tc<=getTotalBgtCasualMonth(MONTH)?"OK":"Over",c:tc<=getTotalBgtCasualMonth(MONTH)?"g":"r"}:null, cls:tc>getTotalBgtCasualMonth(MONTH)&&getTotalBgtCasualMonth(MONTH)?"red":"amb"},
+    {l:"Casual % of Fct Revenue", v:pctFct!==null?pctFct.toFixed(2)+"%":"—", s:`Target ≤${PCT_TARGET}% · ${fct?.version||"ไม่มี Forecast"}`, pill:pctFct!==null?{t:pctFct<=PCT_TARGET?"OK":"Over "+pctFct.toFixed(1)+"%",c:pctFct<=PCT_TARGET?"g":"r"}:null, cls:pctFct!==null&&pctFct>PCT_TARGET?"red":"navy"},
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div>${k.pill?`<span class="pill p${k.pill.c}">${k.pill.t}</span>`:""}<div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+}
+function buildCal(ld) {
+  document.getElementById("calHdr").innerHTML = DAY_ABBR.map(w=>`<div class="chdr">${w}</div>`).join("");
+  const mdata = getMonthData(), fw = mdata.firstWdSun;
+  const bm = getBgtMonth(MONTH), bgtOcc = bm.occ || 78.2;
+  let cells = ""; for (let i=0;i<fw;i++) cells+="<div></div>";
+  ld.forEach(d => {
+    const isW=d.isWeekend,isH=d.isHoliday,hName=d.holidayName||"";
+    let sc = occCls(d.o, d.r>0, bgtOcc); if (isH) sc="s-hol";
+    const wkndCls = isW&&!isH?" is-wknd":"";
+    const casual = getDayCasualInfo(d.d);
+    const totP = casual.reduce((s,x)=>s+x.ppl,0);
+    let barsHtml = "";
+    if (casual.length > 0) {
+      const maxP = Math.max(...casual.map(c=>c.ppl),1);
+      const shown = casual.slice(0,6);
+      barsHtml = `<div class="cal-bars">${shown.map(c=>`<div class="cal-bar" style="background:${c.color};width:${Math.max(15,Math.round(c.ppl/maxP*100))}%;opacity:.85"></div>`).join("")}</div>
+      <div class="cal-cost" style="color:${isH?"#DC2626":isW?"#7C3AED":"#0F766E"}">${totP}คน</div>`;
+    }
+    const colPos=(fw+d.d-1)%7, ttAlign=colPos<=1?" tt-left":colPos>=5?" tt-right":"";
+    let ttBody="";
+    if (isH) ttBody+=`<div class="ctt-hol">🎌 ${hName}</div>`;
+    if (d.r>0) ttBody+=`<div class="ctt-occ">OCC ${d.o.toFixed(1)}% · ${d.r} rooms</div>`;
+    if (casual.length>0) {
+      ttBody+=casual.map(c=>`<div class="ctt-row"><div class="ctt-dot" style="background:${c.color}"></div><div class="ctt-dept">${c.name}</div><div class="ctt-ppl">${c.ppl} คน · ฿${c.cost.toLocaleString()}</div></div>`).join("");
+      ttBody+=`<div class="ctt-total">รวม ${totP} คน · ฿${casual.reduce((s,x)=>s+x.cost,0).toLocaleString()}</div>`;
+    } else if (!isH) { ttBody+=`<div class="ctt-empty">ไม่มี Casual Request</div>`; }
+    cells+=`<div class="cday ${sc}${wkndCls}" style="position:relative">
+      <div class="cn">${d.d}</div>
+      <div class="co">${d.r>0?d.o.toFixed(0)+"%":isH?"🎌":isW?"🏖":""}</div>
+      <div class="cr">${d.r>0?d.r+" rms":""}</div>
+      ${isH&&!casual.length?`<div class="hol-tag">${hName}</div>`:""}
+      ${barsHtml}
+      <div class="ctt${ttAlign}">
+        <div class="ctt-hdr">${d.wd} ${d.d} ${MONTHS_LIST.find(m=>m.id===MONTH)?.name||""}</div>
+        ${ttBody}
+      </div>
+    </div>`;
+  });
+  document.getElementById("calGrid").innerHTML = cells;
+}
+function buildDashWkTbl(ld) {
+  const el = document.getElementById("d-wktbl"); if (!el) return;
+  const bm = getBgtMonth(MONTH), bgtOcc = bm.occ||0;
+  let tot=0, h=`<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="background:#F1F5F9">
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;text-align:left">Week</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase">OCC% Actual</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase">OCC% Budget</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase">Casual Cost</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase">vs Wk Budget</th>
+    <th style="padding:9px 12px;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase">Status</th>
+  </tr></thead><tbody>`;
+  getWkRanges(MONTH).forEach(([s,e],wi)=>{
+    const wkD=ld.filter(x=>x.d>=s&&x.d<=e&&x.r>0);
+    const wo=wkD.length?wkD.reduce((sum,x)=>sum+x.o,0)/wkD.length:0;
+    const cost=wkCasual(wi); tot+=cost;
+    const bWk=getTotalBgtCasualMonth(MONTH)?Math.round(getTotalBgtCasualMonth(MONTH)/4):0;
+    const v=cost-bWk;
+    const sg=getReqStore(), hasSome=DEPTS.some(d=>(sg[d.id]?.weeks?.[wi]?.totalCost||0)>0);
+    const allAppr=hasSome&&DEPTS.filter(d=>(sg[d.id]?.weeks?.[wi]?.totalCost||0)>0).every(d=>sg[d.id]?.weeks?.[wi]?.approved);
+    const stH=!hasSome?`<span style="color:#94A3B8;font-size:12px">No data</span>`:allAppr?`<span style="background:#DCFCE7;color:#166534;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">Approved</span>`:`<span style="background:#FEF3C7;color:#92400E;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">Pending</span>`;
+    const mn=MONTHS_LIST.find(m=>m.id===MONTH)?.name.slice(0,3)||"";
+    h+=`<tr><td style="padding:10px 12px;border-bottom:1px solid #F1F5F9"><strong>W${wi+1}</strong><div style="font-size:11px;color:#64748B">${mn} ${s}–${e}</div></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #F1F5F9"><span style="color:${wo>=(bgtOcc||78.2)?"#166534":"#991B1B"};font-weight:700">${wo?wo.toFixed(1)+"%":"—"}</span><div style="height:5px;background:#E2E8F0;border-radius:3px;margin-top:3px;overflow:hidden"><div style="width:${Math.min(wo,100)}%;height:100%;background:${wo>=(bgtOcc||78.2)?"#0F766E":"#991B1B"};border-radius:3px"></div></div></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #F1F5F9;color:#1565C0">${bgtOcc?bgtOcc.toFixed(1)+"%":"—"}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #F1F5F9"><strong>${cost?fB(cost):"—"}</strong></td>
+      <td style="padding:10px 12px;border-bottom:1px solid #F1F5F9">${cost&&bWk?`<span style="color:${v<=0?"#166534":"#991B1B"};font-weight:700">${v>=0?"+":""}${fB(v)}</span>`:"—"}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #F1F5F9">${stH}</td></tr>`;
+  });
+  const bTot=getTotalBgtCasualMonth(MONTH), vTot=tot-bTot;
+  h+=`</tbody><tfoot><tr style="background:#0D1F3C"><td colspan="3" style="padding:10px 12px;color:#F59E0B;font-weight:700">TOTAL</td><td style="padding:10px 12px;color:#F59E0B;font-weight:700">${tot?fB(tot):"—"}</td><td style="padding:10px 12px;color:#F59E0B;font-weight:700">${tot&&bTot?(vTot>=0?"+":"")+fB(vTot):"—"}</td><td style="padding:10px 12px;color:#93C5FD;font-size:11px">Budget ${bTot?fB(bTot):"ยังไม่ได้ตั้ง"}</td></tr></tfoot></table>`;
+  el.innerHTML = h;
+}
+function buildDashCharts(ld) {
+  if (dCharts.l) { dCharts.l.destroy(); dCharts.l = null; }
+  if (dCharts.b) { dCharts.b.destroy(); dCharts.b = null; }
+  const bm = getBgtMonth(MONTH), fct = getActiveFct();
+  const bgtOcc = bm.occ || 78.2, fctOcc = fct?.occ || 0;
+  const lc = document.getElementById("cLine")?.getContext("2d");
+  if (lc) dCharts.l = new Chart(lc,{type:"line",data:{labels:ld.map(d=>d.d),datasets:[
+    {label:"OCC% Actual",data:ld.map(d=>d.r>0?d.o:null),borderColor:"#0F766E",backgroundColor:"rgba(15,118,110,.1)",borderWidth:2,tension:.3,fill:true,pointRadius:2,spanGaps:false},
+    {label:`Budget ${bgtOcc.toFixed(1)}%`,data:ld.map(()=>bgtOcc),borderColor:"#1565C0",borderWidth:1.5,borderDash:[5,4],pointRadius:0},
+    ...(fctOcc?[{label:`Forecast ${fctOcc.toFixed(1)}%`,data:ld.map(()=>fctOcc),borderColor:"#D97706",borderWidth:1.5,borderDash:[3,3],pointRadius:0}]:[]),
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:11},boxWidth:10,padding:10}}},scales:{y:{min:0,max:105,ticks:{callback:v=>v+"%",font:{size:10}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:9},maxTicksLimit:16},grid:{display:false}}}}});
+  const bc = document.getElementById("cBar")?.getContext("2d");
+  if (bc) {
+    const wkOccs=getWkRanges(MONTH).map(([s,e])=>{const w=ld.filter(x=>x.d>=s&&x.d<=e&&x.r>0);return w.length?+(w.reduce((sum,x)=>sum+x.o,0)/w.length).toFixed(1):0;});
+    dCharts.b = new Chart(bc,{type:"bar",data:{labels:getWkRanges(MONTH).map(([s,e],i)=>`W${i+1}`),datasets:[
+      {label:"OCC%",data:wkOccs,backgroundColor:wkOccs.map(v=>v>=(bgtOcc||78.2)?"rgba(15,118,110,.8)":"rgba(153,27,27,.75)"),borderRadius:5},
+      {label:"Budget",data:Array(4).fill(bgtOcc),type:"line",borderColor:"#1565C0",borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false},
+      ...(fctOcc?[{label:"Forecast",data:Array(4).fill(fctOcc),type:"line",borderColor:"#D97706",borderDash:[3,3],borderWidth:1.5,pointRadius:0,fill:false}]:[]),
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:11},boxWidth:10,padding:10}}},scales:{y:{min:0,max:105,ticks:{callback:v=>v+"%",font:{size:10}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+  }
+}
+
+
+/* ═══════════════════════════════════════
+   AUTH — Login / Roles / Password
+═══════════════════════════════════════ */
+const DEPT_NAMES = {"fo": "Front Office", "hk": "Housekeeping", "fb": "Food & Beverage", "kitchen": "Kitchen", "sport": "Sport & Recreation", "spa": "Spa", "sales": "Sales & Marketing", "prop": "Property Op & Maint", "hr": "Human Resources", "admin": "Admin & General", "marine": "Marine", "other": "Other Special Op", "laundry": "Guest Laundry", "trans": "Transportation", "hlaund": "House Laundry", "dining": "Staff Dining", "conv": "Conversion"};
+const ADMIN_ID   = "finance";
+let CUR_USER  = null;
+let IS_ADMIN  = false;
+
+function getPw(uid) {
+  return localStorage.getItem("cc_pw_"+uid) || (uid===ADMIN_ID?"1412":"1234");
+}
+function setPw(uid, pw) { localStorage.setItem("cc_pw_"+uid, pw); }
+
+/* Login */
+function doLogin() {
+  const dept = document.getElementById("lg-dept").value;
+  const pw   = document.getElementById("lg-pw").value;
+  const err  = document.getElementById("lg-err");
+  err.classList.remove("show");
+  if (!dept) { err.textContent="กรุณาเลือกแผนก"; err.classList.add("show"); return; }
+  if (!/^\d{4}$/.test(pw)) { err.textContent="รหัสผ่านต้องเป็นตัวเลข 4 หลัก"; err.classList.add("show"); return; }
+  if (pw !== getPw(dept)) {
+    err.textContent="รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่"; err.classList.add("show");
+    document.getElementById("lg-pw").value = ""; return;
+  }
+  CUR_USER = dept; IS_ADMIN = dept === ADMIN_ID;
+  document.getElementById("lgbg").style.display = "none";
+  document.getElementById("main-app").style.display = "block";
+  document.getElementById("lg-pw").value = "";
+  // Badge
+  const lbl = IS_ADMIN ? "Finance (Admin)" : (DEPT_NAMES[dept]||dept);
+  document.getElementById("ulbl").textContent = lbl;
+  document.getElementById("udot").className = "udot" + (IS_ADMIN?" adm":"");
+  // Lock admin-only tabs for dept users
+  if (!IS_ADMIN) {
+    [1,2].forEach(i => {
+      const t = document.querySelectorAll(".tab")[i];
+      if (t) { t.style.opacity=".4"; t.style.cursor="not-allowed";
+        t.onclick=()=>showToast("เฉพาะ Finance Admin เท่านั้น"); }
+    });
+    document.getElementById("ro-notice").style.display = "flex";
+  }
+  // Update month label
+  const m = MONTHS_LIST.find(x=>x.id===MONTH);
+  if (m) document.getElementById("hdr-title").textContent="Casual Labor Control · "+m.name+" 2026";
+  updateBadge(); buildDash();
+  // Dept user → go directly to their own casual request
+  if (!IS_ADMIN) {
+    go("req");
+    setTimeout(()=>{ if(DEPTS.find(d=>d.id===CUR_USER)) pickDept(CUR_USER); }, 60);
+  }
+}
+
+/* Enter key on PW field */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const pw = document.getElementById("lg-pw");
+  if (pw) pw.addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(); });
+  const sel = document.getElementById("lg-dept");
+  if (sel) sel.addEventListener("change", ()=>{ document.getElementById("lg-pw").focus(); });
+});
+
+/* Logout */
+function doLogout() {
+  if (!confirm("ออกจากระบบ?")) return;
+  CUR_USER=null; IS_ADMIN=false;
+  // Reset tab styles
+  document.querySelectorAll(".tab").forEach((t,i)=>{ t.style.opacity=""; t.style.cursor=""; });
+  document.getElementById("ro-notice").style.display = "none";
+  document.getElementById("main-app").style.display = "none";
+  document.getElementById("lgbg").style.display = "flex";
+  document.getElementById("lg-pw").value="";
+  document.getElementById("lg-err").classList.remove("show");
+}
+
+/* Change PW */
+function openCpw()  { document.getElementById("cpwbg").classList.add("on"); document.getElementById("cpw-err").classList.remove("show"); }
+function closeCpw() { document.getElementById("cpwbg").classList.remove("on"); }
+function doChangePw() {
+  const old = document.getElementById("cpw-old").value;
+  const nw  = document.getElementById("cpw-new").value;
+  const cfm = document.getElementById("cpw-cfm").value;
+  const err = document.getElementById("cpw-err");
+  err.classList.remove("show");
+  if (old !== getPw(CUR_USER)) { err.textContent="รหัสปัจจุบันไม่ถูกต้อง"; err.classList.add("show"); return; }
+  if (!/^\d{4}$/.test(nw))   { err.textContent="รหัสใหม่ต้องเป็นตัวเลข 4 หลัก"; err.classList.add("show"); return; }
+  if (nw !== cfm)              { err.textContent="รหัสยืนยันไม่ตรงกัน"; err.classList.add("show"); return; }
+  setPw(CUR_USER, nw);
+  closeCpw();
+  showToast("เปลี่ยนรหัสผ่านสำเร็จ ✓");
+}
+
+/* Permission check */
+function canEdit(deptId) { return IS_ADMIN || CUR_USER === deptId; }
+
+/* ─── INIT ─── */
+/* init() runs inside doLogin() */
+
+</script>
+</body>
+</html>
