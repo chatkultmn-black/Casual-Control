@@ -669,6 +669,38 @@ function renderAlerts(id){
 }
 
 
+
+/* ═══ FORECAST PREFILL 2026 ═══ */
+function prefillForecastIfEmpty(){
+  const MONTHS=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const OCC=[58.1, 67.2, 75.9, 77.7, 68.6, 43.1, 45.3, 56.1, 54.4, 79.1, 61.2, 77.6];
+  const REV=[10249708, 10012497, 12703163, 13869501, 11860260, 6958212, 8051830, 9046694, 8016655, 13484727, 9642086, 14409666];
+  MONTHS.forEach((m,mi)=>{
+    const key="cc_"+m+"_fct";
+    try{
+      const ex=localStorage.getItem(key);
+      if(ex){ const d=JSON.parse(ex); if(d.f1||d.f2) return; }
+    }catch(e){}
+    // Pre-fill as F1 (Forecast 1 — official annual forecast)
+    const fct={ f1:{ rev:REV[mi], occ:OCC[mi], note:"Forecast 2026 (Official)", ts:"Jan 2026", ver:"F1" }, f2:null };
+    localStorage.setItem(key,JSON.stringify(fct));
+  });
+  console.log("Forecast 2026 prefilled ✓");
+}
+
+
+/* ═══ APRIL 2026 OCC PREFILL ═══ */
+function prefillAprOccIfEmpty(){
+  const KEY="cc_apr_occ";
+  try{
+    const ex=localStorage.getItem(KEY);
+    if(ex){ const d=JSON.parse(ex); if(Object.keys(d).length>0) return; }
+  }catch(e){}
+  const data={"1": 40, "2": 85, "3": 84, "4": 104, "5": 101, "6": 50, "7": 39, "8": 47, "9": 44, "10": 44, "11": 60, "12": 100, "13": 106, "14": 48, "15": 55, "16": 53, "17": 99, "18": 84, "19": 28, "20": 36, "21": 33, "22": 45, "23": 37, "24": 32, "25": 142, "26": 34, "27": 21, "28": 9, "29": 24, "30": 16};
+  localStorage.setItem(KEY,JSON.stringify(data));
+  console.log("April 2026 OCC prefilled ✓ (1,700 rooms / 30.14%)");
+}
+
 /* ═══ BUDGET PREFILL 2026 ═══ */
 function prefillBudgetIfEmpty(){
   const KEY="cc_g_bgt";
@@ -679,8 +711,10 @@ function prefillBudgetIfEmpty(){
   const MONTHS=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
   const CASUAL={"fo": [104900, 104900, 91200, 102000, 102000, 75000, 75000, 80400, 80400, 91200, 80400, 102000], "hk": [104900, 104900, 91200, 102000, 102000, 75000, 75000, 80400, 80400, 91200, 80400, 102000], "fb": [105840, 105840, 77040, 77040, 77040, 77040, 77040, 77040, 77040, 88560, 77040, 94320], "kt": [70560, 70560, 51360, 51360, 51360, 51360, 51360, 51360, 51360, 59040, 51360, 62880], "sp": [43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200], "sa": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "sm": [74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539], "pm": [47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000], "hr": [105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667], "ag": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "mr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "so": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "gl": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "tr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "hl": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "sd": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "cv": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
   const bgt={};
+  const BGT_OCC=[58.1, 67.2, 75.9, 77.7, 68.6, 43.1, 45.3, 56.1, 54.4, 79.1, 61.2, 77.6];
+  const BGT_REV=[10249708, 10012497, 12703163, 13869501, 11860260, 6958212, 8051830, 9046694, 8016655, 13484727, 9642086, 14409666];
   MONTHS.forEach((m,mi)=>{
-    bgt[m]={occ:0,rev:0,casual:{}};
+    bgt[m]={occ:BGT_OCC[mi],rev:BGT_REV[mi],casual:{}};
     Object.entries(CASUAL).forEach(([id,arr])=>{ bgt[m].casual[id]=arr[mi]; });
   });
   localStorage.setItem(KEY,JSON.stringify(bgt));
@@ -695,6 +729,8 @@ const setPw = (uid,pw)=>localStorage.setItem("cc_pw_"+uid,pw);
 
 function doLogin(){
   prefillBudgetIfEmpty();
+  prefillForecastIfEmpty();
+  prefillAprOccIfEmpty();
   const dept=document.getElementById("lg-dept").value;
   const pw=document.getElementById("lg-pw").value;
   const err=document.getElementById("lg-err");
