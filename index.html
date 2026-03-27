@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Casual Labor Control 2026</title>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>/* ═══════════════════════════════════════════
    CASUAL LABOR CONTROL 2026 — Main CSS
@@ -556,68 +554,16 @@ let curDept = null, curWk = 0;
 let _dCharts = {}, _revChart = null;
 
 /* ═══════════════════════════════════════════════════
-   FIREBASE — Optional Cloud Sync
+   STORAGE — localStorage only
 ═══════════════════════════════════════════════════ */
-let _DB = null;
-const _mem = {};  // memory cache
-
-function _ls(key,val){
-  if(val===undefined){ try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null} }
-  localStorage.setItem(key,JSON.stringify(val));
-}
 function gj(key){
-  if(_mem[key]!==undefined) return _mem[key];
-  const v=_ls(key); if(v!==null) _mem[key]=v; return v;
+  try{ return JSON.parse(localStorage.getItem(key)||"null"); }catch{ return null; }
 }
 function sj(key,val){
-  _mem[key]=val; _ls(key,val);
-  if(_DB){ _DB.ref("cc/"+key.replace(/[.#$[\]/]/g,"_")).set(val).catch(()=>{}); }
+  localStorage.setItem(key,JSON.stringify(val));
 }
 function sjDel(key){
-  delete _mem[key]; localStorage.removeItem(key);
-  if(_DB){ _DB.ref("cc/"+key.replace(/[.#$[\]/]/g,"_")).remove().catch(()=>{}); }
-}
-
-function connectFirebase(cfg){
-  try{
-    if(typeof firebase==="undefined") return Promise.resolve(false);
-    if(firebase.apps.length) firebase.apps[0].delete();
-    firebase.initializeApp(cfg);
-    _DB=firebase.database();
-    return _DB.ref("cc").get().then(snap=>{
-      if(snap.exists()){
-        Object.entries(snap.val()||{}).forEach(([k,v])=>{
-          const lk=k; _mem[lk]=v; _ls(lk,v);
-        });
-      }
-      return true;
-    }).catch(()=>false);
-  }catch(e){ return Promise.resolve(false); }
-}
-
-function tryAutoFirebase(){
-  const s=localStorage.getItem("cc_fb_cfg");
-  if(!s) return;
-  try{
-    const c=JSON.parse(s);
-    if(c.apiKey&&!c.apiKey.startsWith("PASTE")){
-      connectFirebase(c).then(ok=>{
-        if(ok) showToast("🔥 Firebase Connected");
-        setFbStatus(ok?"on":false);
-      });
-    }
-  }catch(e){}
-}
-
-function setFbStatus(st){
-  const el=document.getElementById("fb-status"); if(!el) return;
-  if(st==="on"){
-    el.innerHTML="🟢 <strong>Firebase Connected</strong> — ข้อมูล Sync ทุก Device";
-    el.style.cssText="color:#166534;background:#F0FDF4;border-color:#86EFAC";
-  } else {
-    el.innerHTML="⚪ ยังไม่ได้เชื่อมต่อ Firebase — ข้อมูลเก็บใน Browser นี้เท่านั้น";
-    el.style.cssText="color:#64748B;background:#F8FAFC;border-color:#E2E8F0";
-  }
+  localStorage.removeItem(key);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -722,6 +668,25 @@ function renderAlerts(id){
   el.innerHTML=getAlerts().map(a=>`<div class="sa sa-${a.t}"><div class="sa-icon">${a.i}</div><div><div class="sa-title">${a.title}</div><div class="sa-sub">${a.sub}</div></div></div>`).join("");
 }
 
+
+/* ═══ BUDGET PREFILL 2026 ═══ */
+function prefillBudgetIfEmpty(){
+  const KEY="cc_g_bgt";
+  try{
+    const ex=localStorage.getItem(KEY);
+    if(ex){ const d=JSON.parse(ex); if(Object.keys(d).length>0) return; }
+  }catch(e){}
+  const MONTHS=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const CASUAL={"fo": [104900, 104900, 91200, 102000, 102000, 75000, 75000, 80400, 80400, 91200, 80400, 102000], "hk": [104900, 104900, 91200, 102000, 102000, 75000, 75000, 80400, 80400, 91200, 80400, 102000], "fb": [105840, 105840, 77040, 77040, 77040, 77040, 77040, 77040, 77040, 88560, 77040, 94320], "kt": [70560, 70560, 51360, 51360, 51360, 51360, 51360, 51360, 51360, 59040, 51360, 62880], "sp": [43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200], "sa": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "sm": [74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539], "pm": [47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000], "hr": [105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667], "ag": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "mr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "so": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "gl": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "tr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "hl": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "sd": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "cv": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+  const bgt={};
+  MONTHS.forEach((m,mi)=>{
+    bgt[m]={occ:0,rev:0,casual:{}};
+    Object.entries(CASUAL).forEach(([id,arr])=>{ bgt[m].casual[id]=arr[mi]; });
+  });
+  localStorage.setItem(KEY,JSON.stringify(bgt));
+  console.log("Budget 2026 prefilled ✓");
+}
+
 /* ═══════════════════════════════════════════════════
    AUTH — Login / Roles / Password
 ═══════════════════════════════════════════════════ */
@@ -729,6 +694,7 @@ const getPw = uid=>localStorage.getItem("cc_pw_"+uid)||(uid==="finance"?"1412":"
 const setPw = (uid,pw)=>localStorage.setItem("cc_pw_"+uid,pw);
 
 function doLogin(){
+  prefillBudgetIfEmpty();
   const dept=document.getElementById("lg-dept").value;
   const pw=document.getElementById("lg-pw").value;
   const err=document.getElementById("lg-err");
@@ -751,7 +717,6 @@ function doLogin(){
   // Month label
   const m=MONTHS.find(x=>x.id===MONTH);
   if(m) document.getElementById("htitle").textContent=`Casual Labor Control · ${m.name} 2026`;
-  tryAutoFirebase();
   updateBadge(); buildDash();
   if(!IS_ADMIN){ go("req"); setTimeout(()=>{ if(DEPTS.find(d=>d.id===CUR)) pickDept(CUR); },80); }
 }
@@ -986,21 +951,8 @@ function buildBudget(){
         </div>
       </div>
     </div>
-    <div style="margin-top:12px" class="sec">
-      <div class="sh" style="background:#78350F"><div class="dot" style="background:#FDE68A"></div>🔥 Firebase Config — เชื่อมต่อ Cloud</div>
-      <div style="padding:12px 14px">
-        <div id="fb-status" style="font-size:12px;padding:8px 11px;border-radius:7px;border:1px solid #E2E8F0;margin-bottom:10px">⚪ ยังไม่ได้เชื่อมต่อ Firebase</div>
-        <div class="fl" style="margin-bottom:9px"><label>Paste Firebase Config (JSON จาก Firebase Console)</label>
-          <textarea id="fb-cfg" rows="7" placeholder='{"apiKey":"AIza...","authDomain":"...","databaseURL":"https://...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'></textarea>
-        </div>
-        <div class="brow" style="padding:0">
-          <button class="btn bp" style="background:#78350F" onclick="saveFbCfg()">🔥 Connect Firebase</button>
-          <button class="btn bg" onclick="discFb()">ยกเลิก</button>
-        </div>
-        <div style="font-size:10px;color:#94A3B8;margin-top:6px">Config บันทึกใน Browser — ไม่ต้อง Paste ซ้ำ · ดูคู่มือ Firebase_Setup_Guide.html</div>
-      </div>
-    </div>`;
-  if(_DB) setFbStatus("on");
+`;
+
 }
 
 function updateBgtTotal(){
@@ -1023,19 +975,7 @@ function copyBgtPrev(){
   if(!prev?.rev){ showToast(`ไม่มี Budget ${MONTHS[idx-1].name}`); return; }
   b[MONTH]=JSON.parse(JSON.stringify(prev)); saveBgt(b); buildBudget(); showToast(`Copied จาก ${MONTHS[idx-1].name}`);
 }
-function saveFbCfg(){
-  let raw=document.getElementById("fb-cfg")?.value?.trim(); if(!raw){ showToast("กรุณา Paste Config ก่อน"); return; }
-  raw=raw.replace(/const\s+firebaseConfig\s*=\s*/g,"").replace(/;\s*$/,"");
-  let cfg; try{ cfg=JSON.parse(raw); }catch(e){ showToast("❌ Config รูปแบบไม่ถูกต้อง"); return; }
-  if(!cfg.apiKey||cfg.apiKey.startsWith("PASTE")){ showToast("❌ apiKey ไม่ถูกต้อง"); return; }
-  localStorage.setItem("cc_fb_cfg",JSON.stringify(cfg));
-  connectFirebase(cfg).then(ok=>{ setFbStatus(ok?"on":false); showToast(ok?"🔥 Firebase Connected!":"❌ เชื่อมต่อไม่ได้ — ตรวจสอบ Config"); });
-}
-function discFb(){
-  localStorage.removeItem("cc_fb_cfg"); _DB=null;
-  try{ if(firebase.apps.length) firebase.apps[0].delete(); }catch(e){}
-  setFbStatus(false); showToast("ยกเลิก Firebase แล้ว");
-}
+
 
 /* ═══════════════════════════════════════════════════
    FORECAST UPDATE
