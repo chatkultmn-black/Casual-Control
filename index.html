@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Casual Labor Control 2026</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>/* ═══════════════════════════════════════════
+   CASUAL LABOR CONTROL 2026 — Main CSS
+   188 Rooms · Thailand Hotel
+═══════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F1F5F9;color:#0F172A;min-height:100vh;overflow-x:hidden}
+
+/* ── Login ───────────────────────────────── */
+#login{position:fixed;inset:0;background:#0D1F3C;display:flex;align-items:center;justify-content:center;z-index:999;padding:16px}
+.lcard{background:#fff;border-radius:16px;padding:28px 24px;width:100%;max-width:340px;text-align:center}
+.lcard h1{font-size:18px;font-weight:700;color:#0D1F3C;margin-bottom:3px}
+.lcard p{font-size:12px;color:#64748B;margin-bottom:20px}
+.lf{margin-bottom:12px;text-align:left}
+.lf label{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+.lf select,.lf input{width:100%;padding:11px 13px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:16px;color:#0F172A;background:#fff}
+.lf select:focus,.lf input:focus{outline:none;border-color:#1565C0}
+.lbtn{width:100%;padding:12px;background:#0D1F3C;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
+.lbtn:hover{background:#1E3A5F}
+.lerr{background:#FEE2E2;color:#991B1B;border-radius:7px;padding:8px 12px;font-size:12px;font-weight:600;margin-top:10px;display:none}
+.lerr.on{display:block}
+
+/* ── Header ──────────────────────────────── */
+#app{display:none}
+.hdr{background:#0D1F3C;padding:12px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding-bottom:10px;flex-wrap:wrap}
+.hdr h1{font-size:clamp(12px,2.5vw,17px);font-weight:700;color:#fff;line-height:1.2}
+.hdr-sub{font-size:10px;color:#93C5FD;margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.upill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 11px;font-size:11px;color:#fff;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.udot{width:7px;height:7px;border-radius:50%;background:#4ADE80;flex-shrink:0}
+.udot.adm{background:#F59E0B}
+.hbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:4px 11px;font-size:11px;color:rgba(255,255,255,.8);cursor:pointer;white-space:nowrap}
+.hbtn:hover{background:rgba(255,255,255,.18);color:#fff}
+.mbtn{background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.4);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#F59E0B;cursor:pointer;white-space:nowrap}
+.mbtn:hover{background:rgba(245,158,11,.3)}
+.tabs{display:flex;overflow-x:auto;border-top:1px solid rgba(255,255,255,.1);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 13px;font-size:12px;font-weight:600;color:rgba(255,255,255,.45);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0;transition:.15s;user-select:none}
+.tab.on{color:#fff;border-bottom-color:#F59E0B}
+.tab:hover:not(.on){color:rgba(255,255,255,.75)}
+.tbadge{display:inline-block;background:#EF4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:3px;vertical-align:middle}
+
+/* ── Modal ───────────────────────────────── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px}
+.mbg.on{display:flex}
+.mbox{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:420px;max-height:85vh;overflow-y:auto}
+.mbox h3{font-size:14px;font-weight:700;color:#0D1F3C;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mopt{padding:9px 6px;border-radius:8px;border:1.5px solid #E2E8F0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;text-align:center;color:#475569;transition:.15s}
+.mopt:hover{border-color:#1565C0;color:#1565C0}
+.mopt.on{background:#0D1F3C;border-color:#0D1F3C;color:#fff}
+.mopt.has{border-color:#0F766E;color:#0F766E}
+.mopt.has.on{background:#0F766E;border-color:#0F766E;color:#fff}
+.mopt small{display:block;font-size:9px;opacity:.65;margin-top:1px;font-weight:400}
+
+/* Change-PW modal */
+#cpw-modal .mbox{max-width:300px}
+
+/* ── Pages ───────────────────────────────── */
+.page{display:none}
+.page.on{display:block}
+.wrap{max-width:1280px;margin:0 auto;padding:12px 12px 60px}
+.mwrap{max-width:900px;margin:0 auto;padding:12px 12px 60px}
+.swrap{max-width:680px;margin:0 auto;padding:12px 12px 60px}
+
+/* ── Alerts ──────────────────────────────── */
+.sa{display:flex;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:9px;margin-bottom:8px;border:1px solid}
+.sa-ok{background:#F0FDF4;border-color:#86EFAC;color:#166534}
+.sa-warn{background:#FEF3C7;border-color:#FDE68A;color:#92400E}
+.sa-over{background:#FEE2E2;border-color:#FECACA;color:#991B1B}
+.sa-pend{background:#EFF6FF;border-color:#BFDBFE;color:#1E3A8A}
+.sa-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.sa-title{font-size:12px;font-weight:700}
+.sa-sub{font-size:11px;opacity:.85;margin-top:1px;line-height:1.4}
+
+/* ── KPI cards ───────────────────────────── */
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.kpi{background:#fff;border-radius:10px;padding:12px 13px;border:1px solid #E2E8F0;border-top:3px solid #CBD5E1}
+.kpi.bl{border-top-color:#1565C0}.kpi.tl{border-top-color:#0F766E}.kpi.am{border-top-color:#D97706}
+.kpi.rd{border-top-color:#DC2626}.kpi.nv{border-top-color:#0D1F3C}.kpi.pu{border-top-color:#7C3AED}
+.kl{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.kv{font-size:clamp(16px,3vw,24px);font-weight:700;line-height:1;margin-bottom:3px;color:#0D1F3C}
+.ks{font-size:11px;color:#64748B;line-height:1.4}
+.pill{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;margin-top:2px}
+.pg{background:#DCFCE7;color:#166534}.pr{background:#FEE2E2;color:#991B1B}.pa{background:#FEF3C7;color:#92400E}
+
+/* ── Section cards ───────────────────────── */
+.sec{background:#fff;border-radius:10px;overflow:hidden;margin-bottom:12px;border:1px solid #E2E8F0}
+.sh{background:#0D1F3C;padding:9px 13px;font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+.sh .dot{width:6px;height:6px;border-radius:50%;background:#F59E0B;flex-shrink:0}
+.sb{padding:12px}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ── Calendar ────────────────────────────── */
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.chdr{text-align:center;font-size:10px;font-weight:700;color:#64748B;padding:3px 0}
+.cday{border-radius:7px;padding:5px 3px;text-align:center;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;position:relative;cursor:default;transition:transform .1s}
+.cday:hover{transform:scale(1.06);z-index:10}
+.cdn{font-size:10px;font-weight:700;line-height:1;margin-bottom:2px}
+.coc{font-size:10px;font-weight:700;line-height:1}
+.crm{font-size:8px;opacity:.7}
+.s-str{background:#14532D;color:#fff}.s-str .cdn{color:rgba(255,255,255,.6)}
+.s-on{background:#DCFCE7;color:#166534}.s-soft{background:#FEF3C7;color:#B45309}
+.s-low{background:#FEE2E2;color:#991B1B}.s-emp{background:#E2E8F0;color:#94A3B8}
+.s-hol{background:#FEF2F2;color:#DC2626;border:1.5px solid #FECACA}
+.s-wk{background:#F5F0FF;color:#7C3AED;opacity:.85}
+.hol-tag{font-size:8px;font-weight:600;color:#DC2626;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1;margin-top:1px}
+/* Mini bars */
+.cbars{width:90%;margin-top:3px;display:flex;flex-direction:column;gap:2px}
+.cbar{height:4px;border-radius:2px;min-width:3px}
+.cbarct{font-size:7px;font-weight:700;margin-top:2px;opacity:.9}
+/* Tooltip */
+.ctt{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#0D1F3C;color:#fff;border-radius:9px;padding:10px 12px;font-size:11px;z-index:200;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.3);min-width:165px;max-width:210px;text-align:left;white-space:normal}
+.ctt::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#0D1F3C}
+.cday:hover .ctt{display:block}
+.ctt.tl{left:0;transform:none}.ctt.tl::after{left:16px;transform:none}
+.ctt.tr{left:auto;right:0;transform:none}.ctt.tr::after{left:auto;right:16px;transform:none}
+.ctt-hd{font-size:10px;color:#93C5FD;font-weight:600;border-bottom:.5px solid rgba(255,255,255,.15);padding-bottom:4px;margin-bottom:5px}
+.ctt-oc{font-size:12px;font-weight:700;color:#F59E0B;margin-bottom:4px}
+.ctt-r{display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.ctt-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ctt-dn{font-size:10px;color:#E2E8F0;flex:1}
+.ctt-pp{font-size:9px;color:#93C5FD;white-space:nowrap}
+.ctt-tot{border-top:.5px solid rgba(255,255,255,.2);margin-top:4px;padding-top:4px;font-size:10px;color:#86EFAC;font-weight:600}
+.ctt-ph{font-size:10px;color:#FCA5A5;margin-bottom:3px}
+.ctt-em{font-size:10px;color:#64748B;font-style:italic}
+/* Cal legend */
+.cleg{display:flex;flex-wrap:wrap;gap:8px;padding:8px 12px;border-top:1px solid #E2E8F0;font-size:10px;color:#64748B}
+.cli{display:flex;align-items:center;gap:3px}
+.cld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.cbar-leg{width:18px;height:4px;border-radius:2px;display:inline-block}
+
+/* ── OCC calendar ────────────────────────── */
+.ocgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.oc-hdr{text-align:center;font-size:10px;font-weight:700;color:#64748B;padding:3px 0;text-transform:uppercase}
+.ocday{background:#fff;border:1.5px solid #E2E8F0;border-radius:8px;padding:6px 3px;text-align:center;transition:.15s}
+.ocday:hover{border-color:#1565C0}
+.ocday.fl{border-color:#0F766E}.ocday.td{border-color:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,.15)}
+.ocday.wk{background:#F5F0FF}.ocday.ph{background:#FFF0F0}.ocday.es{visibility:hidden}
+.od-n{font-size:10px;font-weight:700;color:#0D1F3C;margin-bottom:1px}
+.od-w{font-size:8px;color:#94A3B8;margin-bottom:3px}
+.ocday input{width:100%;border:1px solid #E2E8F0;border-radius:5px;padding:4px 2px;font-size:11px;font-weight:700;text-align:center;background:#F8FAFC;color:#0D1F3C;-moz-appearance:textfield}
+.ocday input::-webkit-inner-spin-button{opacity:1}
+.ocday input:focus{outline:none;border-color:#0F766E;background:#fff}
+.od-p{font-size:9px;font-weight:700;margin-top:2px;min-height:12px}
+.od-s{font-size:8px;margin-top:1px;min-height:11px}
+
+/* ── Request form ────────────────────────── */
+.glbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 0 2px;width:100%}
+.dbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.db{padding:6px 11px;border-radius:7px;border:1.5px solid #E2E8F0;background:#fff;font-size:11px;font-weight:600;color:#475569;cursor:pointer;transition:.15s;position:relative}
+.db:hover{border-color:#1565C0;color:#1565C0}
+.db.on{background:#0D1F3C;border-color:#0D1F3C;color:#fff}
+.db.has{border-color:#0F766E;color:#0F766E}
+.db.has.on{background:#0F766E;border-color:#0F766E;color:#fff}
+.db.ov{border-color:#DC2626;color:#DC2626}
+.db.ov.on{background:#DC2626;border-color:#DC2626;color:#fff}
+.db-dot{position:absolute;top:-4px;right:-4px;width:8px;height:8px;border-radius:50%;border:1.5px solid #fff}
+.fcard{background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;margin-bottom:12px}
+.fhdr{padding:12px 16px}
+.fhdr h2{font-size:14px;font-weight:700;color:#fff}
+.fhdr p{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}
+.wtabs{display:flex;gap:4px;padding:10px 16px 0;border-bottom:1px solid #F1F5F9;flex-wrap:wrap}
+.wtab{padding:6px 12px;font-size:11px;font-weight:600;color:#64748B;cursor:pointer;border-radius:6px 6px 0 0;border:1.5px solid transparent;border-bottom:none;background:#F8FAFC;transition:.15s}
+.wtab.on{background:#fff;color:#0D1F3C;border-color:#E2E8F0;border-bottom-color:#fff;margin-bottom:-1px}
+.wtab.has{color:#0F766E}.wtab.ov{color:#DC2626}
+.dgrid{display:grid;gap:8px;padding:12px 16px}
+.drow{display:grid;grid-template-columns:68px 76px 1fr 1fr 80px;gap:7px;align-items:center;padding:8px 10px;border-radius:8px;background:#F8FAFC;border:1px solid transparent;transition:.15s}
+.drow:hover{border-color:#DBEAFE}
+.drow.he{background:#F0FDF4;border-color:#BBF7D0}
+.drow.wk{background:#F5F0FF}.drow.lo{background:#FFF7ED}.drow.ph2{background:#FFF0F0}
+.dhdr{display:grid;grid-template-columns:68px 76px 1fr 1fr 80px;gap:7px;padding:0 10px 5px;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em}
+.dn{font-weight:700;font-size:12px;color:#0D1F3C}.dw{font-size:9px;color:#64748B}
+.dcost{font-size:11px;font-weight:700;color:#0F766E;text-align:right}
+input[type=number]{width:100%;padding:7px 6px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:13px;font-weight:600;text-align:center;background:#fff;color:#0F172A;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{opacity:1}
+input[type=number]:focus{outline:none;border-color:#1565C0}
+input[type=text]{width:100%;padding:7px 9px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;background:#fff;color:#0F172A}
+input[type=text]:focus{outline:none;border-color:#1565C0}
+input[type=password]{width:100%;padding:7px 9px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:16px;background:#fff;color:#0F172A}
+input[type=password]:focus{outline:none;border-color:#1565C0}
+select{width:100%;padding:7px 8px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;background:#fff;color:#0F172A;cursor:pointer}
+select:focus{outline:none;border-color:#1565C0}
+textarea{width:100%;padding:8px 10px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;resize:vertical;min-height:52px;font-family:inherit;color:#0F172A}
+textarea:focus{outline:none;border-color:#1565C0}
+.wsum{background:#0D1F3C;padding:9px 16px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.wsi{color:#93C5FD;font-size:10px}
+.wsi strong{color:#fff;font-size:13px;display:block;margin-bottom:1px}
+.wsi.hl strong{color:#F59E0B}.wsi.ov strong{color:#FCA5A5}
+.extrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:11px 16px}
+.fl label{font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:3px}
+.brow{display:flex;gap:8px;padding:11px 16px;border-top:1px solid #F1F5F9;flex-wrap:wrap}
+.btn{padding:9px 16px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;transition:.15s}
+.bp{background:#0D1F3C;color:#fff}.bp:hover{background:#1E3A5F}
+.bs{background:#0F766E;color:#fff}.bs:hover{background:#0D5C55}
+.bg{background:#F1F5F9;color:#475569;border:1px solid #E2E8F0}.bg:hover{background:#E2E8F0}
+.bd{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}.bd:hover{background:#FECACA}
+
+/* ── Tables ──────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:#F1F5F9;color:#64748B;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:8px 10px;text-align:left;white-space:nowrap}
+.tbl td{padding:8px 10px;border-bottom:1px solid #F1F5F9;vertical-align:middle}
+.tbl tbody tr:hover td{background:#FAFAFA}
+.tbl .tot td{background:#0D1F3C!important;color:#F59E0B;font-weight:700}
+.tbl .ghdr td{background:#F8FAFC;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px}
+.pchip{display:inline-block;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700}
+.mbar{height:5px;background:#E2E8F0;border-radius:3px;margin-top:2px;overflow:hidden}
+.mfil{height:100%;border-radius:3px}
+
+/* ── Gauge ───────────────────────────────── */
+.gtrack{height:11px;background:#F1F5F9;border-radius:6px;overflow:visible;position:relative;margin-bottom:3px}
+.gfil{height:100%;border-radius:6px;transition:width .5s}
+.gtgt{position:absolute;top:-4px;bottom:-4px;width:2px;background:#D97706;border-radius:1px}
+.gtgt-lb{position:absolute;top:-16px;font-size:8px;font-weight:700;color:#D97706;white-space:nowrap;transform:translateX(-50%)}
+
+/* ── Revenue input ───────────────────────── */
+.rigrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:12px 16px}
+.ric{background:#F8FAFC;border-radius:9px;border:1.5px solid #E2E8F0;padding:10px;transition:.15s}
+.ric:hover{border-color:#1565C0}.ric.hv{border-color:#0F766E;background:#F0FDF4}
+.ric-w{font-size:9px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1px}
+.ric-d{font-size:8px;color:#94A3B8;margin-bottom:6px}
+.ric-f label{font-size:9px;font-weight:600;color:#64748B;display:block;margin-bottom:3px;text-transform:uppercase}
+.ric-f input{width:100%;padding:6px 8px;border:1.5px solid #E2E8F0;border-radius:6px;font-size:12px;font-weight:600;text-align:right;background:#fff}
+.ric-f input:focus{outline:none;border-color:#0F766E}
+.ricc{border-radius:6px;padding:6px 8px;font-size:10px;border:.5px solid #E2E8F0;margin-top:5px}
+.pct-big{font-size:14px;font-weight:700;display:block;line-height:1;margin-bottom:1px}
+
+/* ── Readonly notice ─────────────────────── */
+.ro-notice{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:9px 13px;font-size:12px;color:#92400E;margin-bottom:10px;display:none;align-items:center;gap:7px}
+
+/* ── YTD ─────────────────────────────────── */
+.ytd-month-sel{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.ytd-ms{padding:5px 10px;border-radius:6px;border:1.5px solid #E2E8F0;background:#fff;font-size:11px;font-weight:600;color:#475569;cursor:pointer;transition:.15s}
+.ytd-ms:hover{border-color:#1565C0;color:#1565C0}
+.ytd-ms.on{background:#0D1F3C;border-color:#0D1F3C;color:#fff}
+.ytd-ms.has{border-color:#0F766E;color:#0F766E}
+
+/* ── Toast ───────────────────────────────── */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(110px);background:#0D1F3C;color:#fff;padding:10px 20px;border-radius:30px;font-size:12px;font-weight:600;z-index:9999;transition:transform .3s;box-shadow:0 4px 16px rgba(0,0,0,.25);white-space:nowrap;pointer-events:none}
+.toast.on{transform:translateX(-50%) translateY(0)}
+
+/* ── Mobile ──────────────────────────────── */
+@media(max-width:640px){
+  .wrap,.mwrap,.swrap{padding:10px 10px 60px}
+  .kg{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .kv{font-size:17px}
+  #page-dash .chart-2col{grid-template-columns:1fr!important}
+  .cgrid{gap:1px}
+  .cday{min-height:50px;padding:3px 2px;border-radius:5px}
+  .cdn,.coc{font-size:9px}.crm{display:none}
+  .chdr{font-size:8px}
+  .cbars{width:95%}.cbar{height:3px}
+  .cbarct{font-size:6px}
+  .ctt{min-width:145px;font-size:10px;padding:8px 10px}
+  .ocgrid{gap:1px}
+  .ocday{padding:4px 2px;border-radius:6px}
+  .od-n{font-size:9px}.od-w{font-size:7px}
+  .ocday input{font-size:14px;padding:3px 1px}
+  .od-p{font-size:8px}.od-s{font-size:7px}
+  .drow{grid-template-columns:56px 60px 1fr!important;gap:5px}
+  .dhdr{grid-template-columns:56px 60px 1fr!important;gap:5px}
+  .drow>:nth-child(4),.drow>:nth-child(5),.dhdr>:nth-child(4),.dhdr>:nth-child(5){display:none!important}
+  .extrow{grid-template-columns:1fr!important;padding:9px 12px}
+  .brow{padding:9px 12px;gap:6px}
+  .btn{padding:8px 13px;font-size:11px}
+  .db{font-size:10px;padding:5px 9px}
+  .rigrid{grid-template-columns:repeat(2,1fr)!important;padding:10px 12px}
+  .mgrid{grid-template-columns:repeat(2,1fr)}
+  .tab{padding:8px 10px;font-size:11px}
+}
+@media(max-width:768px){
+  .tw,.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl{min-width:480px}
+  input[type=number],input[type=text],input[type=password],select,textarea{font-size:16px!important}
+  .ocday input{font-size:16px!important}
+  .rigrid{grid-template-columns:repeat(2,1fr)}
+  body{overflow-x:hidden}
+}
+.chart-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <div style="font-size:30px;margin-bottom:6px">🏨</div>
+    <h1>Casual Labor Control</h1>
+    <p>188 Rooms · 2026 · กรุณาเข้าสู่ระบบ</p>
+    <div class="lf">
+      <label>แผนก / User</label>
+      <select id="lg-dept">
+        <option value="">— เลือกแผนก —</option>
+        <option value="finance">Finance (Admin)</option>
+        <option value="fo">Front Office</option>
+        <option value="hk">Housekeeping</option>
+        <option value="fb">Food &amp; Beverage</option>
+        <option value="kt">Kitchen</option>
+        <option value="sp">Sport &amp; Recreation</option>
+        <option value="sa">Spa</option>
+        <option value="sm">Sales &amp; Marketing</option>
+        <option value="pm">Property Op &amp; Maint</option>
+        <option value="hr">Human Resources</option>
+        <option value="ag">Admin &amp; General</option>
+        <option value="mr">Marine</option>
+        <option value="so">Other Special Op</option>
+        <option value="gl">Guest Laundry</option>
+        <option value="tr">Transportation</option>
+        <option value="hl">House Laundry</option>
+        <option value="sd">Staff Dining</option>
+        <option value="cv">Conversion</option>
+      </select>
+    </div>
+    <div class="lf">
+      <label>รหัสผ่าน (ตัวเลข 4 หลัก)</label>
+      <input type="password" id="lg-pw" maxlength="4" placeholder="••••" inputmode="numeric" pattern="[0-9]*">
+    </div>
+    <button class="lbtn" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="lerr" id="lg-err"></div>
+  </div>
+</div>
+
+<!-- CHANGE PW MODAL -->
+<div class="mbg" id="cpw-modal" onclick="if(event.target===this)closeCpw()">
+  <div class="mbox" style="max-width:300px">
+    <h3>🔑 เปลี่ยนรหัสผ่าน</h3>
+    <div class="lf"><label>รหัสปัจจุบัน</label><input type="password" id="cpw-old" maxlength="4" placeholder="••••" inputmode="numeric"></div>
+    <div class="lf"><label>รหัสใหม่</label><input type="password" id="cpw-new" maxlength="4" placeholder="••••" inputmode="numeric"></div>
+    <div class="lf"><label>ยืนยันรหัสใหม่</label><input type="password" id="cpw-cfm" maxlength="4" placeholder="••••" inputmode="numeric"></div>
+    <div class="lerr" id="cpw-err" style="margin-bottom:9px"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn bp" onclick="doChangePw()" style="flex:1">บันทึก</button>
+      <button class="btn bg" onclick="closeCpw()" style="flex:1">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MONTH MODAL -->
+<div class="mbg" id="month-modal" onclick="if(event.target===this)closeMonthModal()">
+  <div class="mbox">
+    <h3>📅 เลือกเดือน 2026</h3>
+    <p style="font-size:11px;color:#64748B;margin-bottom:10px">🟢 มีข้อมูล Casual &nbsp;|&nbsp; 🟡 มี Forecast &nbsp;|&nbsp; ⚙️ มี Budget</p>
+    <div class="mgrid" id="mgrid"></div>
+    <div style="margin-top:12px;text-align:right"><button class="btn bg" onclick="closeMonthModal()">ปิด</button></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <h1 id="htitle">Casual Labor Control · 2026</h1>
+        <div class="hdr-sub">188 Rooms · Budget &amp; Forecast · OCC รายวัน · Casual Request · YTD</div>
+      </div>
+      <div class="hdr-right">
+        <div class="upill"><div class="udot" id="udot"></div><span id="ulbl">—</span></div>
+        <button class="hbtn" onclick="openCpw()">🔑 รหัส</button>
+        <button class="hbtn" onclick="doLogout()">ออก</button>
+        <button class="mbtn" onclick="openMonthModal()">📅 เดือน</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab on"   onclick="go('dash')">Dashboard</div>
+      <div class="tab"      onclick="go('budget')">⚙️ Budget Setup</div>
+      <div class="tab"      onclick="go('fct')">📋 Forecast Update</div>
+      <div class="tab"      onclick="go('occ')">OCC Daily</div>
+      <div class="tab"      onclick="go('req')" id="t-req">Casual Request <span class="tbadge" id="rbadge" style="display:none">0</span></div>
+      <div class="tab"      onclick="go('rev')">Revenue &amp; Casual%</div>
+      <div class="tab"      onclick="go('sum')">All Dept Summary</div>
+      <div class="tab"      onclick="go('ytd')">📊 YTD Summary</div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page on" id="page-dash">
+  <div class="wrap">
+    <div id="d-alerts"></div>
+    <div class="kg" id="d-kpis"></div>
+    <div class="chart-2col">
+      <div class="sec" style="margin:0"><div class="sh"><div class="dot"></div>Daily OCC% — Actual vs Budget vs Forecast</div><div class="sb"><div style="position:relative;height:clamp(150px,22vw,185px)"><canvas id="cLine"></canvas></div></div></div>
+      <div class="sec" style="margin:0"><div class="sh"><div class="dot"></div>Weekly OCC% Average</div><div class="sb"><div style="position:relative;height:clamp(150px,22vw,185px)"><canvas id="cBar"></canvas></div></div></div>
+    </div>
+    <div class="sec">
+      <div class="sh"><div class="dot"></div>OCC% รายวัน · แถบสี = Casual Request แต่ละกลุ่มแผนก · เม้าชี้เพื่อดูรายละเอียด</div>
+      <div class="sb">
+        <div class="cgrid" id="cal-hdr"></div>
+        <div class="cgrid" id="cal-grid" style="margin-top:2px"></div>
+      </div>
+      <div class="cleg">
+        <div class="cli"><div class="cld" style="background:#14532D"></div>Strong &gt;+5%</div>
+        <div class="cli"><div class="cld" style="background:#DCFCE7"></div>On Budget</div>
+        <div class="cli"><div class="cld" style="background:#FEF3C7"></div>Soft ±5%</div>
+        <div class="cli"><div class="cld" style="background:#FEE2E2"></div>Low OCC</div>
+        <div class="cli"><div class="cld" style="background:#FEF2F2;border:1px solid #FECACA"></div>วันหยุด 🎌</div>
+        <div class="cli"><div class="cld" style="background:#F5F0FF"></div>Sat–Sun 🏖</div>
+        <div class="cli" style="width:100%;font-size:10px;font-weight:600;color:#475569;margin-top:2px">แถบสี Casual:</div>
+        <div class="cli"><div class="cbar-leg" style="background:#1565C0"></div>Rooms</div>
+        <div class="cli"><div class="cbar-leg" style="background:#166534"></div>F&amp;B</div>
+        <div class="cli"><div class="cbar-leg" style="background:#7C3AED"></div>Leisure</div>
+        <div class="cli"><div class="cbar-leg" style="background:#B45309"></div>Commercial</div>
+        <div class="cli"><div class="cbar-leg" style="background:#BE185D"></div>Engineering</div>
+        <div class="cli"><div class="cbar-leg" style="background:#475569"></div>Back Office</div>
+      </div>
+    </div>
+    <div class="sec"><div class="sh"><div class="dot"></div>Weekly Summary</div><div class="tw" id="d-wktbl"></div></div>
+  </div>
+  </div>
+
+  <!-- BUDGET SETUP -->
+  <div class="page" id="page-budget">
+  <div class="mwrap">
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:9px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;gap:9px">
+      <div style="font-size:20px">⚙️</div>
+      <div><div style="font-size:13px;font-weight:700;color:#1E3A8A">Budget Setup — กรอกครั้งเดียวต้นปี · แก้ไขได้ตลอด</div><div style="font-size:11px;color:#64748B;margin-top:2px">Budget Revenue, OCC% และ Casual Wage แต่ละแผนก × แต่ละเดือน · Copy จากเดือนก่อนได้</div></div>
+    </div>
+    <div id="bgt-body"></div>
+  </div>
+  </div>
+
+  <!-- FORECAST UPDATE -->
+  <div class="page" id="page-fct">
+  <div class="swrap">
+    <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:9px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;gap:9px">
+      <div style="font-size:20px">📋</div>
+      <div><div style="font-size:13px;font-weight:700;color:#92400E">Forecast Update — อัพเดทเดือนละ 2 ครั้ง</div><div style="font-size:11px;color:#64748B;margin-top:2px">Forecast 1 (วันที่ 1–15) · Forecast 2 (วันที่ 16–31) · เก็บ 2 Version แยกกัน</div></div>
+    </div>
+    <div id="fct-body"></div>
+  </div>
+  </div>
+
+  <!-- OCC DAILY -->
+  <div class="page" id="page-occ">
+  <div class="swrap">
+    <div class="kg" id="occ-kpis"></div>
+    <div class="sec" style="margin-bottom:10px">
+      <div class="sh"><div class="dot"></div>กรอก Rooms Occupied ทุกวัน · 188 Rooms</div>
+      <div style="padding:7px 12px 3px;font-size:11px;color:#92400E;background:#FFFBEB;border-bottom:1px solid #FDE68A">กรอก Paying Rooms ที่ขายได้จริง · OCC% คำนวณและเปรียบเทียบกับ Budget อัตโนมัติ</div>
+      <div style="padding:9px 8px">
+        <div class="ocgrid" id="occ-hdr"></div>
+        <div class="ocgrid" id="occ-cal" style="margin-top:2px"></div>
+      </div>
+      <div class="brow" style="border-top:1px solid #F1F5F9">
+        <button class="btn bp" onclick="saveAllOcc()">Save ทั้งเดือน</button>
+        <button class="btn bg" onclick="clearOcc()">Clear OCC</button>
+      </div>
+    </div>
+    <div class="sec"><div class="sh"><div class="dot"></div>OCC Summary รายสัปดาห์</div><div class="tw" id="occ-wtbl"></div></div>
+  </div>
+  </div>
+
+  <!-- CASUAL REQUEST -->
+  <div class="page" id="page-req">
+  <div class="mwrap">
+    <div style="background:#fff;border-radius:9px;border:1px solid #E2E8F0;padding:11px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:9px;align-items:center">
+      <div style="flex:1;min-width:180px"><div style="font-size:13px;font-weight:700;color:#0D1F3C">Casual Request</div><div style="font-size:11px;color:#64748B;margin-top:1px">เลือกแผนก → กรอก Casual (คน/วัน) → Save</div></div>
+      <button class="btn bd" style="font-size:11px;padding:6px 11px" onclick="clearMonth()">Clear Month</button>
+    </div>
+    <div class="ro-notice" id="ro-notice">🔒 คุณดูได้ทุกหน้า แต่แก้ไขได้เฉพาะ Casual Request แผนกตัวเองเท่านั้น</div>
+    <div id="req-alerts" style="margin-bottom:10px"></div>
+    <div id="dbar" class="dbar"></div>
+    <div id="farea"><div style="text-align:center;padding:40px;color:#94A3B8"><div style="font-size:28px;margin-bottom:8px">👆</div><div style="font-size:13px;font-weight:600">เลือกแผนกด้านบน</div></div></div>
+  </div>
+  </div>
+
+  <!-- REVENUE & CASUAL % -->
+  <div class="page" id="page-rev">
+  <div class="mwrap">
+    <div class="kg" id="rev-kpis"></div>
+    <div style="background:#FEF3C7;border:.5px solid #FDE68A;border-radius:8px;padding:8px 12px;font-size:11px;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+      ⚠️ Target: Casual Wage ≤ 4.5% of Net Revenue &nbsp;|&nbsp; Revenue ต่ำ → % สูงขึ้น → ควรลด Casual
+    </div>
+    <div class="sec" style="margin-bottom:10px"><div class="sh"><div class="dot"></div>Casual % of Revenue — Gauge</div><div style="padding:13px 16px" id="gauges"></div></div>
+    <div class="sec" style="margin-bottom:10px">
+      <div class="sh"><div class="dot"></div>กรอก Forecast Revenue รายสัปดาห์ (ระบบคำนวณ % ให้อัตโนมัติ)</div>
+      <div class="rigrid" id="rev-inp"></div>
+      <div class="brow" style="border-top:1px solid #F1F5F9">
+        <button class="btn bp" onclick="saveRevData()">Save Revenue Forecast</button>
+        <button class="btn bg" onclick="clearRevData()">Clear</button>
+      </div>
+    </div>
+    <div class="sec" style="margin-bottom:10px">
+      <div class="sh"><div class="dot"></div>Revenue vs Casual Wage Chart</div>
+      <div style="padding:12px">
+        <div id="rev-legend" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:9px;font-size:10px;color:#64748B"></div>
+        <div style="position:relative;height:clamp(160px,25vw,210px)"><canvas id="revChart"></canvas></div>
+      </div>
+    </div>
+    <div class="sec"><div class="sh"><div class="dot"></div>Weekly Revenue vs Casual Summary</div><div class="tw"><table class="tbl" id="rev-tbl"></table></div></div>
+  </div>
+  </div>
+
+  <!-- ALL DEPT SUMMARY -->
+  <div class="page" id="page-sum">
+  <div class="mwrap">
+    <div class="sec">
+      <div class="sh"><div class="dot"></div>All Departments <span id="sum-mlbl" style="font-size:10px;opacity:.65;margin-left:6px"></span></div>
+      <div id="sum-body"></div>
+    </div>
+  </div>
+  </div>
+
+  <!-- YTD SUMMARY -->
+  <div class="page" id="page-ytd">
+  <div class="mwrap">
+    <div style="background:#0D1F3C;border-radius:9px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;gap:9px">
+      <div style="font-size:20px">📊</div>
+      <div><div style="font-size:13px;font-weight:700;color:#fff">Year-to-Date Summary — 2026</div><div style="font-size:11px;color:#93C5FD;margin-top:2px">ภาพรวม OCC% · Casual Cost · Revenue ทั้ง 12 เดือน</div></div>
+    </div>
+    <div class="ytd-month-sel" id="ytd-months"></div>
+    <div class="kg" id="ytd-kpis"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="sec" style="margin:0"><div class="sh"><div class="dot"></div>OCC% รายเดือน — Actual vs Budget</div><div class="sb"><div style="position:relative;height:clamp(150px,22vw,180px)"><canvas id="ytdOccChart"></canvas></div></div></div>
+      <div class="sec" style="margin:0"><div class="sh"><div class="dot"></div>Casual Cost รายเดือน vs Budget</div><div class="sb"><div style="position:relative;height:clamp(150px,22vw,180px)"><canvas id="ytdCasChart"></canvas></div></div></div>
+    </div>
+    <div class="sec" style="margin-bottom:10px"><div class="sh"><div class="dot"></div>Revenue รายเดือน — Budget vs Forecast</div><div class="sb"><div style="position:relative;height:clamp(150px,22vw,180px)"><canvas id="ytdRevChart"></canvas></div></div></div>
+    <div class="sec"><div class="sh"><div class="dot"></div>YTD Table — 12 เดือน</div><div class="tw" id="ytd-tbl"></div></div>
+  </div>
+  </div>
+
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CAL_DATA=[{"id":"jan","name":"January","mn":1,"days":31,"fw":4,"cal":[{"d":1,"wd":"Thu","wi":4,"we":false,"ph":true,"pn":"วันปีใหม่"},{"d":2,"wd":"Fri","wi":5,"we":false,"ph":true,"pn":"ชดเชยปีใหม่"},{"d":3,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":4,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":5,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":11,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":12,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":18,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":19,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":25,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":26,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":31,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""}]},{"id":"feb","name":"February","mn":2,"days":28,"fw":0,"cal":[{"d":1,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":2,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":8,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":9,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Wed","wi":3,"we":false,"ph":true,"pn":"วันมาฆบูชา"},{"d":12,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":15,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":16,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":22,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":23,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""}]},{"id":"mar","name":"March","mn":3,"days":31,"fw":0,"cal":[{"d":1,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":2,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":8,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":9,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":12,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":15,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":16,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":22,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":23,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":29,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":30,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":31,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""}]},{"id":"apr","name":"April","mn":4,"days":30,"fw":3,"cal":[{"d":1,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":2,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":5,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":6,"wd":"Mon","wi":1,"we":false,"ph":true,"pn":"วันจักรี"},{"d":7,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":12,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":13,"wd":"Mon","wi":1,"we":false,"ph":true,"pn":"วันสงกรานต์"},{"d":14,"wd":"Tue","wi":2,"we":false,"ph":true,"pn":"วันสงกรานต์"},{"d":15,"wd":"Wed","wi":3,"we":false,"ph":true,"pn":"วันสงกรานต์"},{"d":16,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":19,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":20,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":26,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":27,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""}]},{"id":"may","name":"May","mn":5,"days":31,"fw":5,"cal":[{"d":1,"wd":"Fri","wi":5,"we":false,"ph":true,"pn":"วันแรงงาน"},{"d":2,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":3,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":4,"wd":"Mon","wi":1,"we":false,"ph":true,"pn":"วันฉัตรมงคล"},{"d":5,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":10,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":11,"wd":"Mon","wi":1,"we":false,"ph":true,"pn":"วันวิสาขบูชา"},{"d":12,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":17,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":18,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":24,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":25,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":31,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""}]},{"id":"jun","name":"June","mn":6,"days":30,"fw":1,"cal":[{"d":1,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":2,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Wed","wi":3,"we":false,"ph":true,"pn":"วันเฉลิมพระชนมพรรษา"},{"d":4,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":7,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":8,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":12,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":14,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":15,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":21,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":22,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":28,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":29,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""}]},{"id":"jul","name":"July","mn":7,"days":31,"fw":3,"cal":[{"d":1,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":2,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":5,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":6,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Thu","wi":4,"we":false,"ph":true,"pn":"วันอาสาฬหบูชา"},{"d":10,"wd":"Fri","wi":5,"we":false,"ph":true,"pn":"วันเข้าพรรษา"},{"d":11,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":12,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":13,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":19,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":20,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":26,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":27,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Tue","wi":2,"we":false,"ph":true,"pn":"วันเฉลิมพระชนมพรรษา"},{"d":29,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":31,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""}]},{"id":"aug","name":"August","mn":8,"days":31,"fw":6,"cal":[{"d":1,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":2,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":3,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":9,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":10,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":12,"wd":"Wed","wi":3,"we":false,"ph":true,"pn":"วันแม่แห่งชาติ"},{"d":13,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":16,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":17,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":23,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":24,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":30,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":31,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""}]},{"id":"sep","name":"September","mn":9,"days":30,"fw":2,"cal":[{"d":1,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":2,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":6,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":7,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":12,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":13,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":14,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":20,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":21,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":27,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":28,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""}]},{"id":"oct","name":"October","mn":10,"days":31,"fw":4,"cal":[{"d":1,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":2,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":4,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":5,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":11,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":12,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Tue","wi":2,"we":false,"ph":true,"pn":"วันคล้ายวันสวรรคต ร.9"},{"d":14,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":18,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":19,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Fri","wi":5,"we":false,"ph":true,"pn":"วันปิยมหาราช"},{"d":24,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":25,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":26,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":31,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""}]},{"id":"nov","name":"November","mn":11,"days":30,"fw":0,"cal":[{"d":1,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":2,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":6,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":7,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":8,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":9,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":11,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":12,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":13,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":14,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":15,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":16,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":20,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":21,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":22,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":23,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":27,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":28,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":29,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":30,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""}]},{"id":"dec","name":"December","mn":12,"days":31,"fw":2,"cal":[{"d":1,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":2,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":3,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":4,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":5,"wd":"Sat","wi":6,"we":true,"ph":true,"pn":"วันพ่อแห่งชาติ"},{"d":6,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":7,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":8,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":9,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":10,"wd":"Thu","wi":4,"we":false,"ph":true,"pn":"วันรัฐธรรมนูญ"},{"d":11,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":12,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":13,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":14,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":15,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":16,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":17,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":18,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":19,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":20,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":21,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":22,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":23,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":24,"wd":"Thu","wi":4,"we":false,"ph":false,"pn":""},{"d":25,"wd":"Fri","wi":5,"we":false,"ph":false,"pn":""},{"d":26,"wd":"Sat","wi":6,"we":true,"ph":false,"pn":""},{"d":27,"wd":"Sun","wi":0,"we":true,"ph":false,"pn":""},{"d":28,"wd":"Mon","wi":1,"we":false,"ph":false,"pn":""},{"d":29,"wd":"Tue","wi":2,"we":false,"ph":false,"pn":""},{"d":30,"wd":"Wed","wi":3,"we":false,"ph":false,"pn":""},{"d":31,"wd":"Thu","wi":4,"we":false,"ph":true,"pn":"วันสิ้นปี"}]}];
+const DEPTS=[{"id": "fo", "name": "Front Office", "group": "Rooms", "bgt": true, "rate": 520}, {"id": "hk", "name": "Housekeeping", "group": "Rooms", "bgt": true, "rate": 480}, {"id": "fb", "name": "Food & Beverage", "group": "F&B", "bgt": true, "rate": 500}, {"id": "kt", "name": "Kitchen", "group": "F&B", "bgt": true, "rate": 500}, {"id": "sp", "name": "Sport & Recreation", "group": "Leisure", "bgt": true, "rate": 500}, {"id": "sa", "name": "Spa", "group": "Leisure", "bgt": false, "rate": 500}, {"id": "sm", "name": "Sales & Marketing", "group": "Commercial", "bgt": true, "rate": 550}, {"id": "pm", "name": "Property Op & Maint", "group": "Engineering", "bgt": true, "rate": 480}, {"id": "hr", "name": "Human Resources", "group": "Back Office", "bgt": true, "rate": 500}, {"id": "ag", "name": "Admin & General", "group": "Back Office", "bgt": false, "rate": 500}, {"id": "mr", "name": "Marine", "group": "Leisure", "bgt": false, "rate": 500}, {"id": "so", "name": "Other Special Op", "group": "Back Office", "bgt": false, "rate": 450}, {"id": "gl", "name": "Guest Laundry", "group": "Back Office", "bgt": false, "rate": 400}, {"id": "tr", "name": "Transportation", "group": "Back Office", "bgt": false, "rate": 500}, {"id": "hl", "name": "House Laundry", "group": "Back Office", "bgt": false, "rate": 400}, {"id": "sd", "name": "Staff Dining", "group": "Back Office", "bgt": false, "rate": 400}, {"id": "cv", "name": "Conversion", "group": "Back Office", "bgt": false, "rate": 450}];
+const GC={"Rooms": ["#DBEAFE", "#1565C0", "#1E3A5F"], "F&B": ["#DCFCE7", "#166534", "#14532D"], "Leisure": ["#F3E8FF", "#7C3AED", "#4C1D95"], "Commercial": ["#FEF3C7", "#B45309", "#78350F"], "Engineering": ["#FFE4E6", "#BE185D", "#831843"], "Back Office": ["#F1F5F9", "#475569", "#1E293B"]};
+const MONTHS=[{"id": "jan", "name": "January", "days": 31}, {"id": "feb", "name": "February", "days": 28}, {"id": "mar", "name": "March", "days": 31}, {"id": "apr", "name": "April", "days": 30}, {"id": "may", "name": "May", "days": 31}, {"id": "jun", "name": "June", "days": 30}, {"id": "jul", "name": "July", "days": 31}, {"id": "aug", "name": "August", "days": 31}, {"id": "sep", "name": "September", "days": 30}, {"id": "oct", "name": "October", "days": 31}, {"id": "nov", "name": "November", "days": 30}, {"id": "dec", "name": "December", "days": 31}];
+
+/* ═══════════════════════════════════════════════════
+   CASUAL LABOR CONTROL 2026 — App Logic
+   188 Rooms · Firebase Optional · localStorage Default
+═══════════════════════════════════════════════════ */
+
+/* ── Constants ── */
+const ROOMS = 188, PCT_TGT = 4.5;
+const DAY_SH = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+const WK_MAX = 4;
+const TYPES  = ["Regular","Group Check-in","Group Check-out","Event","Seasonal Peak","Emergency","Other"];
+const DEPT_NAMES = Object.fromEntries(DEPTS.map(d=>[d.id,d.name]));
+
+/* ── State ── */
+let MONTH = "jan", CUR = null, IS_ADMIN = false;
+let curDept = null, curWk = 0;
+let _dCharts = {}, _revChart = null;
+
+/* ═══════════════════════════════════════════════════
+   FIREBASE — Optional Cloud Sync
+═══════════════════════════════════════════════════ */
+let _DB = null;
+const _mem = {};  // memory cache
+
+function _ls(key,val){
+  if(val===undefined){ try{return JSON.parse(localStorage.getItem(key)||"null")}catch{return null} }
+  localStorage.setItem(key,JSON.stringify(val));
+}
+function gj(key){
+  if(_mem[key]!==undefined) return _mem[key];
+  const v=_ls(key); if(v!==null) _mem[key]=v; return v;
+}
+function sj(key,val){
+  _mem[key]=val; _ls(key,val);
+  if(_DB){ _DB.ref("cc/"+key.replace(/[.#$[\]/]/g,"_")).set(val).catch(()=>{}); }
+}
+function sjDel(key){
+  delete _mem[key]; localStorage.removeItem(key);
+  if(_DB){ _DB.ref("cc/"+key.replace(/[.#$[\]/]/g,"_")).remove().catch(()=>{}); }
+}
+
+function connectFirebase(cfg){
+  try{
+    if(typeof firebase==="undefined") return Promise.resolve(false);
+    if(firebase.apps.length) firebase.apps[0].delete();
+    firebase.initializeApp(cfg);
+    _DB=firebase.database();
+    return _DB.ref("cc").get().then(snap=>{
+      if(snap.exists()){
+        Object.entries(snap.val()||{}).forEach(([k,v])=>{
+          const lk=k; _mem[lk]=v; _ls(lk,v);
+        });
+      }
+      return true;
+    }).catch(()=>false);
+  }catch(e){ return Promise.resolve(false); }
+}
+
+function tryAutoFirebase(){
+  const s=localStorage.getItem("cc_fb_cfg");
+  if(!s) return;
+  try{
+    const c=JSON.parse(s);
+    if(c.apiKey&&!c.apiKey.startsWith("PASTE")){
+      connectFirebase(c).then(ok=>{
+        if(ok) showToast("🔥 Firebase Connected");
+        setFbStatus(ok?"on":false);
+      });
+    }
+  }catch(e){}
+}
+
+function setFbStatus(st){
+  const el=document.getElementById("fb-status"); if(!el) return;
+  if(st==="on"){
+    el.innerHTML="🟢 <strong>Firebase Connected</strong> — ข้อมูล Sync ทุก Device";
+    el.style.cssText="color:#166534;background:#F0FDF4;border-color:#86EFAC";
+  } else {
+    el.innerHTML="⚪ ยังไม่ได้เชื่อมต่อ Firebase — ข้อมูลเก็บใน Browser นี้เท่านั้น";
+    el.style.cssText="color:#64748B;background:#F8FAFC;border-color:#E2E8F0";
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   STORAGE KEYS
+═══════════════════════════════════════════════════ */
+const SK  = k=>`cc_${MONTH}_${k}`;
+const GSK = k=>`cc_g_${k}`;
+
+const getBgt     = ()=>gj(GSK("bgt"))    ||{};
+const saveBgt    = d=>sj(GSK("bgt"),d);
+const getFct     = ()=>gj(SK("fct"))     ||{f1:null,f2:null};
+const saveFct    = d=>sj(SK("fct"),d);
+const getOcc     = ()=>gj(SK("occ"))     ||{};
+const saveOcc    = d=>sj(SK("occ"),d);
+const getReq     = ()=>gj(SK("req"))     ||{};
+const saveReq    = d=>sj(SK("req"),d);
+
+/* Budget helpers */
+const bgtM     = mid=>(getBgt()[mid]||{});
+const bgtOcc   = mid=>bgtM(mid).occ||0;
+const bgtRev   = mid=>bgtM(mid).rev||0;
+const bgtCasual= mid=>Object.values(bgtM(mid).casual||{}).reduce((s,v)=>s+(v||0),0);
+const bgtDept  = (did,mid)=>(bgtM(mid).casual||{})[did]||0;
+
+/* Forecast helpers */
+const activeFct=()=>{ const f=getFct(); return f.f2||f.f1||null; };
+
+/* OCC helpers */
+const mdata   = mid=>CAL_DATA.find(x=>x.id===(mid||MONTH))||CAL_DATA[0];
+const liveOcc = mid=>{
+  const occ=getOcc(), m=mdata(mid||MONTH);
+  return m.cal.map(d=>{ const r=occ[d.d]??0, o=r>0?+(r/ROOMS*100).toFixed(1):0; return{...d,r,o}; });
+};
+const mtdOcc=()=>{
+  const ld=liveOcc(), en=ld.filter(x=>x.r>0);
+  return{ occ:en.length?+(en.reduce((s,x)=>s+x.o,0)/en.length).toFixed(1):0, rooms:en.reduce((s,x)=>s+x.r,0), days:en.length };
+};
+
+/* Casual helpers */
+const getReqD  = id=>{ const s=getReq(); return s[id]||{weeks:[null,null,null,null]}; };
+const setReqD  = (id,d)=>{ const s=getReq(); s[id]=d; saveReq(s); };
+const wkRanges = mid=>{ const m=mdata(mid); const days=m.days; const r=[]; let s=1;
+  while(s<=days&&r.length<WK_MAX){ const e=r.length===WK_MAX-1?days:Math.min(s+6,days); r.push([s,e]); s=e+1; } return r; };
+const wkCost   = wi=>DEPTS.reduce((s,d)=>s+(getReqD(d.id).weeks?.[wi]?.totalCost||0),0);
+const totCost  = ()=>[0,1,2,3].reduce((s,wi)=>s+wkCost(wi),0);
+
+/* Day casual info for calendar tooltip */
+function dayCasual(dn){
+  const s=getReq(), wkR=wkRanges(MONTH), res=[];
+  DEPTS.forEach(dept=>{
+    const dd=s[dept.id]; if(!dd?.weeks) return;
+    wkR.forEach(([ws,we],wi)=>{
+      if(dn<ws||dn>we) return;
+      const wk=dd.weeks[wi]; if(!wk?.days) return;
+      const day=wk.days[dn]; if(!day?.ppl) return;
+      const gc=GC[dept.group]||["#F1F5F9","#475569","#1E293B"];
+      res.push({name:dept.name,ppl:day.ppl,cost:day.ppl*(day.rate||dept.rate),color:gc[1]});
+    });
+  });
+  return res;
+}
+
+/* ═══════════════════════════════════════════════════
+   FORMATTING
+═══════════════════════════════════════════════════ */
+const fmt  = (n,d=0)=>(+n||0).toLocaleString("th-TH",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fB   = n=>"฿"+fmt(n);
+const fM   = n=>n>=1e6?(n/1e6).toFixed(2)+"M":n>0?fB(n):"—";
+const fP   = n=>n!=null?n.toFixed(1)+"%":"—";
+const ts   = ()=>new Date().toLocaleString("th-TH",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});
+
+/* ─ Toast ─ */
+function showToast(msg,dur=2400){
+  const t=document.getElementById("toast");
+  t.textContent=msg; t.classList.add("on");
+  clearTimeout(t._tid); t._tid=setTimeout(()=>t.classList.remove("on"),dur);
+}
+
+/* ─ OCC status class ─ */
+function occCls(o,has,bgt){ const b=bgt||bgtOcc(MONTH)||78.2;
+  if(!has) return "s-emp";
+  if(o>=b+5) return "s-str"; if(o>=b) return "s-on"; if(o>=b-5) return "s-soft"; return "s-low";
+}
+
+/* ═══════════════════════════════════════════════════
+   ALERTS
+═══════════════════════════════════════════════════ */
+function getAlerts(){
+  const s=getReq(), alerts=[];
+  const bm=bgtM(MONTH);
+  if(!bm.occ&&!bm.rev) alerts.push({t:"warn",i:"⚙️",title:"ยังไม่ได้ตั้ง Budget",sub:"ไปที่ Tab Budget Setup → กรอก OCC% / Revenue / Casual Wage"});
+  if(!activeFct()) alerts.push({t:"pend",i:"📋",title:"ยังไม่มี Forecast เดือนนี้",sub:"ไปที่ Tab Forecast Update → กรอก Revenue และ OCC%"});
+  const ov=DEPTS.filter(d=>{ const b=bgtDept(d.id,MONTH); if(!b) return false;
+    return (getReqD(d.id).weeks?.reduce((sum,w)=>sum+(w?.totalCost||0),0)||0)>b*1.05; });
+  if(ov.length) alerts.push({t:"over",i:"🔴",title:`${ov.length} แผนกเกิน Budget`,sub:ov.map(d=>d.name).join(" · ")});
+  const pn=DEPTS.filter(d=>s[d.id]?.weeks?.some(w=>w?.totalCost>0));
+  if(pn.length&&!ov.length&&bm.occ) alerts.push({t:"ok",i:"✅",title:"ทุกอย่างอยู่ในกรอบ Budget",sub:"Casual costs within budget"});
+  return alerts;
+}
+function renderAlerts(id){
+  const el=document.getElementById(id); if(!el) return;
+  el.innerHTML=getAlerts().map(a=>`<div class="sa sa-${a.t}"><div class="sa-icon">${a.i}</div><div><div class="sa-title">${a.title}</div><div class="sa-sub">${a.sub}</div></div></div>`).join("");
+}
+
+/* ═══════════════════════════════════════════════════
+   AUTH — Login / Roles / Password
+═══════════════════════════════════════════════════ */
+const getPw = uid=>localStorage.getItem("cc_pw_"+uid)||(uid==="finance"?"1412":"1234");
+const setPw = (uid,pw)=>localStorage.setItem("cc_pw_"+uid,pw);
+
+function doLogin(){
+  const dept=document.getElementById("lg-dept").value;
+  const pw=document.getElementById("lg-pw").value;
+  const err=document.getElementById("lg-err");
+  err.classList.remove("on");
+  if(!dept){ err.textContent="กรุณาเลือกแผนก"; err.classList.add("on"); return; }
+  if(!/^\d{4}$/.test(pw)){ err.textContent="รหัสผ่านต้องเป็นตัวเลข 4 หลัก"; err.classList.add("on"); return; }
+  if(pw!==getPw(dept)){ err.textContent="รหัสผ่านไม่ถูกต้อง"; err.classList.add("on"); document.getElementById("lg-pw").value=""; return; }
+  CUR=dept; IS_ADMIN=dept==="finance";
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("lg-pw").value="";
+  const lbl=IS_ADMIN?"Finance (Admin)":(DEPT_NAMES[dept]||dept);
+  document.getElementById("ulbl").textContent=lbl;
+  document.getElementById("udot").className="udot"+(IS_ADMIN?" adm":"");
+  // Lock admin-only tabs for dept users
+  if(!IS_ADMIN){
+    [1,2].forEach(i=>{ const t=document.querySelectorAll(".tab")[i]; if(t){ t.style.opacity=".35"; t.style.cursor="not-allowed"; t.onclick=()=>showToast("เฉพาะ Finance Admin เท่านั้น"); }});
+    document.getElementById("ro-notice").style.display="flex";
+  }
+  // Month label
+  const m=MONTHS.find(x=>x.id===MONTH);
+  if(m) document.getElementById("htitle").textContent=`Casual Labor Control · ${m.name} 2026`;
+  tryAutoFirebase();
+  updateBadge(); buildDash();
+  if(!IS_ADMIN){ go("req"); setTimeout(()=>{ if(DEPTS.find(d=>d.id===CUR)) pickDept(CUR); },80); }
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  const pw=document.getElementById("lg-pw");
+  if(pw) pw.addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); });
+  const sel=document.getElementById("lg-dept");
+  if(sel) sel.addEventListener("change",()=>{ document.getElementById("lg-pw").focus(); });
+});
+function doLogout(){
+  if(!confirm("ออกจากระบบ?")) return;
+  CUR=null; IS_ADMIN=false;
+  document.querySelectorAll(".tab").forEach(t=>{ t.style.opacity=""; t.style.cursor=""; });
+  document.getElementById("ro-notice").style.display="none";
+  document.getElementById("app").style.display="none";
+  document.getElementById("login").style.display="flex";
+  document.getElementById("lg-pw").value="";
+  document.getElementById("lg-err").classList.remove("on");
+}
+function openCpw(){ document.getElementById("cpw-modal").classList.add("on"); }
+function closeCpw(){ document.getElementById("cpw-modal").classList.remove("on"); }
+function doChangePw(){
+  const old=document.getElementById("cpw-old").value;
+  const nw=document.getElementById("cpw-new").value;
+  const cf=document.getElementById("cpw-cfm").value;
+  const err=document.getElementById("cpw-err");
+  err.classList.remove("on");
+  if(old!==getPw(CUR)){ err.textContent="รหัสปัจจุบันไม่ถูกต้อง"; err.classList.add("on"); return; }
+  if(!/^\d{4}$/.test(nw)){ err.textContent="รหัสใหม่ต้องเป็นตัวเลข 4 หลัก"; err.classList.add("on"); return; }
+  if(nw!==cf){ err.textContent="รหัสยืนยันไม่ตรงกัน"; err.classList.add("on"); return; }
+  setPw(CUR,nw); closeCpw(); showToast("เปลี่ยนรหัสผ่านสำเร็จ ✓");
+}
+function canEdit(did){ return IS_ADMIN||CUR===did; }
+
+/* ═══════════════════════════════════════════════════
+   MONTH MODAL
+═══════════════════════════════════════════════════ */
+function openMonthModal(){
+  document.getElementById("mgrid").innerHTML=MONTHS.map(m=>{
+    const hasReq=!!localStorage.getItem(`cc_${m.id}_req`);
+    const hasFct=!!localStorage.getItem(`cc_${m.id}_fct`);
+    const bm=bgtM(m.id); const hasB=bm.occ||bm.rev;
+    const dot=hasReq?"🟢":hasFct?"🟡":hasB?"⚙️":"";
+    return `<div class="mopt ${m.id===MONTH?"on":""} ${hasReq?"has":""}" onclick="pickMonth('${m.id}')">${m.name}<small>${dot}</small></div>`;
+  }).join("");
+  document.getElementById("month-modal").classList.add("on");
+}
+function closeMonthModal(){ document.getElementById("month-modal").classList.remove("on"); }
+function pickMonth(id){
+  MONTH=id;
+  const m=MONTHS.find(x=>x.id===id);
+  if(m) document.getElementById("htitle").textContent=`Casual Labor Control · ${m.name} 2026`;
+  closeMonthModal();
+  const pg=document.querySelector(".page.on")?.id?.replace("page-","");
+  if(pg) go(pg); else go("dash");
+  updateBadge(); showToast(`เปลี่ยนเป็น ${m.name} 2026`);
+}
+
+/* ═══════════════════════════════════════════════════
+   PAGE ROUTING
+═══════════════════════════════════════════════════ */
+const PAGES=["dash","budget","fct","occ","req","rev","sum","ytd"];
+function go(pg){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("on"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("on"));
+  document.getElementById("page-"+pg)?.classList.add("on");
+  const i=PAGES.indexOf(pg);
+  if(i>=0) document.querySelectorAll(".tab")[i]?.classList.add("on");
+  if(pg==="dash")   buildDash();
+  if(pg==="budget") buildBudget();
+  if(pg==="fct")    buildFct();
+  if(pg==="occ")    buildOccPage();
+  if(pg==="req")    { buildDBar(); renderAlerts("req-alerts"); }
+  if(pg==="rev")    buildRevPage();
+  if(pg==="sum")    buildSum();
+  if(pg==="ytd")    buildYTD();
+}
+function updateBadge(){
+  const s=getReq(); let n=0;
+  DEPTS.forEach(d=>{ const dd=s[d.id]; if(dd?.weeks) dd.weeks.forEach(w=>{ if(w?.totalCost>0) n++; }); });
+  const b=document.getElementById("rbadge"); b.textContent=n; b.style.display=n>0?"inline":"none";
+}
+
+/* ═══════════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════════ */
+function buildDash(){
+  const ld=liveOcc(), mtd=mtdOcc(), bm=bgtM(MONTH), fct=activeFct(), tc=totCost();
+  const bo=bm.occ||0, fo=fct?.occ||0, br=bm.rev||0, fr=fct?.rev||0;
+  const bc=bgtCasual(MONTH);
+  const varBO=bo?(mtd.occ-bo):null, varFO=fo?(mtd.occ-fo):null;
+  const pctFct=fr&&tc?(tc/fr*100):null;
+  renderAlerts("d-alerts");
+  // KPIs
+  document.getElementById("d-kpis").innerHTML=[
+    {l:"OCC% Actual vs Budget",   v:mtd.days?fP(mtd.occ):"—", s:`Budget ${fP(bo)}${varBO!=null?" · Var "+(varBO>=0?"+":"")+varBO.toFixed(1)+"%":""}`,pill:varBO!=null?{t:(varBO>=0?"+":"")+varBO.toFixed(1)+"%",c:varBO>=0?"g":"r"}:null,cls:""},
+    {l:"OCC% Actual vs Forecast", v:mtd.days?fP(mtd.occ):"—", s:`Forecast ${fP(fo)}${varFO!=null?" · Var "+(varFO>=0?"+":"")+varFO.toFixed(1)+"%":""}`,pill:varFO!=null?{t:(varFO>=0?"+":"")+varFO.toFixed(1)+"%",c:varFO>=0?"g":"r"}:null,cls:"tl"},
+    {l:"Casual Cost vs Budget",   v:tc?fM(tc):"Not entered", s:`Budget ${fM(bc)}`,pill:tc&&bc?{t:tc<=bc?"OK":"Over",c:tc<=bc?"g":"r"}:null,cls:tc>bc&&bc?"rd":"am"},
+    {l:"Casual % of Fct Revenue", v:pctFct!=null?pctFct.toFixed(2)+"%":"—", s:`Target ≤${PCT_TGT}% · ${fct?.ver||"ไม่มี Forecast"}`,pill:pctFct!=null?{t:pctFct<=PCT_TGT?"OK":"Over",c:pctFct<=PCT_TGT?"g":"r"}:null,cls:pctFct!=null&&pctFct>PCT_TGT?"rd":"nv"},
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div>${k.pill?`<span class="pill p${k.pill.c}">${k.pill.t}</span>`:""}<div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+  buildCal(ld); buildDashWkTbl(ld); buildDashCharts(ld, bo, fo);
+}
+
+function buildCal(ld){
+  document.getElementById("cal-hdr").innerHTML=["Su","Mo","Tu","We","Th","Fr","Sa"].map(w=>`<div class="chdr">${w}</div>`).join("");
+  const m=mdata(), fw=m.fw, bo=bgtOcc(MONTH)||78.2;
+  let cells=""; for(let i=0;i<fw;i++) cells+="<div></div>";
+  ld.forEach(d=>{
+    const isW=d.we, isH=d.ph;
+    let sc=occCls(d.o,d.r>0,bo); if(isH) sc="s-hol"; else if(isW) sc="s-wk";
+    const cas=dayCasual(d.d), tp=cas.reduce((s,x)=>s+x.ppl,0);
+    let bars="";
+    if(cas.length>0){
+      const mp=Math.max(...cas.map(c=>c.ppl),1);
+      bars=`<div class="cbars">${cas.slice(0,6).map(c=>`<div class="cbar" style="background:${c.color};width:${Math.max(15,Math.round(c.ppl/mp*100))}%;opacity:.85"></div>`).join("")}</div><div class="cbarct" style="color:${isH?"#DC2626":isW?"#7C3AED":"#0F766E"}">${tp}คน</div>`;
+    }
+    const cp=(fw+d.d-1)%7, ta=cp<=1?" tl":cp>=5?" tr":"";
+    let ttb="";
+    if(isH) ttb+=`<div class="ctt-ph">🎌 ${d.pn}</div>`;
+    if(d.r>0) ttb+=`<div class="ctt-oc">OCC ${d.o.toFixed(1)}% · ${d.r} rooms</div>`;
+    if(cas.length>0){ ttb+=cas.map(c=>`<div class="ctt-r"><div class="ctt-dot" style="background:${c.color}"></div><div class="ctt-dn">${c.name}</div><div class="ctt-pp">${c.ppl} คน</div></div>`).join(""); ttb+=`<div class="ctt-tot">รวม ${tp} คน · ${fB(cas.reduce((s,x)=>s+x.cost,0))}</div>`; }
+    else if(!isH) ttb+=`<div class="ctt-em">ไม่มี Casual Request</div>`;
+    cells+=`<div class="cday ${sc}" style="position:relative">
+      <div class="cdn">${d.d}</div>
+      <div class="coc">${d.r>0?d.o.toFixed(0)+"%":isH?"🎌":isW?"🏖":""}</div>
+      <div class="crm">${d.r>0?d.r+" rms":""}</div>
+      ${isH&&!cas.length?`<div class="hol-tag">${d.pn}</div>`:""}
+      ${bars}
+      <div class="ctt${ta}"><div class="ctt-hd">${d.wd} ${d.d} ${MONTHS.find(x=>x.id===MONTH)?.name||""}</div>${ttb}</div>
+    </div>`;
+  });
+  document.getElementById("cal-grid").innerHTML=cells;
+}
+
+function buildDashWkTbl(ld){
+  const el=document.getElementById("d-wktbl"); if(!el) return;
+  const bo=bgtOcc(MONTH)||0, bc=bgtCasual(MONTH);
+  const mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  let tot=0;
+  let h=`<table class="tbl"><thead><tr><th>Week</th><th>OCC% Actual</th><th>OCC% Budget</th><th>Casual Cost</th><th>vs Wk Budget</th><th>Status</th></tr></thead><tbody>`;
+  wkRanges(MONTH).forEach(([s,e],wi)=>{
+    const wkD=ld.filter(x=>x.d>=s&&x.d<=e&&x.r>0);
+    const wo=wkD.length?+(wkD.reduce((sum,x)=>sum+x.o,0)/wkD.length).toFixed(1):0;
+    const cost=wkCost(wi); tot+=cost;
+    const bWk=bc?Math.round(bc/4):0, v=cost-bWk;
+    const hasSome=DEPTS.some(d=>(getReqD(d.id).weeks?.[wi]?.totalCost||0)>0);
+    const stH=!hasSome?`<span style="color:#94A3B8;font-size:11px">No data</span>`:`<span style="background:#DCFCE7;color:#166534;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">Entered</span>`;
+    h+=`<tr><td><strong>W${wi+1}</strong><div style="font-size:10px;color:#64748B">${mn} ${s}–${e}</div></td>
+      <td><span style="color:${wo>=(bo||78.2)?"#166534":"#991B1B"};font-weight:700">${wo?wo.toFixed(1)+"%":"—"}</span><div class="mbar" style="margin-top:3px"><div class="mfil" style="width:${Math.min(wo,100)}%;background:${wo>=(bo||78.2)?"#0F766E":"#991B1B"}"></div></div></td>
+      <td style="color:#1565C0">${bo?bo.toFixed(1)+"%":"—"}</td>
+      <td><strong>${cost?fB(cost):"—"}</strong></td>
+      <td>${cost&&bWk?`<span style="color:${v<=0?"#166534":"#991B1B"};font-weight:700">${v>=0?"+":""}${fB(v)}</span>`:"—"}</td>
+      <td>${stH}</td></tr>`;
+  });
+  const tv=tot-bc, mn2=MONTHS.find(x=>x.id===MONTH)?.name||"";
+  h+=`</tbody><tfoot><tr class="tot"><td colspan="3">TOTAL ${mn2}</td><td>${tot?fB(tot):"—"}</td><td>${tot&&bc?(tv>=0?"+":"")+fB(tv):"—"}</td><td></td></tr></tfoot></table>`;
+  el.innerHTML=h;
+}
+
+function buildDashCharts(ld,bo,fo){
+  if(_dCharts.l){ _dCharts.l.destroy(); _dCharts.l=null; }
+  if(_dCharts.b){ _dCharts.b.destroy(); _dCharts.b=null; }
+  const lc=document.getElementById("cLine")?.getContext("2d");
+  if(lc) _dCharts.l=new Chart(lc,{type:"line",data:{labels:ld.map(d=>d.d),datasets:[
+    {label:"OCC% Actual",data:ld.map(d=>d.r>0?d.o:null),borderColor:"#0F766E",backgroundColor:"rgba(15,118,110,.1)",borderWidth:2,tension:.3,fill:true,pointRadius:2,spanGaps:false},
+    {label:`Budget ${bo?bo.toFixed(1)+"%":""}`,data:ld.map(()=>bo||null),borderColor:"#1565C0",borderWidth:1.5,borderDash:[5,4],pointRadius:0},
+    ...(fo?[{label:`Forecast ${fo.toFixed(1)}%`,data:ld.map(()=>fo),borderColor:"#D97706",borderWidth:1.5,borderDash:[3,3],pointRadius:0}]:[]),
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:9,padding:8}}},scales:{y:{min:0,max:105,ticks:{callback:v=>v+"%",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:8},maxTicksLimit:16},grid:{display:false}}}}});
+  const bc2=document.getElementById("cBar")?.getContext("2d");
+  if(bc2){
+    const wo=wkRanges(MONTH).map(([s,e])=>{const w=ld.filter(x=>x.d>=s&&x.d<=e&&x.r>0);return w.length?+(w.reduce((sum,x)=>sum+x.o,0)/w.length).toFixed(1):0;});
+    _dCharts.b=new Chart(bc2,{type:"bar",data:{labels:wkRanges(MONTH).map(([s,e],i)=>`W${i+1}`),datasets:[
+      {label:"OCC%",data:wo,backgroundColor:wo.map(v=>v>=(bo||78.2)?"rgba(15,118,110,.8)":"rgba(153,27,27,.75)"),borderRadius:4},
+      {label:"Budget",data:Array(4).fill(bo||0),type:"line",borderColor:"#1565C0",borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false},
+      ...(fo?[{label:"Forecast",data:Array(4).fill(fo),type:"line",borderColor:"#D97706",borderDash:[3,3],borderWidth:1.5,pointRadius:0,fill:false}]:[]),
+    ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:9,padding:8}}},scales:{y:{min:0,max:105,ticks:{callback:v=>v+"%",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:10}},grid:{display:false}}}}});
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   BUDGET SETUP
+═══════════════════════════════════════════════════ */
+function buildBudget(){
+  const b=getBgt(), m=MONTHS.find(x=>x.id===MONTH), bm=b[MONTH]||{};
+  const summRows=MONTHS.map(mo=>{
+    const bmo=b[mo.id]||{};
+    return `<tr style="${mo.id===MONTH?"background:#EFF6FF":""}">
+      <td style="padding:7px 9px;font-weight:${mo.id===MONTH?"700":"500"};color:${mo.id===MONTH?"#1565C0":"#0F172A"}">${mo.name}</td>
+      <td style="padding:7px 9px;text-align:right">${bmo.occ?bmo.occ.toFixed(1)+"%":`<span style="color:#CBD5E1">—</span>`}</td>
+      <td style="padding:7px 9px;text-align:right">${bmo.rev?fM(bmo.rev):`<span style="color:#CBD5E1">—</span>`}</td>
+      <td style="padding:7px 9px;text-align:right">${bgtCasual(mo.id)?fM(bgtCasual(mo.id)):`<span style="color:#CBD5E1">—</span>`}</td>
+      <td style="padding:7px 9px;text-align:center"><button class="btn bg" style="font-size:10px;padding:3px 9px" onclick="editBgtMonth('${mo.id}')">แก้ไข</button></td>
+    </tr>`;
+  }).join("");
+  const deptRows=DEPTS.map((d,i)=>{
+    const val=(bm.casual||{})[d.id]||0;
+    const gc=GC[d.group]||["#F1F5F9","#475569"];
+    return `<tr style="${i%2===0?"background:#F8FAFC":""}">
+      <td style="padding:7px 9px;font-size:12px"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${gc[1]};margin-right:5px"></span>${d.name}</td>
+      <td style="padding:7px 9px"><input type="number" id="bw-${d.id}" min="0" step="1000" value="${val||""}" placeholder="0" style="text-align:right" oninput="updateBgtTotal()"></td>
+      <td style="padding:7px 9px;font-size:12px;color:#64748B;text-align:right">${val?fB(val):"—"}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("bgt-body").innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="sec" style="margin:0">
+        <div class="sh"><div class="dot"></div>Budget Summary — 12 เดือน</div>
+        <div class="tw"><table class="tbl">
+          <thead><tr><th>Month</th><th style="text-align:right">OCC%</th><th style="text-align:right">Revenue</th><th style="text-align:right">Casual</th><th style="text-align:center">Edit</th></tr></thead>
+          <tbody>${summRows}</tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="sec" style="margin:0 0 10px">
+          <div class="sh"><div class="dot"></div>Budget ${m.name} 2026</div>
+          <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:9px">
+            <div><div class="fl"><label>Budget OCC%</label><input type="number" id="b-occ" min="0" max="100" step="0.1" value="${bm.occ||""}" placeholder="78.2"></div></div>
+            <div><div class="fl"><label>Budget Revenue (THB)</label><input type="number" id="b-rev" min="0" step="1000" value="${bm.rev||""}" placeholder="0"></div></div>
+          </div>
+        </div>
+        <div class="sec" style="margin:0">
+          <div class="sh"><div class="dot"></div>Budget Casual Wage แยกรายแผนก — ${m.name}</div>
+          <div class="tw"><table class="tbl">
+            <thead><tr><th>Department</th><th>Budget Wage (THB)</th><th style="text-align:right">Saved</th></tr></thead>
+            <tbody>${deptRows}</tbody>
+            <tfoot><tr class="tot"><td colspan="2">TOTAL</td><td style="text-align:right" id="bgt-total">${fB(bgtCasual(MONTH))}</td></tr></tfoot>
+          </table></div>
+          <div class="brow">
+            <button class="btn bp" onclick="saveBgtMonth()">Save Budget ${m.name}</button>
+            <button class="btn bg" onclick="copyBgtPrev()">Copy จากเดือนก่อน</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px" class="sec">
+      <div class="sh" style="background:#78350F"><div class="dot" style="background:#FDE68A"></div>🔥 Firebase Config — เชื่อมต่อ Cloud</div>
+      <div style="padding:12px 14px">
+        <div id="fb-status" style="font-size:12px;padding:8px 11px;border-radius:7px;border:1px solid #E2E8F0;margin-bottom:10px">⚪ ยังไม่ได้เชื่อมต่อ Firebase</div>
+        <div class="fl" style="margin-bottom:9px"><label>Paste Firebase Config (JSON จาก Firebase Console)</label>
+          <textarea id="fb-cfg" rows="7" placeholder='{"apiKey":"AIza...","authDomain":"...","databaseURL":"https://...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'></textarea>
+        </div>
+        <div class="brow" style="padding:0">
+          <button class="btn bp" style="background:#78350F" onclick="saveFbCfg()">🔥 Connect Firebase</button>
+          <button class="btn bg" onclick="discFb()">ยกเลิก</button>
+        </div>
+        <div style="font-size:10px;color:#94A3B8;margin-top:6px">Config บันทึกใน Browser — ไม่ต้อง Paste ซ้ำ · ดูคู่มือ Firebase_Setup_Guide.html</div>
+      </div>
+    </div>`;
+  if(_DB) setFbStatus("on");
+}
+
+function updateBgtTotal(){
+  let tot=0;
+  DEPTS.forEach(d=>{ const el=document.getElementById("bw-"+d.id); if(el) tot+=parseFloat(el.value)||0; });
+  const el=document.getElementById("bgt-total"); if(el) el.textContent=fB(tot);
+}
+function saveBgtMonth(){
+  const b=getBgt(); if(!b[MONTH]) b[MONTH]={casual:{}};
+  b[MONTH].occ=parseFloat(document.getElementById("b-occ")?.value)||0;
+  b[MONTH].rev=parseFloat(document.getElementById("b-rev")?.value)||0;
+  if(!b[MONTH].casual) b[MONTH].casual={};
+  DEPTS.forEach(d=>{ const el=document.getElementById("bw-"+d.id); if(el) b[MONTH].casual[d.id]=parseFloat(el.value)||0; });
+  saveBgt(b); buildBudget(); showToast(`Saved Budget ${MONTHS.find(x=>x.id===MONTH)?.name}`);
+}
+function editBgtMonth(mid){ MONTH=mid; const m=MONTHS.find(x=>x.id===mid); if(m) document.getElementById("htitle").textContent=`Casual Labor Control · ${m.name} 2026`; buildBudget(); showToast(`แก้ไข Budget ${m.name}`); }
+function copyBgtPrev(){
+  const idx=MONTHS.findIndex(x=>x.id===MONTH); if(idx<=0){ showToast("ไม่มีเดือนก่อนหน้า"); return; }
+  const prevId=MONTHS[idx-1].id; const b=getBgt(); const prev=b[prevId];
+  if(!prev?.rev){ showToast(`ไม่มี Budget ${MONTHS[idx-1].name}`); return; }
+  b[MONTH]=JSON.parse(JSON.stringify(prev)); saveBgt(b); buildBudget(); showToast(`Copied จาก ${MONTHS[idx-1].name}`);
+}
+function saveFbCfg(){
+  let raw=document.getElementById("fb-cfg")?.value?.trim(); if(!raw){ showToast("กรุณา Paste Config ก่อน"); return; }
+  raw=raw.replace(/const\s+firebaseConfig\s*=\s*/g,"").replace(/;\s*$/,"");
+  let cfg; try{ cfg=JSON.parse(raw); }catch(e){ showToast("❌ Config รูปแบบไม่ถูกต้อง"); return; }
+  if(!cfg.apiKey||cfg.apiKey.startsWith("PASTE")){ showToast("❌ apiKey ไม่ถูกต้อง"); return; }
+  localStorage.setItem("cc_fb_cfg",JSON.stringify(cfg));
+  connectFirebase(cfg).then(ok=>{ setFbStatus(ok?"on":false); showToast(ok?"🔥 Firebase Connected!":"❌ เชื่อมต่อไม่ได้ — ตรวจสอบ Config"); });
+}
+function discFb(){
+  localStorage.removeItem("cc_fb_cfg"); _DB=null;
+  try{ if(firebase.apps.length) firebase.apps[0].delete(); }catch(e){}
+  setFbStatus(false); showToast("ยกเลิก Firebase แล้ว");
+}
+
+/* ═══════════════════════════════════════════════════
+   FORECAST UPDATE
+═══════════════════════════════════════════════════ */
+function buildFct(){
+  const f=getFct(), bm=bgtM(MONTH), m=MONTHS.find(x=>x.id===MONTH);
+  const today=new Date().getDate(), k=today>=16?"f2":"f1", cur=f[k]||{};
+  const ver=k==="f1"?"Forecast 1 (1st–15th)":"Forecast 2 (16th–31st)";
+  const histCards=["f1","f2"].map(fk=>{
+    const fx=f[fk]; const lbl=fk==="f1"?"F1 (วันที่ 1)":"F2 (วันที่ 16)"; const isActive=fk===k;
+    return `<div style="background:${isActive?"#EFF6FF":"#F8FAFC"};border:${isActive?"2px solid #1565C0":"1px solid #E2E8F0"};border-radius:9px;padding:12px 13px">
+      <div style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;margin-bottom:5px">${lbl}${isActive?" ← ตอนนี้":""}</div>
+      ${fx?`<div style="font-size:13px;font-weight:700;color:#0D1F3C">${fM(fx.rev)}</div><div style="font-size:11px;color:#0F766E">OCC: ${fP(fx.occ)}</div><div style="font-size:10px;color:#94A3B8;margin-top:2px">${fx.ts||"—"}</div>`:`<div style="color:#94A3B8;font-size:12px">ยังไม่มีข้อมูล</div>`}
+    </div>`;
+  }).join("");
+  document.getElementById("fct-body").innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="sec" style="margin:0">
+        <div class="sh"><div class="dot"></div>${ver} — ${m.name} 2026</div>
+        <div style="padding:12px 14px">
+          <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:7px;padding:8px 11px;font-size:11px;color:#92400E;margin-bottom:12px">📅 วันที่ 1–15 → F1 · วันที่ 16–31 → F2 · เก็บ 2 Version แยกกัน</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px">
+            <div class="fl"><label>Forecast Revenue (THB)</label><input type="number" id="fct-rev" min="0" step="1000" value="${cur.rev||""}" placeholder="${bm.rev||0}"><div style="font-size:10px;color:#64748B;margin-top:2px">Budget: ${fM(bm.rev||0)}</div></div>
+            <div class="fl"><label>Forecast OCC% (เดือน)</label><input type="number" id="fct-occ" min="0" max="100" step="0.1" value="${cur.occ||""}" placeholder="${bm.occ||0}"><div style="font-size:10px;color:#64748B;margin-top:2px">Budget: ${fP(bm.occ||0)}</div></div>
+          </div>
+          <div class="fl" style="margin-bottom:10px"><label>หมายเหตุ</label><textarea id="fct-note" placeholder="เหตุผลที่ Forecast เปลี่ยน เช่น Group cancellation, Event...">${cur.note||""}</textarea></div>
+          <div class="brow" style="padding:0">
+            <button class="btn bp" onclick="saveFct2()">Save ${ver.split(" ")[0]} ${ver.split(" ")[1]}</button>
+            <button class="btn bg" onclick="clearFct2('${k}')">Clear</button>
+          </div>
+        </div>
+      </div>
+      <div class="sec" style="margin:0">
+        <div class="sh"><div class="dot"></div>ประวัติ Forecast — ${m.name}</div>
+        <div style="padding:12px 14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">${histCards}</div>
+          ${bm.rev?`<div style="background:#F8FAFC;border-radius:8px;padding:10px 12px;font-size:12px">
+            <div style="font-weight:700;color:#0D1F3C;margin-bottom:6px">Budget vs Active Forecast</div>
+            ${[["Revenue","rev",fM],["OCC%","occ",fP]].map(([lbl,key,ff])=>{
+              const fa=activeFct(); const bv=bm[key]; const fv=fa?.[key];
+              const vr=bv&&fv?(fv-bv):null;
+              return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:.5px solid #E2E8F0"><span style="color:#64748B">${lbl}</span><span><span style="color:#1565C0">${bv?ff(bv):"—"}</span>${vr!=null?`<span style="color:${vr>=0?"#166534":"#991B1B"};margin-left:7px;font-weight:700">${vr>=0?"+":""}${key==="rev"?fM(vr):vr.toFixed(1)+"%"}</span>`:""}</span></div>`;
+            }).join("")}
+          </div>`:"<div style='color:#94A3B8;font-size:12px'>กรอก Budget ก่อนเพื่อเปรียบเทียบ</div>"}
+        </div>
+      </div>
+    </div>`;
+}
+function saveFct2(){
+  const today=new Date().getDate(), k=today>=16?"f2":"f1";
+  const f=getFct();
+  f[k]={ rev:parseFloat(document.getElementById("fct-rev")?.value)||0, occ:parseFloat(document.getElementById("fct-occ")?.value)||0, note:document.getElementById("fct-note")?.value||"", ts:ts(), ver:k==="f1"?"F1":"F2" };
+  saveFct(f); buildFct(); showToast("Saved Forecast "+(k==="f1"?"1":"2"));
+}
+function clearFct2(k){ if(!confirm("Clear Forecast "+(k==="f1"?"1":"2")+"?")) return; const f=getFct(); delete f[k]; saveFct(f); buildFct(); showToast("Cleared"); }
+
+/* ═══════════════════════════════════════════════════
+   OCC DAILY INPUT
+═══════════════════════════════════════════════════ */
+function buildOccPage(){ buildOccKPIs(); buildOccCal(); buildOccWkTbl(); }
+function buildOccKPIs(){
+  const mtd=mtdOcc(), bm=bgtM(MONTH), fct=activeFct();
+  const bo=bm.occ||0, fo=fct?.occ||0;
+  const varB=bo?(mtd.occ-bo):null, varF=fo?(mtd.occ-fo):null;
+  document.getElementById("occ-kpis").innerHTML=[
+    {l:"MTD OCC% vs Budget",   v:mtd.days?fP(mtd.occ):"—", s:`Budget ${fP(bo)}${varB!=null?" · Var "+(varB>=0?"+":"")+varB.toFixed(1)+"%":""}`, cls:varB===null?"nv":varB>=0?"tl":"rd"},
+    {l:"MTD OCC% vs Forecast", v:mtd.days?fP(mtd.occ):"—", s:`Forecast ${fP(fo)}${varF!=null?" · Var "+(varF>=0?"+":"")+varF.toFixed(1)+"%":""}`, cls:varF===null?"nv":varF>=0?"tl":"rd"},
+    {l:"Days Entered", v:`${mtd.days}/${mdata().days}`, s:`${mdata().days-mtd.days} วันเหลือ`, cls:"am"},
+    {l:"Rooms Sold", v:fmt(mtd.rooms), s:`Budget ${fmt(Math.round(mdata().days*ROOMS*(bo/100)))} rms`, cls:"nv"},
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div><div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+}
+function buildOccCal(){
+  document.getElementById("occ-hdr").innerHTML=["Su","Mo","Tu","We","Th","Fr","Sa"].map(w=>`<div class="oc-hdr">${w}</div>`).join("");
+  const m=mdata(), occ=getOcc(), bo=bgtOcc(MONTH)||78.2, today=new Date().getDate();
+  let cells=""; for(let i=0;i<m.fw;i++) cells+=`<div class="ocday es"></div>`;
+  m.cal.forEach(d=>{
+    const isW=d.we, isH=d.ph, isTd=d.d===today;
+    const sr=occ[d.d]??null, r=sr!==null?sr:0;
+    const p=r>0?(r/ROOMS*100):0, hf=sr!==null;
+    const pc=r>0?(p>=bo+5?"#166534":p>=bo?"#0F766E":p>=bo-5?"#B45309":"#991B1B"):"#CBD5E1";
+    const st=r>0?(p>=bo+5?"Strong":p>=bo?"On Bgt":p>=bo-5?"Soft":"Low"):"";
+    cells+=`<div class="ocday ${hf?"fl":""} ${isTd?"td":""} ${isW?"wk":""} ${isH?"ph":""}">
+      <div class="od-n">${d.d}${isH?" 🎌":""}</div>
+      <div class="od-w">${d.wd}${isW?" 🏖":""}</div>
+      <input type="number" id="oi-${d.d}" min="0" max="188" step="1" value="${r||""}" placeholder="—" oninput="onOccIn(${d.d},this.value)" style="${isTd?"border-color:#F59E0B;background:#FFFBEB;":""}">
+      <div class="od-p" style="color:${pc}">${r>0?p.toFixed(0)+"%":""}</div>
+      <div class="od-s" style="color:${pc};font-size:8px">${st}</div>
+    </div>`;
+  });
+  document.getElementById("occ-cal").innerHTML=cells;
+}
+function onOccIn(day,val){
+  const r=val===""?null:Math.max(0,Math.min(188,parseInt(val)||0));
+  const occ=getOcc(); if(r===null) delete occ[day]; else occ[day]=r; saveOcc(occ);
+  const bo=bgtOcc(MONTH)||78.2, p=r>0?(r/ROOMS*100):0;
+  const card=document.getElementById("oi-"+day)?.closest(".ocday");
+  if(card){
+    const pc=r>0?(p>=bo+5?"#166534":p>=bo?"#0F766E":p>=bo-5?"#B45309":"#991B1B"):"#CBD5E1";
+    const st=r>0?(p>=bo+5?"Strong":p>=bo?"On Bgt":p>=bo-5?"Soft":"Low"):"";
+    card.querySelector(".od-p").textContent=r>0?p.toFixed(0)+"%":""; card.querySelector(".od-p").style.color=pc;
+    card.querySelector(".od-s").textContent=st; card.querySelector(".od-s").style.color=pc;
+    card.classList.toggle("fl",r!==null);
+  }
+  buildOccKPIs(); buildOccWkTbl();
+}
+function saveAllOcc(){ const occ=getOcc(); mdata().cal.forEach(d=>{ const el=document.getElementById("oi-"+d.d); if(el&&el.value!==""){const n=parseInt(el.value)||0; if(n>=0) occ[d.d]=n;} }); saveOcc(occ); buildOccKPIs(); buildOccWkTbl(); showToast("Saved OCC data"); }
+function clearOcc(){ if(!confirm("Clear OCC data?")) return; sjDel(SK("occ")); buildOccPage(); showToast("OCC cleared"); }
+function buildOccWkTbl(){
+  const tbl=document.getElementById("occ-wtbl"); if(!tbl) return;
+  const ld=liveOcc(), bo=bgtOcc(MONTH)||0, mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  let h=`<table class="tbl"><thead><tr><th>Week</th><th>Days</th><th>OCC% Actual</th><th>Budget</th><th>Variance</th><th>Rooms Sold</th></tr></thead><tbody>`;
+  wkRanges(MONTH).forEach(([s,e],wi)=>{
+    const wkD=ld.filter(x=>x.d>=s&&x.d<=e&&x.r>0), all=ld.filter(x=>x.d>=s&&x.d<=e);
+    const wo=wkD.length?+(wkD.reduce((sum,x)=>sum+x.o,0)/wkD.length).toFixed(1):0;
+    const varO=bo?(wo-bo):null;
+    h+=`<tr><td><strong>W${wi+1}</strong><div style="font-size:10px;color:#64748B">${mn} ${s}–${e}</div></td>
+      <td style="text-align:center;color:#64748B">${wkD.length}/${all.length}</td>
+      <td><span style="color:${wo>=(bo||78.2)?"#166534":"#991B1B"};font-weight:700">${wo?wo.toFixed(1)+"%":"—"}</span><div class="mbar" style="margin-top:2px"><div class="mfil" style="width:${Math.min(wo,100)}%;background:${wo>=(bo||78.2)?"#0F766E":"#991B1B"}"></div></div></td>
+      <td style="color:#1565C0">${bo?bo.toFixed(1)+"%":"—"}</td>
+      <td>${varO!=null&&wo?`<span style="color:${varO>=0?"#166534":"#991B1B"};font-weight:700">${varO>=0?"+":""}${varO.toFixed(1)}%</span>`:"—"}</td>
+      <td style="font-weight:700">${wkD.reduce((s,x)=>s+x.r,0)||"—"}</td></tr>`;
+  });
+  tbl.innerHTML=h+"</tbody></table>";
+}
+
+/* ═══════════════════════════════════════════════════
+   CASUAL REQUEST
+═══════════════════════════════════════════════════ */
+function buildDBar(){
+  const s=getReq(); const groups=[...new Set(DEPTS.map(d=>d.group))]; let h="";
+  groups.forEach(g=>{
+    const gc=GC[g]||["#F1F5F9","#475569"]; h+=`<div class="glbl" style="color:${gc[1]}">${g}</div>`;
+    DEPTS.filter(d=>d.group===g).forEach(d=>{
+      const dd=s[d.id], hasCost=dd?.weeks?.some(w=>w?.totalCost>0);
+      const b=bgtDept(d.id,MONTH), tot=dd?.weeks?.reduce((sum,w)=>sum+(w?.totalCost||0),0)||0;
+      const isOv=b>0&&tot>b*1.05;
+      const cls=isOv?"ov":hasCost?"has":"";
+      const dotC=isOv?"#EF4444":hasCost?"#0F766E":"transparent";
+      const ce=canEdit(d.id);
+      h+=`<button class="db ${cls}${curDept===d.id?" on":""}" id="db-${d.id}"
+        onclick="${ce?`pickDept('${d.id}')`:`showToast('เฉพาะแผนก ${d.name} เท่านั้น')`}"
+        style="${!ce?"opacity:.4;cursor:not-allowed;":""}">${d.name}<div class="db-dot" style="background:${dotC}"></div></button>`;
+    });
+  });
+  document.getElementById("dbar").innerHTML=h;
+}
+function pickDept(id){ curDept=id; curWk=0; document.querySelectorAll(".db").forEach(b=>b.classList.remove("on")); document.getElementById("db-"+id)?.classList.add("on"); renderForm(); }
+function renderForm(){
+  if(!curDept) return;
+  const dept=DEPTS.find(d=>d.id===curDept);
+  const data=getReqD(curDept), gc=GC[dept.group]||["#F1F5F9","#475569","#1E293B"];
+  const bWage=bgtDept(curDept,MONTH);
+  const wkR=wkRanges(MONTH), mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  const wkLabels=wkR.map((r,i)=>`W${i+1} ${mn} ${r[0]}–${r[1]}`);
+  document.getElementById("farea").innerHTML=`
+    <div class="fcard">
+      <div class="fhdr" style="background:${gc[2]}"><h2>${dept.name}</h2><p>${dept.group} · ${bWage?`Budget: ${fB(bWage)}/month · `:"Unbudgeted · "}Rate: ${fB(dept.rate)}/คน</p></div>
+      <div class="wtabs">${wkLabels.map((lbl,i)=>{ const w=data.weeks[i]; const hc=w?.totalCost>0; const isOv=bWage>0&&hc&&w.totalCost>bWage/4*1.05; return`<div class="wtab ${hc?isOv?"ov":"has":""} ${i===curWk?"on":""}" onclick="pickWk(${i})">${lbl}</div>`; }).join("")}</div>
+      <div id="wk-content"></div>
+    </div>`;
+  renderWkForm();
+}
+function pickWk(wi){ curWk=wi; document.querySelectorAll(".wtab").forEach((t,i)=>t.classList.toggle("on",i===wi)); renderWkForm(); }
+function renderWkForm(){
+  if(!curDept) return;
+  const dept=DEPTS.find(d=>d.id===curDept);
+  const data=getReqD(curDept), wk=data.weeks[curWk]||{days:{},type:"Regular",reqBy:"",reason:""};
+  const wkR=wkRanges(MONTH), [ws,we]=wkR[curWk]||[1,7];
+  const rate=wk.rate??dept.rate, occ=getOcc(), bo=bgtOcc(MONTH)||78.2;
+  const m=mdata(), mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  let h=`<div class="dgrid"><div class="dhdr"><div>วัน</div><div>OCC%</div><div style="text-align:center">Casual (คน)</div><div style="text-align:center">Rate (THB)</div><div style="text-align:right">ค่าใช้จ่าย</div></div>`;
+  for(let dn=ws;dn<=we;dn++){
+    const dayObj=m.cal.find(x=>x.d===dn), isW=dayObj?.we||false, isH=dayObj?.ph||false;
+    const occR=occ[dn]??0, occP=occR>0?(occR/ROOMS*100):0, isLow=occP>0&&occP<bo-5;
+    const ppl=wk.days[dn]?.ppl??0, dr=wk.days[dn]?.rate??rate, cost=ppl*dr;
+    const oc=occR>0?(occP>=bo+5?"#166534":occP>=bo?"#0F766E":occP>=bo-5?"#B45309":"#991B1B"):"#CBD5E1";
+    h+=`<div class="drow ${isW?"wk":""} ${ppl>0?"he":""} ${isLow?"lo":""} ${isH?"ph2":""}" id="dr-${dn}">
+      <div><div class="dn">${dn} ${mn}</div><div class="dw">${dayObj?.wd||""}${isW?" 🏖":""}${isH?" 🎌":""}${isLow?" ⚠️":""}</div></div>
+      <div style="text-align:center"><span style="font-size:11px;font-weight:700;color:${oc}">${occR>0?occP.toFixed(0)+"%":"—"}</span><div style="font-size:8px;color:#94A3B8">${occR>0?occR+" rms":""}</div></div>
+      <input type="number" min="0" max="50" step="1" value="${ppl||""}" placeholder="0" onchange="upDay(${dn},this.value,'ppl')" oninput="upRow(${dn})">
+      <input type="number" min="0" step="50" value="${dr}" onchange="upDay(${dn},this.value,'rate')" oninput="upRow(${dn})">
+      <div class="dcost" id="dc-${dn}">${ppl>0?fB(cost):"—"}</div>
+    </div>`;
+  }
+  h+="</div>";
+  const totP=Object.values(wk.days||{}).reduce((s,v)=>s+(v.ppl||0),0);
+  const totC=Object.entries(wk.days||{}).reduce((s,[,v])=>s+(v.ppl||0)*(v.rate||dept.rate),0);
+  const bWk=bgtDept(curDept,MONTH)>0?Math.round(bgtDept(curDept,MONTH)/4):0;
+  const varV=bWk>0?totC-bWk:null, isOv=varV!=null&&varV>bWk*0.05;
+  h+=`<div class="wsum"><div class="wsi"><strong>${totP}</strong>Person-Days</div><div class="wsi hl"><strong>${fB(totC)}</strong>Total Cost</div>${bWk>0?`<div class="wsi"><strong>${fB(bWk)}</strong>Wk Budget</div><div class="wsi ${isOv?"ov":""}"><strong>${varV>=0?"+":""}${fB(varV??0)}</strong>vs Budget</div>`:`<div class="wsi" style="color:#FCA5A5"><strong>Unbudgeted</strong></div>`}</div>
+  <div class="extrow">
+    <div class="fl"><label>ประเภทงาน</label><select onchange="upEx('type',this.value)">${TYPES.map(t=>`<option ${wk.type===t?"selected":""}>${t}</option>`).join("")}</select></div>
+    <div class="fl"><label>Requested By</label><input type="text" value="${wk.reqBy||""}" placeholder="ชื่อ-ตำแหน่ง" onchange="upEx('reqBy',this.value)"></div>
+    <div class="fl" style="grid-column:1/-1"><label>เหตุผล / รายละเอียด</label><textarea placeholder="Group check-in, Event, Peak season..." onchange="upEx('reason',this.value)">${wk.reason||""}</textarea></div>
+  </div>
+  <div class="brow">
+    <button class="btn bp" onclick="saveWk()">Save W${curWk+1}</button>
+    <button class="btn bg" onclick="clearWk()">Clear</button>
+    <button class="btn bs" onclick="saveWk();go('sum')">Save &amp; Summary</button>
+  </div>`;
+  document.getElementById("wk-content").innerHTML=h;
+}
+function upDay(day,val,field){ const dept=DEPTS.find(d=>d.id===curDept), data=getReqD(curDept), wk=data.weeks[curWk]||{days:{}}; if(!wk.days) wk.days={}; if(!wk.days[day]) wk.days[day]={ppl:0,rate:dept.rate}; wk.days[day][field]=field==="ppl"?Math.max(0,parseInt(val)||0):Math.max(0,parseFloat(val)||dept.rate); data.weeks[curWk]=wk; setReqD(curDept,data); }
+function upRow(day){ const dept=DEPTS.find(d=>d.id===curDept), data=getReqD(curDept), wk=data.weeks[curWk]||{days:{}}; const d=wk.days?.[day]||{ppl:0,rate:dept.rate}; const cost=d.ppl*d.rate; const el=document.getElementById("dc-"+day); if(el) el.textContent=d.ppl>0?fB(cost):"—"; document.getElementById("dr-"+day)?.classList.toggle("he",d.ppl>0); const tot=Object.entries(wk.days||{}).reduce((s,[,v])=>s+(v.ppl||0)*(v.rate||dept.rate),0); const totP=Object.values(wk.days||{}).reduce((s,v)=>s+(v.ppl||0),0); const its=document.querySelectorAll(".wsi strong"); if(its[0]) its[0].textContent=totP; if(its[1]) its[1].textContent=fB(tot); const bWk=bgtDept(curDept,MONTH)>0?Math.round(bgtDept(curDept,MONTH)/4):0; if(its[3]&&bWk){ const v=tot-bWk; its[3].textContent=(v>=0?"+":"")+fB(v); its[3].closest(".wsi")?.classList.toggle("ov",v>bWk*0.05); } }
+function upEx(field,val){ const data=getReqD(curDept), wk=data.weeks[curWk]||{days:{}}; wk[field]=val; data.weeks[curWk]=wk; setReqD(curDept,data); }
+function saveWk(){ if(!canEdit(curDept)){showToast("ไม่มีสิทธิ์แก้ไขแผนกนี้");return;} const data=getReqD(curDept), wk=data.weeks[curWk]||{days:{}}, dept=DEPTS.find(d=>d.id===curDept); const tot=Object.entries(wk.days||{}).reduce((s,[,v])=>s+(v.ppl||0)*(v.rate||dept.rate),0); wk.totalCost=tot; wk.totalPpl=Object.values(wk.days||{}).reduce((s,v)=>s+(v.ppl||0),0); data.weeks[curWk]=wk; setReqD(curDept,data); buildDBar(); renderAlerts("req-alerts"); updateBadge(); renderForm(); showToast("Saved W"+(curWk+1)+" · "+dept.name); }
+function clearWk(){ if(!canEdit(curDept)){showToast("ไม่มีสิทธิ์");return;} if(!confirm("Clear W"+(curWk+1)+"?")) return; const data=getReqD(curDept); data.weeks[curWk]=null; setReqD(curDept,data); buildDBar(); renderForm(); updateBadge(); showToast("Cleared"); }
+function clearMonth(){ if(!IS_ADMIN){showToast("เฉพาะ Admin เท่านั้น");return;} const m=MONTHS.find(x=>x.id===MONTH); if(!confirm("Clear ALL "+m.name+"?")) return; sjDel(SK("req")); sjDel(SK("rev")); curDept=null; buildDBar(); updateBadge(); document.getElementById("farea").innerHTML=`<div style="text-align:center;padding:40px;color:#94A3B8"><div style="font-size:28px;margin-bottom:8px">👆</div><div style="font-size:13px;font-weight:600">เลือกแผนกด้านบน</div></div>`; showToast("Cleared "+m.name); }
+
+/* ═══════════════════════════════════════════════════
+   REVENUE & CASUAL %
+═══════════════════════════════════════════════════ */
+const getRev  = ()=>gj(SK("rev"))||{};
+const saveRev = d=>sj(SK("rev"),d);
+
+function buildRevPage(){ buildRevKPIs(); buildRevGauges(); buildRevInp(); buildRevTbl(); if(_revChart){_revChart.destroy();_revChart=null;} buildRevChart(); }
+function buildRevKPIs(){
+  const bm=bgtM(MONTH), fct=activeFct(), tc=totCost(), bc=bgtCasual(MONTH);
+  const bR=bm.rev||0, fR=fct?.rev||0, rV=bR&&fR?((fR-bR)/bR*100):null, pB=bR&&bc?(bc/bR*100):null, pF=fR&&tc?(tc/fR*100):null;
+  document.getElementById("rev-kpis").innerHTML=[
+    {l:"Budget Revenue",v:bR?fM(bR):"กรอก Budget",s:MONTHS.find(x=>x.id===MONTH)?.name+" 2026",cls:""},
+    {l:"Forecast Revenue",v:fR?fM(fR):"กรอก Forecast",s:rV!=null?(rV>=0?"+":"")+rV.toFixed(1)+"% vs Budget":fct?.ver||"ไม่มี Forecast",cls:"tl"},
+    {l:"Budget Casual % of Rev",v:pB!=null?pB.toFixed(2)+"%":"—",s:`Budget Casual ${fM(bc)}`,cls:"am"},
+    {l:"Actual Casual % of Fct",v:pF!=null?pF.toFixed(2)+"%":"—",s:pF!=null?(pF<=PCT_TGT?"✅ Within target":"🔴 Over "+PCT_TGT+"%"):"กรอก Forecast",cls:pF!=null&&pF>PCT_TGT?"rd":pF!=null?"tl":"nv"},
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div><div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+}
+function buildRevGauges(){
+  const bm=bgtM(MONTH), fct=activeFct(), tc=totCost(), bc=bgtCasual(MONTH);
+  const bR=bm.rev||0, fR=fct?.rev||0;
+  const gauges=[{label:"Budget Scenario",pct:bR&&bc?bc/bR*100:null,color:"#1565C0",sub:bR?`${fB(bc)} ÷ ${fM(bR)}`:"กรอก Budget"},{label:"Forecast Scenario",pct:fR&&tc?tc/fR*100:null,color:"#0F766E",sub:fR?`${fB(tc)} ÷ ${fM(fR)}`:"กรอก Forecast Revenue"}];
+  const MAX=10, TW=(PCT_TGT/MAX*100);
+  document.getElementById("gauges").innerHTML=gauges.map(g=>{
+    const has=g.pct!=null&&g.pct>0, fw=has?Math.min(g.pct/MAX*100,100):0, over=has&&g.pct>PCT_TGT, fc=!has?"#CBD5E1":over?"#DC2626":g.color, pc=!has?"#94A3B8":over?"#991B1B":"#166534";
+    return `<div style="margin-bottom:13px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span style="font-size:12px;font-weight:600;color:#475569">${g.label}</span><span style="font-size:19px;font-weight:700;color:${pc}">${has?g.pct.toFixed(2)+"%":"—"}</span></div><div class="gtrack"><div class="gfil" style="width:${fw}%;background:${fc}"></div><div class="gtgt" style="left:${TW}%"><span class="gtgt-lb">Target ${PCT_TGT}%</span></div></div><div style="font-size:11px;color:#64748B;margin-top:2px">${g.sub}${over?` <strong style="color:#991B1B">▲ Over by ${(g.pct-PCT_TGT).toFixed(2)}%</strong>`:""}</div></div>`;
+  }).join("");
+}
+function buildRevInp(){
+  const rs=getRev(), wkR=wkRanges(MONTH), mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  document.getElementById("rev-inp").innerHTML=wkR.map(([s,e],wi)=>{
+    const fR=rs["w"+(wi+1)]??"", cas=wkCost(wi);
+    const p=fR>0&&cas>0?(cas/fR*100):null, over=p!=null&&p>PCT_TGT, hv=fR>0;
+    return `<div class="ric ${hv?"hv":""}" id="ric-${wi}">
+      <div class="ric-w">W${wi+1}</div><div class="ric-d">${mn} ${s}–${e}</div>
+      <div class="ric-f" style="margin-bottom:5px"><label>Forecast Revenue</label><input type="number" min="0" step="1000" value="${fR||""}" placeholder="0" id="ri-${wi}" oninput="onRevIn(${wi},this.value)"></div>
+      <div class="ricc" style="background:${p===null?"#F8FAFC":over?"#FEE2E2":"#F0FDF4"}"><span class="pct-big" style="color:${p===null?"#94A3B8":over?"#991B1B":"#166534"}">${p!=null?p.toFixed(2)+"%":"—"}</span><div style="font-size:9px;color:#64748B">Casual % of Fct Rev</div><div style="font-size:9px;color:#94A3B8">Casual: ${cas?fB(cas):"—"}</div></div>
+    </div>`;
+  }).join("");
+}
+function onRevIn(wi,val){ const n=parseFloat(val)||0, rs=getRev(); if(n>0) rs["w"+(wi+1)]=n; else delete rs["w"+(wi+1)]; saveRev(rs); buildRevKPIs(); buildRevGauges(); buildRevTbl(); if(_revChart){_revChart.destroy();_revChart=null;} buildRevChart(); }
+function saveRevData(){ const rs=getRev(); wkRanges(MONTH).forEach(([s,e],wi)=>{ const el=document.getElementById("ri-"+wi); if(el){const n=parseFloat(el.value)||0; if(n>0) rs["w"+(wi+1)]=n; else delete rs["w"+(wi+1)];} }); saveRev(rs); buildRevPage(); showToast("Saved Revenue Forecast"); }
+function clearRevData(){ if(!confirm("Clear Revenue?")) return; sjDel(SK("rev")); buildRevPage(); showToast("Cleared"); }
+function buildRevTbl(){
+  const rs=getRev(), bm=bgtM(MONTH), tc=totCost(), bc=bgtCasual(MONTH), bR=bm.rev||0, fR=activeFct()?.rev||0;
+  const mDays=mdata().days, mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  let tBC=0,tAC=0,tBR=0,tFR=0;
+  const wkR=wkRanges(MONTH);
+  let rows=`<thead><tr><th>Week</th><th>Budget Casual</th><th>Actual Casual</th><th>Budget Rev</th><th>Forecast Rev</th><th>Casual%Bgt</th><th>Casual%Fct</th><th>Status</th></tr></thead><tbody>`;
+  wkR.forEach(([s,e],wi)=>{
+    const wkD=e-s+1, wkBR=bR?Math.round(bR/mDays*wkD):0, wkFR=rs["w"+(wi+1)]??(fR?Math.round(fR/mDays*wkD):0), wkBC=bc?Math.round(bc/4):0, wkAC=wkCost(wi);
+    tBC+=wkBC;tAC+=wkAC;tBR+=wkBR;tFR+=wkFR;
+    const pB=wkBR&&wkBC?(wkBC/wkBR*100):null, pF=wkFR&&wkAC?(wkAC/wkFR*100):null, ov=pF!=null&&pF>PCT_TGT;
+    rows+=`<tr><td><strong>W${wi+1}</strong><div style="font-size:10px;color:#64748B">${mn} ${s}–${e}</div></td>
+      <td style="color:#1565C0;font-size:12px">${wkBC?fB(wkBC):"—"}</td>
+      <td>${wkAC?`<strong>${fB(wkAC)}</strong>`:`<span style="color:#94A3B8">—</span>`}</td>
+      <td style="color:#1565C0;font-size:12px">${wkBR?fB(wkBR):"—"}</td>
+      <td>${wkFR?fB(wkFR):"—"}</td>
+      <td>${pB!=null?`<span class="pchip" style="background:${pB<=PCT_TGT?"#DCFCE7":"#FEE2E2"};color:${pB<=PCT_TGT?"#166534":"#991B1B"}">${pB.toFixed(2)}%</span>`:"—"}</td>
+      <td>${pF!=null?`<span class="pchip" style="background:${ov?"#FEE2E2":"#DCFCE7"};color:${ov?"#991B1B":"#166534"}">${pF.toFixed(2)}%</span><div class="mbar" style="margin-top:2px"><div class="mfil" style="width:${Math.min(pF/PCT_TGT*100,150)}%;background:${ov?"#DC2626":"#0F766E"}"></div></div>`:"—"}</td>
+      <td>${pF==null&&!wkAC?`<span style="color:#94A3B8;font-size:10px">No data</span>`:ov?`<span class="pchip" style="background:#FEE2E2;color:#991B1B">Over</span>`:`<span class="pchip" style="background:#DCFCE7;color:#166534">OK</span>`}</td>
+    </tr>`;
+  });
+  const tpB=tBR&&tBC?(tBC/tBR*100):null, tpF=tFR&&tAC?(tAC/tFR*100):null;
+  rows+=`</tbody><tfoot><tr class="tot"><td colspan="2">TOTAL</td><td>${tAC?fB(tAC):"—"}</td><td>${tBR?fB(tBR):"—"}</td><td>${tFR?fB(tFR):"—"}</td><td>${tpB!=null?tpB.toFixed(2)+"%":"—"}</td><td style="color:${tpF!=null&&tpF>PCT_TGT?"#FCA5A5":"#86EFAC"}">${tpF!=null?tpF.toFixed(2)+"%":"—"}</td><td></td></tr></tfoot>`;
+  document.getElementById("rev-tbl").innerHTML=rows;
+}
+function buildRevChart(){
+  const ctx=document.getElementById("revChart")?.getContext("2d"); if(!ctx) return;
+  const bm=bgtM(MONTH), rs=getRev(), fct=activeFct(), bc=bgtCasual(MONTH), bR=bm.rev||0, fR=fct?.rev||0;
+  const mDays=mdata().days, wkR=wkRanges(MONTH);
+  const labels=wkR.map(([s,e],i)=>`W${i+1}`);
+  const bgtRevWk=wkR.map(([s,e])=>bR?Math.round(bR/mDays*(e-s+1)):null);
+  const fctRevWk=wkR.map(([s,e],wi)=>rs["w"+(wi+1)]??(fR?Math.round(fR/mDays*(e-s+1)):null));
+  const bgtCasWk=wkR.map(()=>bc?Math.round(bc/4):null);
+  const actCasWk=wkR.map(([s,e],wi)=>wkCost(wi)||null);
+  const leg=[{c:"rgba(21,101,192,.2)",l:"Budget Revenue",t:"bar"},{c:"rgba(15,118,110,.2)",l:"Forecast Revenue",t:"bar"},{c:"#F59E0B",l:"Budget Casual",t:"line"},{c:"#7C3AED",l:"Actual Casual",t:"dash"}];
+  document.getElementById("rev-legend").innerHTML=leg.map(x=>`<div style="display:flex;align-items:center;gap:4px">${x.t==="bar"?`<div style="width:11px;height:11px;border-radius:2px;background:${x.c}"></div>`:x.t==="line"?`<div style="width:15px;height:3px;background:${x.c};border-radius:2px"></div>`:`<div style="width:15px;height:0;border-top:2.5px dashed ${x.c}"></div>`}<span style="font-size:10px;color:#64748B">${x.l}</span></div>`).join("");
+  _revChart=new Chart(ctx,{type:"bar",data:{labels,datasets:[
+    {label:"Budget Rev",data:bgtRevWk,backgroundColor:"rgba(21,101,192,.2)",borderColor:"#1565C0",borderWidth:1.5,borderRadius:4,yAxisID:"yR"},
+    {label:"Forecast Rev",data:fctRevWk,backgroundColor:"rgba(15,118,110,.2)",borderColor:"#0F766E",borderWidth:1.5,borderRadius:4,yAxisID:"yR"},
+    {label:"Budget Casual",data:bgtCasWk,type:"line",borderColor:"#F59E0B",borderWidth:2.5,pointRadius:4,pointBackgroundColor:"#F59E0B",fill:false,yAxisID:"yW"},
+    {label:"Actual Casual",data:actCasWk,type:"line",borderColor:"#7C3AED",borderWidth:2,borderDash:[5,4],pointRadius:4,pointBackgroundColor:"#7C3AED",fill:false,yAxisID:"yW"},
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+    yR:{position:"left",ticks:{callback:v=>v>=1e6?(v/1e6).toFixed(1)+"M":(v/1000)+"K",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"},title:{display:true,text:"Revenue (THB)",font:{size:9},color:"#64748B"}},
+    yW:{position:"right",ticks:{callback:v=>(v/1000).toFixed(0)+"K",font:{size:9}},grid:{display:false},title:{display:true,text:"Casual Wage (THB)",font:{size:9},color:"#64748B"}},
+    x:{ticks:{font:{size:10}},grid:{display:false}}
+  }}});
+}
+
+/* ═══════════════════════════════════════════════════
+   ALL DEPT SUMMARY
+═══════════════════════════════════════════════════ */
+function buildSum(){
+  const s=getReq(); const groups=[...new Set(DEPTS.map(d=>d.group))];
+  let rows="", wkTots=[0,0,0,0], gTotC=0, gTotB=0;
+  const mn=MONTHS.find(x=>x.id===MONTH)?.name.slice(0,3)||"";
+  groups.forEach(g=>{
+    const gc=GC[g]||["#F1F5F9","#475569"];
+    rows+=`<tr class="ghdr"><td colspan="8" style="background:${gc[0]};color:${gc[1]}">${g}</td></tr>`;
+    DEPTS.filter(d=>d.group===g).forEach(d=>{
+      const dd=s[d.id]||{weeks:[null,null,null,null]};
+      const tot=dd.weeks?.reduce((sum,w)=>sum+(w?.totalCost||0),0)||0;
+      dd.weeks?.forEach((w,i)=>{ if(w) wkTots[i]+=(w.totalCost||0); });
+      const b=bgtDept(d.id,MONTH); if(b) gTotB+=b; gTotC+=tot;
+      const varV=b?tot-b:null, isOv=varV!=null&&varV>b*0.05;
+      const dotC=!tot?"#CBD5E1":isOv?"#EF4444":tot>0?"#22C55E":"#F59E0B";
+      const stLbl=!tot?"No data":isOv?"Over Budget":"Entered";
+      rows+=`<tr style="${!tot?"opacity:.45":""}">
+        <td style="padding:8px 9px;font-size:12px"><strong>${d.name}</strong></td>
+        <td style="padding:8px 9px;color:#1565C0;font-size:11px">${b?fB(b):"—"}</td>
+        ${dd.weeks?.map((w,wi)=>`<td style="padding:8px 9px;text-align:center;font-size:11px;color:${w?.totalCost>0?"#0F172A":"#CBD5E1"}">${w?.totalCost>0?fB(w.totalCost)+(w.totalPpl>0?`<div style="font-size:9px;color:#64748B">${w.totalPpl}d</div>`:""):"—"}</td>`).join("")||"<td colspan='4'>—</td>"}
+        <td style="padding:8px 9px;text-align:right"><strong style="color:${tot?"#0D1F3C":"#CBD5E1"}">${tot?fB(tot):"—"}</strong></td>
+        <td style="padding:8px 9px;text-align:center">${varV!=null&&tot?`<span style="font-size:11px;font-weight:700;color:${isOv?"#991B1B":"#166534"}">${varV>=0?"+":""}${fB(varV)}</span>`:"—"}</td>
+        <td style="padding:8px 9px;text-align:center"><span style="display:inline-flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:${dotC}"></span><span style="font-size:10px;color:#64748B">${stLbl}</span></span></td>
+      </tr>`;
+    });
+  });
+  const wkLabels=wkRanges(MONTH).map(([s,e],i)=>`W${i+1}<div style="font-weight:400;font-size:9px;color:#94A3B8">${mn}${s}–${e}</div>`);
+  document.getElementById("sum-body").innerHTML=`<div class="tw"><table class="tbl">
+    <thead><tr><th>Department</th><th>Budget/Mo</th>${wkLabels.map(l=>`<th style="text-align:center">${l}</th>`).join("")}<th style="text-align:right">Total</th><th style="text-align:center">vs Budget</th><th style="text-align:center">Status</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr class="tot"><td colspan="2">TOTAL</td>${wkTots.map(c=>`<td style="text-align:center">${c?fB(c):"—"}</td>`).join("")}<td style="text-align:right">${gTotC?fB(gTotC):"—"}</td><td style="text-align:center;color:${(gTotC-gTotB)<=0?"#86EFAC":"#FCA5A5"}">${gTotC&&gTotB?(gTotC-gTotB>=0?"+":"")+fB(gTotC-gTotB):"—"}</td><td></td></tr></tfoot>
+  </table></div>`;
+  const ml=document.getElementById("sum-mlbl"); if(ml) ml.textContent=MONTHS.find(x=>x.id===MONTH)?.name+" 2026";
+}
+
+/* ═══════════════════════════════════════════════════
+   YTD — YEAR-TO-DATE SUMMARY
+═══════════════════════════════════════════════════ */
+let _ytdChart={};
+function buildYTD(){
+  const b=getBgt();
+  // Month selector
+  document.getElementById("ytd-months").innerHTML=MONTHS.map(m=>{
+    const hasReq=!!localStorage.getItem(`cc_${m.id}_req`), bm=b[m.id]||{};
+    return `<div class="ytd-ms ${m.id===MONTH?"on":""} ${hasReq?"has":""}" onclick="pickYtdMonth('${m.id}')">${m.name.slice(0,3)}</div>`;
+  }).join("");
+  buildYtdKPIs(); buildYtdTable(); buildYtdCharts();
+}
+function pickYtdMonth(id){ MONTH=id; const m=MONTHS.find(x=>x.id===id); if(m) document.getElementById("htitle").textContent=`Casual Labor Control · ${m.name} 2026`; buildYTD(); updateBadge(); showToast(m.name+" 2026"); }
+
+function buildYtdKPIs(){
+  // Sum all months with data
+  const b=getBgt(); let ytdRooms=0, ytdOccDays=0, ytdOccSum=0, ytdCasual=0, ytdBgtCasual=0, ytdBgtRev=0;
+  MONTHS.forEach(m=>{
+    const occ=gj(`cc_${m.id}_occ`)||{}, bm=b[m.id]||{};
+    const mld=CAL_DATA.find(x=>x.id===m.id)?.cal||[];
+    mld.forEach(d=>{ const r=occ[d.d]??0; if(r>0){ ytdRooms+=r; ytdOccSum+=r/ROOMS*100; ytdOccDays++; } });
+    const req=gj(`cc_${m.id}_req`)||{};
+    DEPTS.forEach(d=>{ const dd=req[d.id]; if(dd?.weeks) dd.weeks.forEach(w=>{ ytdCasual+=(w?.totalCost||0); }); });
+    ytdBgtCasual+=bgtCasual(m.id); ytdBgtRev+=(bm.rev||0);
+  });
+  const ytdOcc=ytdOccDays?+(ytdOccSum/ytdOccDays).toFixed(1):0;
+  const pct=ytdBgtRev&&ytdCasual?(ytdCasual/ytdBgtRev*100):null;
+  document.getElementById("ytd-kpis").innerHTML=[
+    {l:"YTD OCC% Avg",    v:ytdOccDays?fP(ytdOcc):"—",  s:`${ytdOccDays} days entered · ${ytdRooms.toLocaleString()} rooms sold`, cls:""},
+    {l:"YTD Budget OCC%", v:fP((() => { let s=0,c=0; MONTHS.forEach(m=>{const bo=bgtOcc(m.id); if(bo){s+=bo;c++;}}); return c?s/c:0; })()),s:"Average Budget OCC% across months",cls:"bl"},
+    {l:"YTD Casual Cost", v:ytdCasual?fM(ytdCasual):"—", s:`Budget ${fM(ytdBgtCasual)}`, cls:ytdCasual>ytdBgtCasual&&ytdBgtCasual?"rd":"am"},
+    {l:"YTD Casual % of Budget Rev",v:pct!=null?pct.toFixed(2)+"%":"—", s:`Budget Rev ${fM(ytdBgtRev)}`, cls:pct!=null&&pct>PCT_TGT?"rd":"nv"},
+  ].map(k=>`<div class="kpi ${k.cls}"><div class="kl">${k.l}</div><div class="kv">${k.v}</div><div class="ks" style="margin-top:3px">${k.s}</div></div>`).join("");
+}
+
+function buildYtdTable(){
+  const b=getBgt();
+  let rows=`<thead><tr><th>Month</th><th>Budget OCC%</th><th>Actual OCC%</th><th>OCC Var</th><th>Budget Casual</th><th>Actual Casual</th><th>Casual Var</th><th>Budget Rev</th><th>Casual % Rev</th></tr></thead><tbody>`;
+  let tBO=0,tAO=0,tAOd=0,tBC=0,tAC=0,tBR=0;
+  MONTHS.forEach(m=>{
+    const bm=b[m.id]||{}, bo=bm.occ||0, br=bm.rev||0, bc2=bgtCasual(m.id);
+    const occ=gj(`cc_${m.id}_occ`)||{};
+    const mld=CAL_DATA.find(x=>x.id===m.id)?.cal||[];
+    let moRooms=0,moOccS=0,moOccD=0;
+    mld.forEach(d=>{ const r=occ[d.d]??0; if(r>0){ moRooms+=r; moOccS+=r/ROOMS*100; moOccD++; } });
+    const aocc=moOccD?+(moOccS/moOccD).toFixed(1):null;
+    const req=gj(`cc_${m.id}_req`)||{}; let ac=0;
+    DEPTS.forEach(d=>{ const dd=req[d.id]; if(dd?.weeks) dd.weeks.forEach(w=>{ ac+=(w?.totalCost||0); }); });
+    const varO=bo&&aocc!=null?(aocc-bo):null, varC=bc2&&ac?(ac-bc2):null;
+    const pctR=br&&ac?(ac/br*100):null;
+    const isActive=m.id===MONTH;
+    if(bo) tBO+=bo; if(aocc!=null){tAO+=aocc;tAOd++;} tBC+=bc2; tAC+=ac; tBR+=br;
+    rows+=`<tr style="${isActive?"background:#EFF6FF;font-weight:600":""}">
+      <td style="padding:8px 9px;font-size:12px"><strong style="color:${isActive?"#1565C0":"inherit"}">${m.name}</strong>${isActive?" ← Now":""}</td>
+      <td style="padding:8px 9px;text-align:center;color:#1565C0">${bo?bo.toFixed(1)+"%":"—"}</td>
+      <td style="padding:8px 9px;text-align:center"><span style="color:${aocc!=null?(aocc>=(bo||78.2)?"#166534":"#991B1B"):"#94A3B8"};font-weight:700">${aocc!=null?aocc.toFixed(1)+"%":"—"}</span></td>
+      <td style="padding:8px 9px;text-align:center">${varO!=null?`<span style="color:${varO>=0?"#166534":"#991B1B"};font-weight:700">${varO>=0?"+":""}${varO.toFixed(1)}%</span>`:"—"}</td>
+      <td style="padding:8px 9px;text-align:right;color:#1565C0">${bc2?fB(bc2):"—"}</td>
+      <td style="padding:8px 9px;text-align:right">${ac?fB(ac):"—"}</td>
+      <td style="padding:8px 9px;text-align:right">${varC!=null?`<span style="color:${varC<=0?"#166534":"#991B1B"};font-weight:700">${varC>=0?"+":""}${fB(varC)}</span>`:"—"}</td>
+      <td style="padding:8px 9px;text-align:right;color:#1565C0">${br?fM(br):"—"}</td>
+      <td style="padding:8px 9px;text-align:center">${pctR!=null?`<span class="pchip" style="background:${pctR<=PCT_TGT?"#DCFCE7":"#FEE2E2"};color:${pctR<=PCT_TGT?"#166534":"#991B1B"}">${pctR.toFixed(2)}%</span>`:"—"}</td>
+    </tr>`;
+  });
+  const tAOcc=tAOd?+(tAO/tAOd).toFixed(1):null, tBOcc=tAOd?+(tBO/12).toFixed(1):null;
+  const tVarC=tBC&&tAC?(tAC-tBC):null, tPctR=tBR&&tAC?(tAC/tBR*100):null;
+  rows+=`</tbody><tfoot><tr class="tot"><td>YTD TOTAL</td><td style="text-align:center">${tBOcc?tBOcc.toFixed(1)+"%":"—"}</td><td style="text-align:center;color:${tAOcc!=null?(tAOcc>=(tBOcc||78.2)?"#86EFAC":"#FCA5A5"):"#F59E0B"}">${tAOcc!=null?tAOcc.toFixed(1)+"%":"—"}</td><td></td><td style="text-align:right">${fB(tBC)}</td><td style="text-align:right">${tAC?fB(tAC):"—"}</td><td style="text-align:right;color:${tVarC!=null&&tVarC<=0?"#86EFAC":"#FCA5A5"}">${tVarC!=null?(tVarC>=0?"+":"")+fB(tVarC):"—"}</td><td style="text-align:right">${tBR?fM(tBR):"—"}</td><td style="text-align:center;color:${tPctR!=null&&tPctR>PCT_TGT?"#FCA5A5":"#86EFAC"}">${tPctR!=null?tPctR.toFixed(2)+"%":"—"}</td></tr></tfoot>`;
+  document.getElementById("ytd-tbl").innerHTML=rows;
+}
+
+function buildYtdCharts(){
+  ["ytdOcc","ytdCasual","ytdRev"].forEach(id=>{ if(_ytdChart[id]){_ytdChart[id].destroy();delete _ytdChart[id];} });
+  const b=getBgt(), labels=MONTHS.map(m=>m.name.slice(0,3));
+  const bgtOccArr=[], actOccArr=[], bgtCasArr=[], actCasArr=[], bgtRevArr=[], fctRevArr=[];
+  MONTHS.forEach(m=>{
+    const bm=b[m.id]||{}; bgtOccArr.push(bm.occ||0); bgtRevArr.push(bm.rev||0); bgtCasArr.push(bgtCasual(m.id));
+    const occ=gj(`cc_${m.id}_occ`)||{}, mld=CAL_DATA.find(x=>x.id===m.id)?.cal||[];
+    let s2=0,c2=0; mld.forEach(d=>{ const r=occ[d.d]??0; if(r>0){s2+=r/ROOMS*100;c2++;} }); actOccArr.push(c2?+(s2/c2).toFixed(1):null);
+    const req=gj(`cc_${m.id}_req`)||{}; let ac=0; DEPTS.forEach(d=>{ const dd=req[d.id]; if(dd?.weeks) dd.weeks.forEach(w=>{ ac+=(w?.totalCost||0); }); }); actCasArr.push(ac||null);
+    const fct=gj(`cc_${m.id}_fct`)||{}; const af=fct.f2||fct.f1||null; fctRevArr.push(af?.rev||null);
+  });
+  const c1=document.getElementById("ytdOccChart")?.getContext("2d");
+  if(c1) _ytdChart.ytdOcc=new Chart(c1,{type:"bar",data:{labels,datasets:[{label:"Budget OCC%",data:bgtOccArr,backgroundColor:"rgba(21,101,192,.25)",borderColor:"#1565C0",borderWidth:1.5,borderRadius:4},{label:"Actual OCC%",data:actOccArr,backgroundColor:actOccArr.map((v,i)=>v!=null?v>=(bgtOccArr[i]||78.2)?"rgba(15,118,110,.75)":"rgba(153,27,27,.7)":"rgba(200,200,200,.3)"),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:9,padding:7}}},scales:{y:{min:0,max:110,ticks:{callback:v=>v+"%",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  const c2=document.getElementById("ytdCasChart")?.getContext("2d");
+  if(c2) _ytdChart.ytdCasual=new Chart(c2,{type:"bar",data:{labels,datasets:[{label:"Budget Casual",data:bgtCasArr,backgroundColor:"rgba(21,101,192,.2)",borderColor:"#1565C0",borderWidth:1.5,borderRadius:4},{label:"Actual Casual",data:actCasArr,backgroundColor:actCasArr.map((v,i)=>v!=null?v<=(bgtCasArr[i]||Infinity)?"rgba(15,118,110,.75)":"rgba(220,38,38,.7)":"rgba(200,200,200,.3)"),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:9,padding:7}}},scales:{y:{ticks:{callback:v=>v>=1e6?(v/1e6).toFixed(1)+"M":(v/1000)+"K",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+  const c3=document.getElementById("ytdRevChart")?.getContext("2d");
+  if(c3) _ytdChart.ytdRev=new Chart(c3,{type:"bar",data:{labels,datasets:[{label:"Budget Revenue",data:bgtRevArr,backgroundColor:"rgba(21,101,192,.2)",borderColor:"#1565C0",borderWidth:1.5,borderRadius:4},{label:"Forecast Revenue",data:fctRevArr,backgroundColor:"rgba(15,118,110,.2)",borderColor:"#0F766E",borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:9,padding:7}}},scales:{y:{ticks:{callback:v=>v>=1e6?(v/1e6).toFixed(1)+"M":(v/1000)+"K",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+}
+
+</script>
+</body>
+</html>
