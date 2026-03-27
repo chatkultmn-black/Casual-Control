@@ -1461,6 +1461,28 @@ function buildYtdCharts(){
   if(c3) _ytdChart.ytdRev=new Chart(c3,{type:"bar",data:{labels,datasets:[{label:"Budget Revenue",data:bgtRevArr,backgroundColor:"rgba(21,101,192,.2)",borderColor:"#1565C0",borderWidth:1.5,borderRadius:4},{label:"Forecast Revenue",data:fctRevArr,backgroundColor:"rgba(15,118,110,.2)",borderColor:"#0F766E",borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:"top",labels:{font:{size:10},boxWidth:9,padding:7}}},scales:{y:{ticks:{callback:v=>v>=1e6?(v/1e6).toFixed(1)+"M":(v/1000)+"K",font:{size:9}},grid:{color:"rgba(0,0,0,.04)"}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
 }
 
+
+/* ═══ BUDGET PREFILL — 2026 ═══ */
+(function prefillBudget(){
+  const KEY = "cc_g_bgt";
+  // Only prefill if budget is empty
+  const existing = localStorage.getItem(KEY);
+  if (existing) {
+    try { const d = JSON.parse(existing); if (Object.keys(d).length > 0) return; } catch(e) {}
+  }
+  const MONTHS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const CASUAL = {"fo": [104900, 104900, 91200, 102000, 102000, 75000, 75000, 80400, 80400, 91200, 80400, 102000], "hk": [104900, 104900, 91200, 102000, 102000, 75000, 75000, 80400, 80400, 91200, 80400, 102000], "fb": [105840, 105840, 77040, 77040, 77040, 77040, 77040, 77040, 77040, 88560, 77040, 94320], "kt": [70560, 70560, 51360, 51360, 51360, 51360, 51360, 51360, 51360, 59040, 51360, 62880], "sp": [43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200, 43200], "sa": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "sm": [74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539, 74539], "pm": [47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000, 47000], "hr": [105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667, 105667], "ag": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "mr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "so": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "gl": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "tr": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "hl": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "sd": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "cv": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+  const bgt = {};
+  MONTHS.forEach((m, mi) => {
+    bgt[m] = { occ: 0, rev: 0, casual: {} };
+    Object.entries(CASUAL).forEach(([id, arr]) => {
+      bgt[m].casual[id] = arr[mi];
+    });
+  });
+  localStorage.setItem(KEY, JSON.stringify(bgt));
+  console.log("Budget 2026 prefilled");
+})();
+
 </script>
 </body>
 </html>
