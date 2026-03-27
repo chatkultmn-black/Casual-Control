@@ -3,308 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hotel Finance Dashboard — 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Hotel Finance Dashboard 2026</title>
+<meta http-equiv="refresh" content="0; url=hotel_finance_v3.html">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#1a2e45;--navy2:#243d57;--gold:#b8890a;--gold2:#d4a012;
-  --bg:#f0f4f8;--white:#ffffff;--text:#1a2e45;--text2:#4a6282;--text3:#7a95b0;
-  --border:#d0dce8;--green:#1e8a4c;--red:#c0392b;--blue:#1e6fc4;
-  --shadow:0 2px 12px rgba(26,46,69,0.1);--shadow2:0 8px 32px rgba(26,46,69,0.15);
-}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#1a2e45;--gold:#d4a012;--bg:#eef2f7;--text:#1a2e45;--text2:#4a6282;--text3:#7a95b0;--border:#d0dce8;--green:#1e8a4c;--red:#c0392b;--blue:#1e6fc4;--sh:0 2px 12px rgba(26,46,69,.1);--sh2:0 8px 32px rgba(26,46,69,.15)}
 html{font-size:14px}
-body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;min-height:100vh;overflow-x:hidden}
-
-/* HERO */
-.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,#1e3d5c 100%);padding:60px 2rem 80px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.hero-badge{display:inline-block;background:rgba(184,137,10,0.2);border:1px solid rgba(212,160,18,0.4);border-radius:999px;padding:4px 14px;font-size:11px;color:var(--gold2);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;margin-bottom:20px}
-.hero-title{font-size:36px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:10px}
-.hero-title span{color:var(--gold2)}
-.hero-sub{font-size:14px;color:rgba(255,255,255,0.6);max-width:560px;margin:0 auto 32px;line-height:1.7}
-.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap}
-.hero-stat{text-align:center}
-.hero-stat-num{font-size:28px;font-weight:700;color:var(--gold2);font-family:'IBM Plex Mono',monospace}
-.hero-stat-lbl{font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px}
-
-/* WAVE */
-.wave{height:50px;background:var(--bg);position:relative;margin-top:-2px}
+body{background:var(--bg);color:var(--text);font-family:'Sarabun',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,#243d57 60%,#1e3d5c 100%);padding:56px 2rem 72px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M20 20h20v20H20zM0 0h20v20H0z'/%3E%3C/g%3E%3C/svg%3E")}
+.hbadge{display:inline-block;background:rgba(212,160,18,.2);border:1px solid rgba(212,160,18,.4);border-radius:999px;padding:4px 14px;font-size:10px;color:var(--gold);font-family:'IBM Plex Mono',monospace;letter-spacing:.06em;margin-bottom:18px}
+.htitle{font-size:34px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:10px}
+.htitle span{color:var(--gold)}
+.hsub{font-size:13px;color:rgba(255,255,255,.6);max-width:520px;margin:0 auto 28px;line-height:1.7}
+.hstats{display:flex;gap:28px;justify-content:center;flex-wrap:wrap}
+.hstat-num{font-size:26px;font-weight:700;color:var(--gold);font-family:'IBM Plex Mono',monospace}
+.hstat-lbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:2px}
+.wave{height:44px;background:var(--bg);position:relative;margin-top:-2px}
 .wave svg{position:absolute;bottom:0;width:100%}
-
-/* CONTENT */
-.content{max-width:1100px;margin:0 auto;padding:0 2rem 4rem}
-
-/* SECTION */
-.section-title{font-size:11px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-
-/* CARDS GRID */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-bottom:48px}
-.card{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;text-decoration:none;color:inherit}
-.card:hover{transform:translateY(-3px);box-shadow:var(--shadow2)}
-.card-top{padding:20px 20px 16px;flex:1}
-.card-icon-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.card-tag{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:3px 8px;border-radius:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
-.card-tag.main{background:rgba(26,46,69,0.08);color:var(--navy)}
-.card-tag.new{background:rgba(30,138,76,0.1);color:var(--green);border:1px solid rgba(30,138,76,0.2)}
-.card-tag.prev{background:rgba(122,149,176,0.1);color:var(--text3)}
-.card-name{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;line-height:1.3}
-.card-desc{font-size:12px;color:var(--text2);line-height:1.6}
-.card-features{display:flex;flex-wrap:wrap;gap:5px;padding:0 20px 14px}
-.feat{font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:2px 8px;color:var(--text2)}
-.card-footer{padding:14px 20px;border-top:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between}
-.card-size{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text3)}
-.card-arrow{font-size:13px;color:var(--navy);font-weight:700;display:flex;align-items:center;gap:4px}
-.card-arrow span{font-size:11px;color:var(--text2)}
-
+.content{max-width:1000px;margin:0 auto;padding:0 2rem 4rem;flex:1}
+.sec-title{font-size:10px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin:36px 0 16px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+/* MAIN CARD */
+.main-card{background:#fff;border:2px solid var(--navy);border-radius:18px;overflow:hidden;box-shadow:var(--sh2);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s;margin-bottom:20px}
+.main-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(26,46,69,.2)}
+.mc-top{background:linear-gradient(135deg,var(--navy),#243d57);padding:24px 28px;color:#fff;display:flex;align-items:center;gap:16px}
+.mc-icon{width:52px;height:52px;background:rgba(212,160,18,.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.mc-name{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px}
+.mc-ver{font-size:10px;font-family:'IBM Plex Mono',monospace;background:rgba(212,160,18,.25);color:var(--gold);padding:2px 8px;border-radius:4px;display:inline-block}
+.mc-body{padding:20px 28px}
+.mc-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px}
+.mc-feats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.feat{font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:3px 9px;color:var(--text2)}
+.mc-footer{padding:14px 28px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mc-size{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--text3)}
+.mc-open{background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 22px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .15s;text-decoration:none;display:inline-block}
+.mc-open:hover{background:#243d57;box-shadow:var(--sh2)}
+/* SMALL CARDS */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:36px}
+.card{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh);transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;text-decoration:none;color:inherit;opacity:.8}
+.card:hover{transform:translateY(-2px);box-shadow:var(--sh2);opacity:1}
+.ctop{padding:16px;flex:1}
+.crow{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.cion{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ctag{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 7px;border-radius:4px;font-weight:600;text-transform:uppercase;background:var(--bg);color:var(--text3);border:1px solid var(--border)}
+.ctag.prev{background:rgba(122,149,176,.08);color:var(--text3)}
+.cname{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px}
+.cdesc{font-size:11px;color:var(--text2);line-height:1.5}
+.cfoot{padding:11px 16px;border-top:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace}
 /* GUIDE */
-.guide{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:28px 32px;margin-bottom:48px;box-shadow:var(--shadow)}
-.guide-title{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:20px;display:flex;align-items:center;gap:8px}
-.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-.step{display:flex;gap:12px;align-items:flex-start}
-.step-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.step-text strong{display:block;font-size:12px;color:var(--navy);margin-bottom:3px}
-.step-text p{font-size:11px;color:var(--text2);line-height:1.5}
-.code-block{background:var(--navy);border-radius:10px;padding:16px 20px;margin-top:20px;overflow-x:auto}
-.code-block code{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a8d4f5;line-height:1.8;white-space:pre}
-.code-block .cm{color:rgba(255,255,255,0.35)}
-.code-block .ck{color:#e8c96a}
-.code-block .cv{color:#7dd4a8}
-
-/* ALERT BOX */
-.alert-box{background:rgba(30,111,196,0.06);border:1px solid rgba(30,111,196,0.2);border-radius:10px;padding:14px 18px;margin-top:20px;font-size:12px;color:var(--blue);line-height:1.6;display:flex;gap:10px;align-items:flex-start}
-.alert-box .ai{font-size:16px;flex-shrink:0;margin-top:1px}
-
-/* FOOTER */
-.footer{text-align:center;padding:2rem;font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border)}
+.guide{background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:36px;box-shadow:var(--sh)}
+.guide-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.snum{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.stext strong{display:block;font-size:12px;color:var(--navy);margin-bottom:3px}
+.stext p{font-size:11px;color:var(--text2);line-height:1.5}
+.code-blk{background:var(--navy);border-radius:10px;padding:14px 18px;margin-top:18px;overflow-x:auto}
+.code-blk code{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a8d4f5;line-height:1.8;white-space:pre}
+.cm{color:rgba(255,255,255,.3)}.ck{color:#e8c96a}.cv{color:#7dd4a8}
+.info-box{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 16px;margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:10px}
+.footer{text-align:center;padding:1.5rem;font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border)}
 .footer a{color:var(--gold);text-decoration:none}
-.footer a:hover{text-decoration:underline}
-
-@media(max-width:600px){
-  .hero-title{font-size:26px}
-  .cards-grid{grid-template-columns:1fr}
-  .steps{grid-template-columns:1fr 1fr}
-  .content{padding:0 1rem 3rem}
-  .guide{padding:20px}
-}
+@media(max-width:600px){.htitle{font-size:24px}.cards-grid{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.content{padding:0 1rem 3rem}.mc-top,.mc-body,.mc-footer{padding:16px}}
 </style>
 </head>
 <body>
-
-<!-- HERO -->
 <div class="hero">
-  <div class="hero-badge">🏨 HOTEL FINANCE SYSTEM · 2026</div>
-  <h1 class="hero-title">Hotel Budget &<br><span>Finance Dashboard</span></h1>
-  <p class="hero-sub">ระบบเปรียบเทียบ Budget · Forecast · Casual Actual ออกแบบสำหรับ Hotel Finance Manager — พร้อมระบบแจ้งเตือน Ratio อัตโนมัติ</p>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-num">5</div><div class="hero-stat-lbl">Dashboard Views</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">6</div><div class="hero-stat-lbl">Revenue Depts</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">2026</div><div class="hero-stat-lbl">Budget Year</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">THB</div><div class="hero-stat-lbl">Currency</div></div>
+  <div class="hbadge">🏨 HOTEL FINANCE SYSTEM · 2026</div>
+  <h1 class="htitle">Hotel Budget &<br><span>Finance Dashboard</span></h1>
+  <p class="hsub">ระบบเปรียบเทียบ Budget · Forecast · Casual Actual ออกแบบสำหรับ Hotel Finance Manager พร้อมระบบแจ้งเตือน Ratio อัตโนมัติ</p>
+  <div class="hstats">
+    <div><div class="hstat-num">5</div><div class="hstat-lbl">Dashboard Views</div></div>
+    <div><div class="hstat-num">6</div><div class="hstat-lbl">Departments</div></div>
+    <div><div class="hstat-num">2026</div><div class="hstat-lbl">Budget Year</div></div>
+    <div><div class="hstat-num">THB</div><div class="hstat-lbl">Currency</div></div>
   </div>
 </div>
+<div class="wave"><svg viewBox="0 0 1440 44" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,44 C360,0 1080,0 1440,44 L1440,44 L0,44 Z" fill="#eef2f7"/></svg></div>
 
-<div class="wave">
-  <svg viewBox="0 0 1440 50" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,50 C360,0 1080,0 1440,50 L1440,50 L0,50 Z" fill="#f0f4f8"/>
-  </svg>
-</div>
+<div class="content" style="padding-top:36px">
+  <div class="sec-title">⭐ Main Dashboard (Latest)</div>
+  <a class="main-card" href="hotel_finance_v3.html">
+    <div class="mc-top">
+      <div class="mc-icon">📊</div>
+      <div>
+        <div class="mc-name">Hotel Finance Dashboard V3</div>
+        <span class="mc-ver">VERSION 3 · LATEST</span>
+      </div>
+    </div>
+    <div class="mc-body">
+      <p class="mc-desc">Dashboard หลักสำหรับ Finance Manager — มีระบบกรอก Actual ที่สมบูรณ์พร้อมปุ่มบันทึกทีละแผนก, ปฏิทิน OCC แต่ละวัน hover เห็น Wage ทุกแผนก, Revenue เชื่อมกับแผนกที่เลือก และแจ้งเตือน Ratio อัตโนมัติ</p>
+      <div class="mc-feats">
+        <span class="feat">🔐 PIN Lock</span><span class="feat">💾 Save per Dept</span><span class="feat">📅 OCC Calendar</span>
+        <span class="feat">⚠️ Ratio Alert</span><span class="feat">🔗 Dept Revenue</span><span class="feat">👥 Casual Input</span>
+        <span class="feat">🏨 Occupancy KPI</span><span class="feat">📋 Full Compare</span><span class="feat">🌤 Light Theme</span>
+        <span class="feat">💾 LocalStorage</span>
+      </div>
+    </div>
+    <div class="mc-footer">
+      <span class="mc-size">132 KB · Standalone HTML · No server needed</span>
+      <a class="mc-open" href="hotel_finance_v3.html">🚀 เปิด Dashboard →</a>
+    </div>
+  </a>
 
-<div class="content" style="padding-top:40px">
-
-  <!-- MAIN DASHBOARDS -->
-  <div class="section-title">📊 Main Dashboard</div>
+  <div class="sec-title">📁 Previous Versions</div>
   <div class="cards-grid">
-
-    <!-- MAIN: Hotel Finance V2 -->
     <a class="card" href="hotel_finance_v2.html">
-      <div class="card-top">
-        <div class="card-icon-row">
-          <div class="card-icon" style="background:#e8f0fa">📊</div>
-          <span class="card-tag new">⭐ Latest</span>
-        </div>
-        <div class="card-name">Hotel Finance Dashboard V2</div>
-        <div class="card-desc">Dashboard หลักสำหรับ Finance Manager — Budget 2026 vs Forecast 2026 vs Casual Actual พร้อมระบบแจ้งเตือน Ratio อัตโนมัติ เลือกดูแยกแผนกได้ทันที</div>
-      </div>
-      <div class="card-features">
-        <span class="feat">🔐 PIN Lock</span>
-        <span class="feat">📊 5 Views</span>
-        <span class="feat">⚠️ Ratio Alert</span>
-        <span class="feat">💰 Revenue Link</span>
-        <span class="feat">👥 Casual Wages</span>
-        <span class="feat">🏨 Occupancy KPI</span>
-        <span class="feat">🌓 Light Theme</span>
-        <span class="feat">📋 Full Comparison</span>
-      </div>
-      <div class="card-footer">
-        <span class="card-size">127 KB · Standalone HTML</span>
-        <span class="card-arrow">เปิดดู <span>→</span></span>
-      </div>
+      <div class="ctop"><div class="crow"><div class="cion" style="background:#f0eafd">📈</div><span class="ctag prev">V2</span></div><div class="cname">Hotel Finance V2</div><div class="cdesc">Light theme — Budget, Forecast, Wages, 5 แท็บ</div></div>
+      <div class="cfoot"><span>127 KB</span><span>→ เปิด</span></div>
     </a>
-
-    <!-- Casual Budget Hotel -->
     <a class="card" href="casual_budget_hotel.html">
-      <div class="card-top">
-        <div class="card-icon-row">
-          <div class="card-icon" style="background:#fef3d0">👥</div>
-          <span class="card-tag main">Casual</span>
-        </div>
-        <div class="card-name">Casual Budget Dashboard</div>
-        <div class="card-desc">Dashboard Casual Wages พร้อมพื้นหลังโรงแรม ปฏิทินปี 2026 PIN Lock และ เปรียบเทียบงบประมาณ vs จ้างจริงรายเดือน</div>
-      </div>
-      <div class="card-features">
-        <span class="feat">🔐 PIN Lock</span>
-        <span class="feat">🏨 Hotel BG</span>
-        <span class="feat">📅 Calendar 2026</span>
-        <span class="feat">📊 Charts</span>
-        <span class="feat">✏️ Input Actual</span>
-        <span class="feat">🌑 Dark Theme</span>
-      </div>
-      <div class="card-footer">
-        <span class="card-size">151 KB · Standalone HTML</span>
-        <span class="card-arrow">เปิดดู <span>→</span></span>
-      </div>
+      <div class="ctop"><div class="crow"><div class="cion" style="background:#fef3d0">👥</div><span class="ctag prev">V1</span></div><div class="cname">Casual Budget Hotel</div><div class="cdesc">Dark theme, Hotel BG, Calendar 2026</div></div>
+      <div class="cfoot"><span>151 KB</span><span>→ เปิด</span></div>
     </a>
-
+    <a class="card" href="hotel_finance_dashboard.html">
+      <div class="ctop"><div class="crow"><div class="cion" style="background:#e8f2fc">📊</div><span class="ctag prev">V1</span></div><div class="cname">Hotel Finance V1</div><div class="cdesc">Dark theme — 5 แท็บ Budget & Forecast</div></div>
+      <div class="cfoot"><span>115 KB</span><span>→ เปิด</span></div>
+    </a>
+    <a class="card" href="casual_budget_dashboard.html">
+      <div class="ctop"><div class="crow"><div class="cion" style="background:#e4f5ec">💼</div><span class="ctag prev">Basic</span></div><div class="cname">Casual Budget Basic</div><div class="cdesc">Simple wages dashboard ไม่มี PIN</div></div>
+      <div class="cfoot"><span>26 KB</span><span>→ เปิด</span></div>
+    </a>
   </div>
 
-  <!-- PREVIOUS VERSIONS -->
-  <div class="section-title">📁 Previous Versions</div>
-  <div class="cards-grid">
-
-    <a class="card" href="hotel_finance_dashboard.html" style="opacity:.75">
-      <div class="card-top">
-        <div class="card-icon-row">
-          <div class="card-icon" style="background:#f0eafd">📈</div>
-          <span class="card-tag prev">V1 · Dark</span>
-        </div>
-        <div class="card-name">Hotel Finance Dashboard V1</div>
-        <div class="card-desc">เวอร์ชันแรก Dark Theme — Budget, Forecast, Casual Wages เปรียบเทียบ 5 แท็บ</div>
-      </div>
-      <div class="card-features">
-        <span class="feat">🔐 PIN Lock</span>
-        <span class="feat">📊 5 Tabs</span>
-        <span class="feat">🌑 Dark Theme</span>
-      </div>
-      <div class="card-footer">
-        <span class="card-size">115 KB · Standalone HTML</span>
-        <span class="card-arrow">เปิดดู <span>→</span></span>
-      </div>
-    </a>
-
-    <a class="card" href="casual_budget_dashboard.html" style="opacity:.75">
-      <div class="card-top">
-        <div class="card-icon-row">
-          <div class="card-icon" style="background:#e4f5ec">💼</div>
-          <span class="card-tag prev">V1 · Basic</span>
-        </div>
-        <div class="card-name">Casual Budget (Basic)</div>
-        <div class="card-desc">Dashboard พื้นฐาน Casual Wages Budget vs Actual ไม่มี PIN Lock ใช้งานง่าย</div>
-      </div>
-      <div class="card-features">
-        <span class="feat">📊 Charts</span>
-        <span class="feat">✏️ Input</span>
-        <span class="feat">🌑 Dark</span>
-      </div>
-      <div class="card-footer">
-        <span class="card-size">26 KB · Standalone HTML</span>
-        <span class="card-arrow">เปิดดู <span>→</span></span>
-      </div>
-    </a>
-
-  </div>
-
-  <!-- GITHUB GUIDE -->
   <div class="guide">
-    <div class="guide-title">🚀 วิธี Upload ขึ้น GitHub Pages</div>
+    <div class="guide-title">🚀 วิธี Upload ขึ้น GitHub (อัปเดต V3)</div>
     <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-text">
-          <strong>สร้าง Repository</strong>
-          <p>ไปที่ github.com → New repository ตั้งชื่อ เช่น <code style="background:#f0f4f8;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px">hotel-finance-2026</code> และเลือก Public</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-text">
-          <strong>Upload ไฟล์ทั้งหมด</strong>
-          <p>คลิก "Add file → Upload files" แล้วลาก ไฟล์ทั้ง 5 ไฟล์ (index.html + 4 dashboards) ขึ้นพร้อมกัน</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-text">
-          <strong>เปิด GitHub Pages</strong>
-          <p>ไปที่ Settings → Pages → Source เลือก <strong>main branch / root</strong> แล้วกด Save</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-text">
-          <strong>รอ 1-2 นาที</strong>
-          <p>GitHub จะแสดง URL เช่น <code style="background:#f0f4f8;padding:1px 5px;border-radius:4px;font-family:monospace;font-size:11px">https://username.github.io/hotel-finance-2026</code></p>
-        </div>
-      </div>
+      <div class="step"><div class="snum">1</div><div class="stext"><strong>ไปที่ Repository</strong><p>github.com/chatkultmn-black/Casual-Control</p></div></div>
+      <div class="step"><div class="snum">2</div><div class="stext"><strong>Upload ไฟล์ใหม่</strong><p>Add file → Upload files แล้วลาก 2 ไฟล์ใหม่ขึ้น</p></div></div>
+      <div class="step"><div class="snum">3</div><div class="stext"><strong>Commit changes</strong><p>กด Commit changes รอ 1-2 นาที</p></div></div>
+      <div class="step"><div class="snum">4</div><div class="stext"><strong>เปิด Link</strong><p>Link เดิมยังใช้ได้ — เปิด hotel_finance_v3.html</p></div></div>
     </div>
-
-    <div class="code-block"><code><span class="cm"># ไฟล์ที่ต้อง Upload ทั้งหมด (5 ไฟล์)</span>
-<span class="ck">📁 hotel-finance-2026/</span>
-<span class="cv">├── index.html</span>                    <span class="cm">&lt;-- หน้านี้ (landing page)</span>
-<span class="cv">├── hotel_finance_v2.html</span>         <span class="cm">&lt;-- ⭐ Dashboard หลัก (แนะนำ)</span>
-<span class="cv">├── casual_budget_hotel.html</span>      <span class="cm">&lt;-- Casual Budget + Hotel BG</span>
-<span class="cv">├── hotel_finance_dashboard.html</span>  <span class="cm">&lt;-- V1 Dark Theme</span>
-<span class="cv">└── casual_budget_dashboard.html</span>  <span class="cm">&lt;-- Basic Version</span></code></div>
-
-    <div class="alert-box">
-      <span class="ai">💡</span>
-      <div>ไฟล์ทุกอันเป็น <strong>Standalone HTML</strong> — ไม่ต้องติดตั้ง Node.js, Python หรือ Server ใดๆ เปิดผ่าน Browser ได้เลย ทั้ง Chrome, Safari, Edge รหัสผ่านเริ่มต้นคือ <strong style="font-family:monospace">1234</strong> และสามารถเปลี่ยนได้ในระบบ (บันทึกใน Browser LocalStorage)</div>
-    </div>
+    <div class="code-blk"><code><span class="cm"># ไฟล์ที่ต้อง Upload เพิ่ม (2 ไฟล์ใหม่)</span>
+<span class="ck">📁 Casual-Control/</span>
+<span class="cv">├── index.html</span>              <span class="cm">&lt;-- อัปเดต (แทนของเดิม)</span>
+<span class="cv">├── hotel_finance_v3.html</span>   <span class="cm">&lt;-- ⭐ NEW — Dashboard V3</span>
+<span class="cm">├── hotel_finance_v2.html   (เดิม — ไม่ต้องเปลี่ยน)</span>
+<span class="cm">├── casual_budget_hotel.html</span>
+<span class="cm">├── hotel_finance_dashboard.html</span>
+<span class="cm">└── casual_budget_dashboard.html</span></code></div>
+    <div class="info-box"><span>💡</span><div>รหัสผ่านเริ่มต้น <strong style="font-family:monospace">1234</strong> · เปลี่ยนได้ในระบบ · ข้อมูล Actual บันทึกใน Browser LocalStorage (ไม่หายเมื่อปิด browser) · ทุกไฟล์ Standalone HTML ไม่ต้องติดตั้งอะไร</div></div>
   </div>
-
-  <!-- FEATURES SUMMARY -->
-  <div class="section-title">✨ Features Summary</div>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:48px">
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
-      <div style="font-size:22px;margin-bottom:8px">🔐</div>
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">PIN Security</div>
-      <div style="font-size:11px;color:var(--text2)">ล็อกด้วย PIN 4 หลัก เปลี่ยนรหัสได้ บันทึกใน Browser</div>
-    </div>
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
-      <div style="font-size:22px;margin-bottom:8px">⚠️</div>
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Ratio Alert</div>
-      <div style="font-size:11px;color:var(--text2)">แจ้งเตือนอัตโนมัติเมื่อ Casual/Revenue เกินเกณฑ์แต่ละแผนก</div>
-    </div>
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
-      <div style="font-size:22px;margin-bottom:8px">🔗</div>
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Dept-Linked Revenue</div>
-      <div style="font-size:11px;color:var(--text2)">เลือกแผนก → Revenue, Forecast, % เปลี่ยนตามทันที</div>
-    </div>
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
-      <div style="font-size:22px;margin-bottom:8px">✏️</div>
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">Input Actual</div>
-      <div style="font-size:11px;color:var(--text2)">กรอก Actual Wages ได้ทุกแผนก-ทุกเดือน กราฟอัปเดตทันที</div>
-    </div>
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
-      <div style="font-size:22px;margin-bottom:8px">📅</div>
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">ปฏิทิน 2026</div>
-      <div style="font-size:11px;color:var(--text2)">ปฏิทินครบ 12 เดือน วันหยุดไทย วันที่ปัจจุบัน</div>
-    </div>
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:var(--shadow)">
-      <div style="font-size:22px;margin-bottom:8px">📊</div>
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:4px">5 Dashboard Views</div>
-      <div style="font-size:11px;color:var(--text2)">Overview · Revenue · Casual · Occupancy · Comparison</div>
-    </div>
-  </div>
-
 </div>
 
-<div class="footer">
-  Hotel Finance Dashboard 2026 · Built with ❤️ · All files are standalone HTML — no server required<br>
-  <span style="margin-top:6px;display:block">Default PIN: <strong style="font-family:monospace">1234</strong> · Currency: THB · <a href="hotel_finance_v2.html">Open Main Dashboard →</a></span>
-</div>
-
+<div class="footer">Hotel Finance Dashboard 2026 · Default PIN: <strong style="font-family:monospace">1234</strong> · <a href="hotel_finance_v3.html">Open Main Dashboard →</a></div>
 </body>
 </html>
