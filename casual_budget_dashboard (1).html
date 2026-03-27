@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casual Budget vs Actual — Contracted & Extra Wages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --bg2: #161b27;
+    --bg3: #1c2235;
+    --surface: #1e2540;
+    --surface2: #252d48;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8eaf0;
+    --text2: #8b92a8;
+    --text3: #5a6278;
+    --accent: #4f80e1;
+    --accent2: #3562c4;
+    --gold: #e8a930;
+    --gold2: #c48a1a;
+    --red: #e05252;
+    --green: #48b07a;
+    --teal: #3bbfb0;
+    --font: 'IBM Plex Sans Thai', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html { font-size: 14px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .page-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff; font-weight: 600;
+  }
+  .logo-text h1 { font-size: 15px; font-weight: 600; color: var(--text); }
+  .logo-text p { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .header-meta { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+  .header-meta span { color: var(--gold); }
+
+  /* Layout */
+  .main { padding: 1.5rem 2rem 3rem; max-width: 1400px; margin: 0 auto; }
+
+  /* Metric Cards */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--card-accent, var(--accent));
+    opacity: 0.7;
+  }
+  .metric-card:hover { border-color: var(--border2); }
+  .metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text3);
+    font-family: var(--mono);
+    margin-bottom: 8px;
+  }
+  .metric-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: var(--mono);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .metric-sub {
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .metric-sub.over { color: var(--red); }
+  .metric-sub.under { color: var(--green); }
+
+  /* Section panels */
+  .panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.5s ease both;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px; height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  /* Month Controls */
+  .month-controls {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .ctrl-btn {
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .ctrl-btn:hover { background: var(--surface); color: var(--text); }
+  .ctrl-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    font-size: 11px; color: var(--text2);
+    margin-bottom: 12px;
+    font-family: var(--mono);
+  }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Charts */
+  .chart-wrap { position: relative; width: 100%; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Table */
+  .dept-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .dept-table th {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: var(--mono);
+    color: var(--text3);
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .dept-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+    transition: background 0.1s;
+  }
+  .dept-table tr:last-child td { border-bottom: none; }
+  .dept-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .dept-table td.num {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .dept-name { font-weight: 500; font-size: 12px; }
+  .dept-sub { font-size: 10px; color: var(--text3); }
+
+  /* Input */
+  .actual-input {
+    width: 100%;
+    text-align: right;
+    font-size: 12px;
+    font-family: var(--mono);
+    padding: 5px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .actual-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(79,128,225,0.2);
+  }
+  .actual-input::placeholder { color: var(--text3); }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+  .badge.over { background: rgba(224,82,82,0.15); color: #f08080; border: 1px solid rgba(224,82,82,0.25); }
+  .badge.under { background: rgba(72,176,122,0.15); color: #72d4a3; border: 1px solid rgba(72,176,122,0.25); }
+  .badge.ok { background: rgba(79,128,225,0.12); color: #8aabf0; border: 1px solid rgba(79,128,225,0.2); }
+  .badge.warn { background: rgba(232,169,48,0.12); color: #f0c06a; border: 1px solid rgba(232,169,48,0.2); }
+  .badge.empty { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border); }
+
+  /* Progress bar */
+  .prog-wrap { background: rgba(255,255,255,0.05); border-radius: 99px; height: 4px; overflow: hidden; margin-top: 4px; }
+  .prog-bar { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .metric-grid { animation-delay: 0.05s; }
+  .panel:nth-child(1) { animation-delay: 0.1s; }
+  .panel:nth-child(2) { animation-delay: 0.15s; }
+  .two-col .panel:nth-child(1) { animation-delay: 0.2s; }
+  .two-col .panel:nth-child(2) { animation-delay: 0.25s; }
+
+  /* Var colors for cards */
+  .card-budget { --card-accent: var(--accent); }
+  .card-actual { --card-accent: var(--teal); }
+  .card-var    { --card-accent: var(--gold); }
+  .card-pct    { --card-accent: var(--green); }
+
+  /* Footer */
+  .footer { text-align: center; padding: 1.5rem; font-size: 10px; color: var(--text3); font-family: var(--mono); border-top: 1px solid var(--border); margin-top: 1rem; }
+
+  @media (max-width: 768px) {
+    .main { padding: 1rem; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .page-header { padding: 1rem; }
+  }
+  @media (max-width: 480px) {
+    .metric-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="page-header">
+  <div class="logo-area">
+    <div class="logo-icon">CB</div>
+    <div class="logo-text">
+      <h1>Casual Budget Dashboard</h1>
+      <p>Contracted & Extra Wages + Outsource</p>
+    </div>
+  </div>
+  <div class="header-meta">ปีงบประมาณ <span>2025</span></div>
+</header>
+
+<main class="main">
+
+  <!-- Metric Cards -->
+  <div class="metric-grid">
+    <div class="metric-card card-budget">
+      <div class="metric-label">Total Budget / ปี</div>
+      <div class="metric-value" id="m-budget">7,108,468</div>
+      <div class="metric-sub">บาท — ทุกแผนก</div>
+    </div>
+    <div class="metric-card card-actual">
+      <div class="metric-label">Actual Used</div>
+      <div class="metric-value" id="m-actual">—</div>
+      <div class="metric-sub" id="m-actual-sub">กรอกค่าจริงในตาราง</div>
+    </div>
+    <div class="metric-card card-var">
+      <div class="metric-label">Variance (฿)</div>
+      <div class="metric-value" id="m-var">—</div>
+      <div class="metric-sub" id="m-var-sub">—</div>
+    </div>
+    <div class="metric-card card-pct">
+      <div class="metric-label">% ใช้งบ</div>
+      <div class="metric-value" id="m-pct">—</div>
+      <div class="metric-sub" id="m-pct-sub">—</div>
+      <div class="prog-wrap"><div class="prog-bar" id="m-prog" style="width:0%;background:var(--green)"></div></div>
+    </div>
+  </div>
+
+  <!-- Bar Chart — By Department -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Budget vs Actual — แยกตามแผนก</div>
+    </div>
+    <div class="month-controls" id="month-controls"></div>
+    <div class="legend">
+      <span><span class="legend-dot" style="background:#4f80e1"></span>Budget (งบ)</span>
+      <span><span class="legend-dot" style="background:#3bbfb0"></span>Actual (จ้างจริง)</span>
+      <span><span class="legend-dot" style="background:#e05252; opacity:0.7"></span>Over Budget</span>
+    </div>
+    <div class="chart-wrap" style="height:300px;"><canvas id="deptChart"></canvas></div>
+  </div>
+
+  <!-- Two column charts -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">Monthly Budget Trend</div></div>
+      <div class="legend">
+        <span><span class="legend-dot" style="background:#4f80e1"></span>Budget/เดือน</span>
+        <span><span class="legend-dot" style="background:#e8a930"></span>Actual/เดือน</span>
+      </div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="monthChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="panel-title">สัดส่วน Budget แต่ละแผนก</div></div>
+      <div class="chart-wrap" style="height:200px;"><canvas id="pieChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">รายละเอียดแผนก — กรอก Actual เพื่อเปรียบเทียบ</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="dept-table">
+        <thead>
+          <tr>
+            <th style="min-width:180px">แผนก</th>
+            <th style="text-align:right">Staff Budget</th>
+            <th style="text-align:right">Yearly Rate (฿)</th>
+            <th style="text-align:right">Budget (Selected)</th>
+            <th style="text-align:right;min-width:150px">Actual จ้างจริง (฿)</th>
+            <th style="text-align:right">Variance (฿)</th>
+            <th style="text-align:center">Status</th>
+          </tr>
+        </thead>
+        <tbody id="dept-tbody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" style="font-weight:600;font-size:12px;padding:10px;border-top:1px solid rgba(255,255,255,0.12);color:var(--text2)">รวมทั้งหมด</td>
+            <td class="num" style="border-top:1px solid rgba(255,255,255,0.12);font-weight:600;font-family:var(--mono)" id="foot-yearly">7,108,468</td>
+            <td class="num" style="border-top:1px solid rgba(255,255,255,0.12);font-weight:600;font-family:var(--mono)" id="foot-budget">—</td>
+            <td class="num" style="border-top:1px solid rgba(255,255,255,0.12);font-weight:600;font-family:var(--mono)" id="foot-actual">—</td>
+            <td class="num" style="border-top:1px solid rgba(255,255,255,0.12);font-weight:600;font-family:var(--mono)" id="foot-var">—</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  Casual Budget Dashboard &nbsp;·&nbsp; Contracted & Extra Wages + Outsource &nbsp;·&nbsp; <span id="curr-date"></span>
+</footer>
+
+<script>
+const departments = [
+  { name: 'Room Department',            sub: 'Rooms',          staff: 5, budget: 2178800, monthly: [209800,209800,182400,204000,204000,150000,150000,160800,160800,182400,160800,204000] },
+  { name: 'F&B Department',             sub: 'Food & Beverage', staff: 5, budget: 1684800, monthly: [176400,176400,128400,128400,128400,128400,128400,128400,128400,147600,128400,157200] },
+  { name: 'Sport & Recreation',         sub: 'Recreation',     staff: 1, budget: 518400,  monthly: [43200,43200,43200,43200,43200,43200,43200,43200,43200,43200,43200,43200] },
+  { name: 'Sales & Marketing',          sub: 'Marketing',      staff: 0, budget: 894468,  monthly: [74539,74539,74539,74539,74539,74539,74539,74539,74539,74539,74539,74539] },
+  { name: 'Property & Maintenance',     sub: 'Engineering',    staff: 3, budget: 564000,  monthly: [47000,47000,47000,47000,47000,47000,47000,47000,47000,47000,47000,47000] },
+  { name: 'Human Resources',            sub: 'HR Admin',       staff: 6, budget: 1268000, monthly: [105667,105667,105667,105667,105667,105667,105667,105667,105667,105667,105667,105667] },
+];
+
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const totalBudget = departments.reduce((s,d) => s+d.budget, 0);
+const chartColors = ['#4f80e1','#3bbfb0','#e8a930','#48b07a','#e05252','#a87de8'];
+
+let actuals = departments.map(() => null);
+let selectedMonth = 'all';
+
+const fmt = n => n == null ? '—' : Math.round(n).toLocaleString('th-TH');
+const pct = (a,b) => b ? Math.round(a/b*100) : 0;
+
+function getSelectedBudget(i) {
+  if (selectedMonth === 'all') return departments[i].budget;
+  return departments[i].monthly[months.indexOf(selectedMonth)];
+}
+
+function updateMetrics() {
+  const filled = actuals.filter(v => v !== null);
+  if (filled.length === 0) {
+    ['m-actual','m-var','m-pct'].forEach(id => { document.getElementById(id).textContent = '—'; });
+    document.getElementById('m-actual-sub').textContent = 'กรอกค่าจริงในตาราง';
+    document.getElementById('m-actual-sub').className = 'metric-sub';
+    document.getElementById('m-var-sub').textContent = '—';
+    document.getElementById('m-var-sub').className = 'metric-sub';
+    document.getElementById('m-pct-sub').textContent = '—';
+    document.getElementById('m-pct-sub').className = 'metric-sub';
+    document.getElementById('m-prog').style.width = '0%';
+    return;
+  }
+  const totalActual = actuals.reduce((s,v,i) => s + (v !== null ? v : departments[i].budget), 0);
+  const totalBgt = selectedMonth === 'all' ? totalBudget : departments.reduce((s,_,i) => s + getSelectedBudget(i), 0);
+  const actualSum = actuals.reduce((s,v,i) => s + (v !== null ? (selectedMonth === 'all' ? v : v/12) : 0), 0);
+  const budgetForCalc = actuals.reduce((s,v,i) => s + (v !== null ? getSelectedBudget(i) : 0), 0);
+  const variance = budgetForCalc - actualSum;
+  const p = pct(actualSum, budgetForCalc);
+
+  document.getElementById('m-actual').textContent = '฿' + fmt(actualSum);
+  document.getElementById('m-actual-sub').textContent = filled.length + '/' + departments.length + ' แผนกกรอกแล้ว';
+  document.getElementById('m-actual-sub').className = 'metric-sub';
+
+  document.getElementById('m-var').textContent = (variance >= 0 ? '+' : '') + fmt(variance);
+  const varSub = document.getElementById('m-var-sub');
+  varSub.textContent = variance >= 0 ? '▼ ประหยัดงบ' : '▲ เกินงบ';
+  varSub.className = 'metric-sub ' + (variance >= 0 ? 'under' : 'over');
+
+  document.getElementById('m-pct').textContent = p + '%';
+  const pctSub = document.getElementById('m-pct-sub');
+  pctSub.textContent = p > 100 ? 'เกิน Budget' : p > 90 ? 'ใกล้เต็ม Budget' : 'อยู่ในงบ';
+  pctSub.className = 'metric-sub ' + (p > 100 ? 'over' : p > 90 ? 'warn' : 'under');
+
+  const prog = document.getElementById('m-prog');
+  prog.style.width = Math.min(p, 100) + '%';
+  prog.style.background = p > 100 ? '#e05252' : p > 90 ? '#e8a930' : '#48b07a';
+}
+
+let deptChart, monthChart, pieChart;
+
+function buildDeptChart() {
+  const ctx = document.getElementById('deptChart').getContext('2d');
+  const budgets = departments.map((_,i) => getSelectedBudget(i));
+  const acts = departments.map((d,i) => {
+    if (actuals[i] === null) return null;
+    return selectedMonth === 'all' ? actuals[i] : actuals[i]/12;
+  });
+  const barColors = departments.map((_,i) => {
+    const a = acts[i]; const b = budgets[i];
+    if (a === null) return 'rgba(79,128,225,0.15)';
+    return a > b ? 'rgba(224,82,82,0.75)' : 'rgba(59,191,176,0.8)';
+  });
+  if (deptChart) deptChart.destroy();
+  deptChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: departments.map(d => d.name),
+      datasets: [
+        { label: 'Budget', data: budgets, backgroundColor: 'rgba(79,128,225,0.5)', borderColor: 'rgba(79,128,225,0.9)', borderWidth: 1, borderRadius: 4, borderSkipped: false },
+        { label: 'Actual', data: acts, backgroundColor: barColors, borderColor: barColors.map(c => c.replace('0.75','1').replace('0.8','1').replace('0.15','0.4')), borderWidth: 1, borderRadius: 4, borderSkipped: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1c2235',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#8b92a8',
+          bodyColor: '#e8eaf0',
+          callbacks: { label: ctx => '  ' + ctx.dataset.label + ': ฿' + fmt(ctx.raw) }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { color: '#8b92a8', font: { family: "'IBM Plex Sans Thai'", size: 11 } }
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          ticks: {
+            color: '#8b92a8',
+            font: { family: "'IBM Plex Mono'", size: 10 },
+            callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v
+          }
+        }
+      }
+    }
+  });
+}
+
+function buildMonthChart() {
+  const ctx = document.getElementById('monthChart').getContext('2d');
+  const monthlyBudget = months.map((_,mi) => departments.reduce((s,d) => s+d.monthly[mi], 0));
+  const monthlyActual = months.map(() => {
+    const sum = actuals.reduce((s,v,i) => v !== null ? s + v/12 : s, 0);
+    return sum > 0 ? sum : null;
+  });
+  if (monthChart) monthChart.destroy();
+  monthChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'Budget', data: monthlyBudget, borderColor: '#4f80e1', backgroundColor: 'rgba(79,128,225,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#4f80e1' },
+        { label: 'Actual', data: monthlyActual, borderColor: '#e8a930', backgroundColor: 'rgba(232,169,48,0.08)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#e8a930', spanGaps: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#1c2235', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#8b92a8', bodyColor: '#e8eaf0', callbacks: { label: ctx => '  ' + ctx.dataset.label + ': ฿' + fmt(ctx.raw) } }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8b92a8', font: { size: 10 } } },
+        y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#8b92a8', font: { size: 10, family: "'IBM Plex Mono'" }, callback: v => (v/1000).toFixed(0)+'K' } }
+      }
+    }
+  });
+}
+
+function buildPieChart() {
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  const colors = ['#4f80e1','#3bbfb0','#e8a930','#48b07a','#e05252','#a87de8'];
+  if (pieChart) pieChart.destroy();
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: departments.map(d => d.name),
+      datasets: [{
+        data: departments.map(d => d.budget),
+        backgroundColor: colors.map(c => c + 'cc'),
+        borderColor: colors,
+        borderWidth: 1.5,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true, position: 'right', labels: { color: '#8b92a8', font: { size: 10 }, boxWidth: 10, padding: 8 } },
+        tooltip: { backgroundColor: '#1c2235', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, titleColor: '#8b92a8', bodyColor: '#e8eaf0', callbacks: { label: ctx => '  ฿' + fmt(ctx.raw) + ' (' + pct(ctx.raw, totalBudget) + '%)' } }
+      },
+      cutout: '62%'
+    }
+  });
+}
+
+function buildTable() {
+  const tbody = document.getElementById('dept-tbody');
+  tbody.innerHTML = '';
+  let footBudget = 0, footActual = 0, footVar = 0, hasActual = false;
+
+  departments.forEach((d, i) => {
+    const bgt = getSelectedBudget(i);
+    const act = actuals[i] !== null ? (selectedMonth === 'all' ? actuals[i] : actuals[i]/12) : null;
+    const variance = act !== null ? bgt - act : null;
+    const p = act !== null ? pct(act, bgt) : null;
+
+    footBudget += bgt;
+    if (act !== null) { footActual += act; footVar += (variance || 0); hasActual = true; }
+
+    let badge = '';
+    if (p === null) badge = '<span class="badge empty">ยังไม่กรอก</span>';
+    else if (p > 100) badge = '<span class="badge over">Over Budget</span>';
+    else if (p > 90) badge = '<span class="badge warn">ใกล้เต็ม</span>';
+    else badge = '<span class="badge ok">OK</span>';
+
+    const varStyle = variance !== null ? (variance < 0 ? 'color:#f08080' : 'color:#72d4a3') : 'color:var(--text3)';
+    const varText = variance !== null ? (variance >= 0 ? '+' : '') + '฿' + fmt(Math.abs(variance)) : '—';
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>
+        <div class="dept-name">${d.name}</div>
+        <div class="dept-sub">${d.sub}</div>
+      </td>
+      <td class="num">${d.staff}</td>
+      <td class="num">฿${fmt(d.budget)}</td>
+      <td class="num">฿${fmt(bgt)}</td>
+      <td class="num"><input type="number" class="actual-input" placeholder="กรอกจำนวน..." step="1000" min="0" value="${actuals[i] !== null ? actuals[i] : ''}" data-idx="${i}" oninput="handleInput(this)"></td>
+      <td class="num" style="${varStyle}">${varText}</td>
+      <td style="text-align:center">${badge}</td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  document.getElementById('foot-yearly').textContent = '฿' + fmt(totalBudget);
+  document.getElementById('foot-budget').textContent = '฿' + fmt(footBudget);
+  document.getElementById('foot-actual').textContent = hasActual ? '฿' + fmt(footActual) : '—';
+  document.getElementById('foot-var').textContent = hasActual ? ((footVar >= 0 ? '+' : '') + '฿' + fmt(Math.abs(footVar))) : '—';
+  if (hasActual) {
+    document.getElementById('foot-var').style.color = footVar >= 0 ? '#72d4a3' : '#f08080';
+  }
+}
+
+function handleInput(el) {
+  const i = parseInt(el.dataset.idx);
+  const val = parseFloat(el.value);
+  actuals[i] = (!isNaN(val) && val >= 0) ? val : null;
+  updateMetrics(); buildDeptChart(); buildMonthChart(); buildTable();
+  // Restore focus
+  setTimeout(() => {
+    const inputs = document.querySelectorAll('.actual-input');
+    if (inputs[i]) { inputs[i].focus(); const len = inputs[i].value.length; inputs[i].setSelectionRange(len,len); }
+  }, 10);
+}
+
+function buildMonthControls() {
+  const ctrl = document.getElementById('month-controls');
+  const makeBtn = (label, val) => {
+    const btn = document.createElement('button');
+    btn.className = 'ctrl-btn' + (val === selectedMonth ? ' active' : '');
+    btn.textContent = label;
+    btn.onclick = () => {
+      selectedMonth = val;
+      ctrl.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      buildDeptChart(); buildTable();
+    };
+    ctrl.appendChild(btn);
+  };
+  makeBtn('ทั้งปี', 'all');
+  months.forEach(m => makeBtn(m, m));
+}
+
+// Current date
+document.getElementById('curr-date').textContent = new Date().toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric' });
+
+// Init
+buildMonthControls();
+buildDeptChart();
+buildMonthChart();
+buildPieChart();
+buildTable();
+updateMetrics();
+</script>
+</body>
+</html>
